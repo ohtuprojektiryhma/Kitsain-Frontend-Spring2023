@@ -16,5 +16,6 @@
     "barcode": "Viivakoodi",
     "pantryItem": "tuote",
     "shoppingListItem": "kauppalista",
-    "createNewRecipe": "Luo uusi resepti"
+    "createNewRecipe": "Luo uusi resepti",
+    "feedTabLabel": "KANAVA"
 }

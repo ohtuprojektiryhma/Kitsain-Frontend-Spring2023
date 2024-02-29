@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/item_controller.dart';
+import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feedview.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/pantryview.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/recipeview.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/used_and_expired.dart';
@@ -78,7 +79,7 @@ class _HomePageState extends State<HomePage> {
         child: DefaultTabController(
           // animationDuration: Duration.zero,
 
-          length: 4,
+          length: 5,
           child: Builder(
             builder: (BuildContext context) {
               return Container(
@@ -94,6 +95,7 @@ class _HomePageState extends State<HomePage> {
                         ShoppingListNavigation(),
                         UsedAndExpired(),
                         RecipeView(),
+                        FeedView()
                       ],
                     ),
                     bottomNavigationBar: TabBar(
@@ -123,6 +125,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .pantryTabLabel,
                                     textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
@@ -150,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .shoppingListsTabLabel,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 13),
+                                    style: TextStyle(fontSize: 9),
                                   ),
                                 ],
                               ),
@@ -178,6 +181,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .pantryTabLabel,
                                     textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
@@ -205,6 +209,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .recipeTabLabel,
                                     textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
@@ -212,6 +217,33 @@ class _HomePageState extends State<HomePage> {
                           },
                           onMove: (details) {
                             DefaultTabController.of(context).animateTo(0);
+                          },
+                        ),
+                        DragTarget(
+                          builder: (
+                            BuildContext context,
+                            List<dynamic> accepted,
+                            List<dynamic> rejected,
+                          ) {
+                            return Container(
+                              height: navBarHeight,
+                              child: Column(
+                                children: [
+                                  SizedBox(height: paddingBoxHeight),
+                                  const Icon(
+                                    Icons.feed,
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!.feedTabLabel,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          onMove: (details) {
+                            DefaultTabController.of(context).animateTo(4);
                           },
                         ),
                       ],
