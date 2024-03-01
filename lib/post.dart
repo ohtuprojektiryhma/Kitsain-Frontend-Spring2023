@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,17 +17,22 @@ class Post {
   *  - figure out the proper location for post.dart file
   * */
 
-  String image = "IMAGE_HERE";
+  File? image;
   String title = "TITLE_HERE";
   String description = "EMPTY_DESC";
+  String price = "0";
+  DateTime expiringDate = DateTime.now();
   int likes = 0;
   List<String> comments = [];
-  Item item = Item("null","null","null",0);
+  //Item item;
 
-  Post(this.image,
-      this.title,
-      this.description,
-      this.likes,
-      this.comments,
-      this.item);
+  Post(
+    this.image,
+    this.title,
+    this.description,
+    this.price,
+    this.expiringDate, {
+    this.likes = 0,
+    this.comments = const [],
+  });
 }

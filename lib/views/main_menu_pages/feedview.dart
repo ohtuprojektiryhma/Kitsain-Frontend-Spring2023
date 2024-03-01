@@ -1,17 +1,23 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
+import 'package:kitsain_frontend_spring2023/post.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
+import 'package:kitsain_frontend_spring2023/views/main_menu_pages/create_post_view.dart';
 
 class FeedView extends StatefulWidget {
-  const FeedView({super.key});
+  const FeedView({Key? key});
+
   @override
   State<FeedView> createState() => _FeedViewState();
 }
 
 class _FeedViewState extends State<FeedView> {
+  List<Post> posts = []; // Create an empty list to store the posts
+
   void _help() {
     showModalBottomSheet(
       context: context,
@@ -26,6 +32,11 @@ class _FeedViewState extends State<FeedView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.main2,
@@ -36,9 +47,9 @@ class _FeedViewState extends State<FeedView> {
         titleBackgroundColor: AppColors.titleBackgroundBrown,
       ),
       body: ListView.builder(
-        itemCount: 10,
+        itemCount: posts.length,
         itemBuilder: (context, index) {
-          return const PostCard();
+          return PostCard(post: posts[index]);
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -46,7 +57,14 @@ class _FeedViewState extends State<FeedView> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreatePostView()),
-          );
+          ).then((newPost) {
+            // Update the feed with the new post
+            if (newPost != null) {
+              setState(() {
+                posts.insert(0, newPost);
+              });
+            }
+          });
         },
         child: const Icon(Icons.add),
       ),
@@ -54,67 +72,46 @@ class _FeedViewState extends State<FeedView> {
   }
 }
 
+/// A card widget that represents a post.
+///
+/// This widget displays the title, content, likes, and comments of a post.
 class PostCard extends StatelessWidget {
-  const PostCard({super.key});
+  final Post post;
 
-  // Placeholder for the posts
+  const PostCard({Key? key, required this.post});
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Post Title',
-              style: TextStyle(
+              post.title,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Post Content',
-              style: TextStyle(fontSize: 14),
+              post.description,
+              style: const TextStyle(fontSize: 14),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.thumb_up),
-                SizedBox(width: 4),
-                Text('Likes'),
-                SizedBox(width: 16),
-                Icon(Icons.comment),
-                SizedBox(width: 4),
-                Text('Comments'),
+                const Icon(Icons.thumb_up),
+                const SizedBox(width: 4),
+                Text(post.likes.toString()),
+                const SizedBox(width: 16),
+                const Icon(Icons.comment),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// A view for creating a new post.
-///
-/// This view allows the user to enter a title and an image for the post.
-/// Once the user clicks the "Create" button, the post will be created.
-class CreatePostView extends StatefulWidget {
-  const CreatePostView({super.key});
-
-  @override
-  CreatePostViewState createState() => CreatePostViewState();
-}
-
-class CreatePostViewState extends State<CreatePostView> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Create Post'),
       ),
     );
   }
