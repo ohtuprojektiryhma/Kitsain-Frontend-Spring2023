@@ -15,8 +15,12 @@ class FeedView extends StatefulWidget {
   State<FeedView> createState() => _FeedViewState();
 }
 
-class _FeedViewState extends State<FeedView> {
+class _FeedViewState extends State<FeedView>
+    with AutomaticKeepAliveClientMixin {
   List<Post> posts = []; // Create an empty list to store the posts
+  @override
+  // Keep the state of the widget when switching between tabs
+  bool get wantKeepAlive => true;
 
   void _help() {
     showModalBottomSheet(
@@ -32,12 +36,8 @@ class _FeedViewState extends State<FeedView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: AppColors.main2,
       appBar: TopBar(
