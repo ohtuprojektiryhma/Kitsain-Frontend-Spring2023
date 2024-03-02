@@ -36,3 +36,27 @@ class Post {
     this.comments = const [],
   });
 }
+
+/// A provider class for managing posts.
+///
+/// This class provides methods to add and delete posts.
+/// It also exposes a list of posts.
+class PostProvider extends ChangeNotifier {
+  final List<Post> _posts = [];
+
+  List<Post> get posts => _posts;
+
+  /// Adds a new post to the list of posts.
+  ///
+  /// The new post is inserted at the beginning of the list.
+  void addPost(Post newPost) {
+    _posts.insert(0, newPost);
+  }
+
+  /// Deletes a post from the list of posts.
+  ///
+  /// The specified post is removed from the list.
+  void deletePost(Post post) {
+    _posts.remove(post);
+  }
+}
