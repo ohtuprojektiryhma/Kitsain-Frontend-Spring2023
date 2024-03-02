@@ -100,7 +100,7 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.grey,
+      color: const Color.fromARGB(255, 206, 205, 205),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -140,20 +140,57 @@ class PostCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              post.description,
-              style: const TextStyle(fontSize: 14),
+            // Add image holder here
+            Container(
+              width: double.infinity,
+              height: 300,
+              color: Colors.grey[300],
+              child: const Center(
+                child: Text(
+                  'Image Placeholder',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.thumb_up),
-                const SizedBox(width: 4),
-                Text(post.likes.toString()),
-                const SizedBox(width: 16),
-                const Icon(Icons.comment),
-              ],
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Expiring date: ${DateFormat('dd.MM.yyyy').format(post.expiringDate)}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Price: ${post.price}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Text(
+                post.description,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const Icon(Icons.thumb_up),
+                  const SizedBox(width: 4),
+                  Text(post.likes.toString()),
+                  const SizedBox(width: 16),
+                  const Icon(Icons.comment),
+                ],
+              ),
             ),
           ],
         ),
