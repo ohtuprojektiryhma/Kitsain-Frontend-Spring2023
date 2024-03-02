@@ -17,7 +17,9 @@ class FeedView extends StatefulWidget {
 
 class _FeedViewState extends State<FeedView>
     with AutomaticKeepAliveClientMixin {
-  List<Post> posts = []; // Create an empty list to store the posts
+  // postProvider is a reference to the PostProvider class to manage posts
+  var postProvider = PostProvider();
+
   @override
   // Keep the state of the widget when switching between tabs
   bool get wantKeepAlive => true;
@@ -35,6 +37,13 @@ class _FeedViewState extends State<FeedView>
     );
   }
 
+  /// Removes a post from the feed.
+  void removePost(Post post) {
+    setState(() {
+      postProvider.deletePost(post);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -47,9 +56,14 @@ class _FeedViewState extends State<FeedView>
         titleBackgroundColor: AppColors.titleBackgroundBrown,
       ),
       body: ListView.builder(
-        itemCount: posts.length,
+        itemCount: postProvider.posts.length,
         itemBuilder: (context, index) {
-          return PostCard(post: posts[index]);
+          return PostCard(
+            post: postProvider.posts[index],
+            onRemovePost: (Post removedPost) {
+              removePost(removedPost);
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -61,7 +75,7 @@ class _FeedViewState extends State<FeedView>
             // Update the feed with the new post
             if (newPost != null) {
               setState(() {
-                posts.insert(0, newPost);
+                postProvider.addPost(newPost);
               });
             }
           });
@@ -78,12 +92,15 @@ class _FeedViewState extends State<FeedView>
 class PostCard extends StatelessWidget {
   final Post post;
 
-  const PostCard({Key? key, required this.post});
+  final Function(Post) onRemovePost;
+
+  const PostCard({Key? key, required this.post, required this.onRemovePost})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.grey, // Change the card color here
+      color: Colors.grey,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -102,9 +119,9 @@ class PostCard extends StatelessWidget {
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_horiz),
                   onSelected: (value) {
-                    // Handle popup menu item selection
+                    // Handle popup menu item selection and logic
                     if (value == 'remove') {
-                      // Edit button logic here
+                      _removeConfirmation(context);
                     } else if (value == 'edit') {
                       // Edit button logic here
                     }
@@ -141,6 +158,34 @@ class PostCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _removeConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remove Post'),
+          content: const Text('Are you sure you want to remove this post?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Call the removePost method from FeedView
+                onRemovePost(post);
+              },
+              child: const Text('Remove'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
