@@ -17,7 +17,7 @@ class Post {
   *  - figure out the proper location for post.dart file
   * */
 
-  File? image;
+  File image;
   String title = "TITLE_HERE";
   String description = "EMPTY_DESC";
   String price = "0";
