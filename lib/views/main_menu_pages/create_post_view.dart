@@ -35,7 +35,7 @@ class CreatePostViewState extends State<CreatePostView> {
 
   /// Function for taking an image with camera.
   Future<void> _pickImageFromCamera() async {
-    try{
+    try {
       final image = await ImagePicker().pickImage(source: ImageSource.camera);
       if (image == null) return;
 
@@ -79,7 +79,7 @@ class CreatePostViewState extends State<CreatePostView> {
   Post _createPost() {
     // Create a Post object using the entered data
     return Post(
-      _image,
+      _image!,
       _title,
       _description,
       _price,
