@@ -1,6 +1,9 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/post.dart';
 
@@ -27,15 +30,33 @@ class CreatePostViewState extends State<CreatePostView> {
   DateTime _expiringDate = DateTime.now();
 
   // Date variables for the expiration date of the post
-
   final DateFormat _dateFormat = DateFormat('dd.MM.yyyy');
   final TextEditingController _dateController = TextEditingController();
 
-  Future<void> _selectImageFromCamera() async {
-    // Add logic to select image from camera
+  /// Function for taking an image with camera.
+  Future<void> _pickImageFromCamera() async {
+    try{
+      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+      if (image == null) return;
+
+      final imageTemporary = File(image.path);
+      setState(() => _image = imageTemporary);
+    } on PlatformException catch (e) {
+      print('Failed to pick Image: $e');
+    }
   }
 
-  Future<void> _selectImageFromGallery() async {
+  /// Function for selecting a picture from gallery.
+  Future<void> _pickImageFromGallery() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+
+      final imageTemporary = File(image.path);
+      setState(() => _image = imageTemporary);
+    } on PlatformException catch (e) {
+      print('Failed to pick Image: $e');
+    }
     // Add logic to select image from gallery
   }
 
@@ -100,12 +121,12 @@ class CreatePostViewState extends State<CreatePostView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: _selectImageFromCamera,
+                      onPressed: () => _pickImageFromCamera(),
                       child: Text('Camera'),
                     ),
                     SizedBox(width: 20),
                     ElevatedButton(
-                      onPressed: _selectImageFromGallery,
+                      onPressed: () => _pickImageFromGallery(),
                       child: Text('Gallery'),
                     ),
                   ],
