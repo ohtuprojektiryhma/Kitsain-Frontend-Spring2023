@@ -145,16 +145,9 @@ class PostCard extends StatelessWidget {
               width: double.infinity,
               height: 300,
               color: Colors.grey[300],
-              child: const Center(
-                child: Text(
-                  'Image Placeholder',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+              child: Image.file(post.image!, fit: BoxFit.cover
                 ),
               ),
-            ),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.all(4.0),

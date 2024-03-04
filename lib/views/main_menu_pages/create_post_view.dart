@@ -60,7 +60,7 @@ class CreatePostViewState extends State<CreatePostView> {
     // Add logic to select image from gallery
   }
 
-  // Function to select the expiration date of the post
+  /// Function to select the expiration date of the post
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
