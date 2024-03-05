@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:kitsain_frontend_spring2023/post.dart';
+import 'package:kitsain_frontend_spring2023/views/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/create_post_view.dart';
@@ -89,7 +90,7 @@ class _FeedViewState extends State<FeedView>
 /// A card widget that represents a post.
 ///
 /// This widget displays the title, content, likes, and comments of a post.
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final Post post;
 
   final Function(Post) onRemovePost;
@@ -97,6 +98,11 @@ class PostCard extends StatelessWidget {
   const PostCard({Key? key, required this.post, required this.onRemovePost})
       : super(key: key);
 
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -110,7 +116,7 @@ class PostCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  post.title,
+                  widget.post.title,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -143,9 +149,9 @@ class PostCard extends StatelessWidget {
             // Add image holder here
             Container(
               width: double.infinity,
-              height: 300,
+              height: 200,
               color: Colors.grey[300],
-              child: Image.file(post.image, fit: BoxFit.cover
+              child: Image.file(widget.post.image, fit: BoxFit.cover
               ),
             ),
             const SizedBox(height: 8),
@@ -155,11 +161,12 @@ class PostCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Expiring date: ${DateFormat('dd.MM.yyyy').format(post.expiringDate)}',
+                    'Expiring date: ${DateFormat('dd.MM.yyyy').format(
+                        widget.post.expiringDate)}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Price: ${post.price}',
+                    'Price: ${widget.post.price}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -168,7 +175,7 @@ class PostCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Text(
-                post.description,
+                widget.post.description,
                 style: const TextStyle(fontSize: 14),
               ),
             ),
@@ -177,11 +184,19 @@ class PostCard extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  const Icon(Icons.thumb_up),
+                  const Icon(Icons.thumb_up_alt_outlined),
                   const SizedBox(width: 4),
-                  Text(post.likes.toString()),
+                  Text(widget.post.likes.toString()),
                   const SizedBox(width: 16),
-                  const Icon(Icons.comment),
+                  IconButton(
+                    icon: const Icon(Icons.comment_rounded),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CommentSectionView()),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -209,7 +224,7 @@ class PostCard extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
                 // Call the removePost method from FeedView
-                onRemovePost(post);
+                widget.onRemovePost(widget.post);
               },
               child: const Text('Remove'),
             ),
