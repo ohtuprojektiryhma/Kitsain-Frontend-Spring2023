@@ -193,10 +193,24 @@ class _PostCardState extends State<PostCard> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CommentSectionView()),
-                      );
+                        MaterialPageRoute(builder: (context) {
+                          List<String> comments = widget.post.comments;
+                          if (comments.isEmpty){
+                            return const CommentSectionView(comments:[]);
+                          } else {
+                            return CommentSectionView(
+                              comments: comments,
+                            );
+                          }
+                        }),
+                      ).then((updatedComments) {
+                        setState(() {
+                          widget.post.comments = updatedComments;
+                        });
+                      });
                     },
                   ),
+                  Text(widget.post.comments.length.toString())
                 ],
               ),
             ),
