@@ -8,6 +8,7 @@ import 'package:kitsain_frontend_spring2023/views/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/create_post_view.dart';
+import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feedImageWidget.dart';
 
 class FeedView extends StatefulWidget {
   const FeedView({Key? key});
@@ -147,22 +148,14 @@ class _PostCardState extends State<PostCard> {
               ],
             ),
             // Add image holder here
-            Container(
-              width: double.infinity,
-              height: 200,
-              color: Colors.grey[300],
-              child: Image.file(widget.post.image, fit: BoxFit.cover
-              ),
-            ),
-            const SizedBox(height: 8),
+            feedImageWidget(images: widget.post.images),
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Expiring date: ${DateFormat('dd.MM.yyyy').format(
-                        widget.post.expiringDate)}',
+                    'Expiring date: ${DateFormat('dd.MM.yyyy').format(widget.post.expiringDate)}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
@@ -195,8 +188,8 @@ class _PostCardState extends State<PostCard> {
                         context,
                         MaterialPageRoute(builder: (context) {
                           List<String> comments = widget.post.comments;
-                          if (comments.isEmpty){
-                            return const CommentSectionView(comments:[]);
+                          if (comments.isEmpty) {
+                            return const CommentSectionView(comments: []);
                           } else {
                             return CommentSectionView(
                               comments: comments,
