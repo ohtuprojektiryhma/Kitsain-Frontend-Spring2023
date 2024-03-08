@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
-import 'package:kitsain_frontend_spring2023/post.dart';
+import 'package:kitsain_frontend_spring2023/models/comment.dart';
+import 'package:kitsain_frontend_spring2023/models/post.dart';
 import 'package:kitsain_frontend_spring2023/views/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
@@ -187,7 +188,8 @@ class _PostCardState extends State<PostCard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          List<String> comments = widget.post.comments;
+                          List<Comment> comments =
+                              widget.post.comments.cast<Comment>();
                           if (comments.isEmpty) {
                             return const CommentSectionView(comments: []);
                           } else {
