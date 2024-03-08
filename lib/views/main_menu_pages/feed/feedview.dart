@@ -5,11 +5,11 @@ import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
-import 'package:kitsain_frontend_spring2023/views/comment_section_view.dart';
+import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
-import 'package:kitsain_frontend_spring2023/views/main_menu_pages/create_post_view.dart';
-import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feedImageWidget.dart';
+import 'package:kitsain_frontend_spring2023/views/createPost/create_post_view.dart';
+import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/feed_image_widget.dart';
 
 class FeedView extends StatefulWidget {
   const FeedView({Key? key});

@@ -1,11 +1,14 @@
 import 'dart:ffi';
 import 'dart:io';
-
+import 'dart:math';
+import 'package:kitsain_frontend_spring2023/models/post.dart';
+import 'package:kitsain_frontend_spring2023/views/createPost/create_post_image_widget.dart';
+import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:kitsain_frontend_spring2023/post.dart';
+import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/feed_image_widget.dart';
 
 /// A view for creating a new post.
 ///
@@ -23,7 +26,7 @@ class CreatePostView extends StatefulWidget {
 /// This state manages the title, image, price, and selected date for the post.
 class CreatePostViewState extends State<CreatePostView> {
   // Content variables for the content of the post
-  File? _image;
+  final List<File> _images = [];
   String _title = '';
   String _description = '';
   String _price = '';
@@ -36,11 +39,12 @@ class CreatePostViewState extends State<CreatePostView> {
   /// Function for taking an image with camera.
   Future<void> _pickImageFromCamera() async {
     try {
-      final image = await ImagePicker().pickImage(source: ImageSource.camera);
-      if (image == null) return;
+      final pickedImage =
+          await ImagePicker().pickImage(source: ImageSource.camera);
+      if (pickedImage == null) return;
 
-      final imageTemporary = File(image.path);
-      setState(() => _image = imageTemporary);
+      _images.add(File(pickedImage.path));
+      setState(() {});
     } on PlatformException catch (e) {
       print('Failed to pick Image: $e');
     }
@@ -49,15 +53,21 @@ class CreatePostViewState extends State<CreatePostView> {
   /// Function for selecting a picture from gallery.
   Future<void> _pickImageFromGallery() async {
     try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image == null) return;
+      final pickedImage = await ImagePicker().pickImage(
+          imageQuality: 100,
+          maxHeight: 1000,
+          maxWidth: 1000,
+          source: ImageSource.gallery);
 
-      final imageTemporary = File(image.path);
-      setState(() => _image = imageTemporary);
+      if (pickedImage != null) {
+        _images.add(File(pickedImage.path));
+        print('Added image to _images list: $_images');
+        setState(() {});
+      }
     } on PlatformException catch (e) {
       print('Failed to pick Image: $e');
     }
-    // Add logic to select image from gallery
+    // Add logic to select an image from the gallery
   }
 
   /// Function to select the expiration date of the post
@@ -79,7 +89,7 @@ class CreatePostViewState extends State<CreatePostView> {
   Post _createPost() {
     // Create a Post object using the entered data
     return Post(
-      _image!,
+      _images,
       _title,
       _description,
       _price,
@@ -103,33 +113,47 @@ class CreatePostViewState extends State<CreatePostView> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(18.0),
+          padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              const SizedBox(height: 30),
-              _image != null
-                  ? Image.file(
-                      _image!,
-                    )
-                  : Container(
-                      height: 200,
-                      color: Colors.grey,
-                    ),
+              editImageWidget(images: _images),
+              const SizedBox(height: 5),
               Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => _pickImageFromCamera(),
-                      child: Text('Camera'),
-                    ),
-                    SizedBox(width: 20),
-                    ElevatedButton(
-                      onPressed: () => _pickImageFromGallery(),
-                      child: Text('Gallery'),
-                    ),
-                  ],
+                child: ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Select Image Source'),
+                          actions: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  child: Text('Camera'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    _pickImageFromCamera();
+                                  },
+                                ),
+                                SizedBox(height: 10),
+                                TextButton(
+                                  child: Text('Gallery'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    _pickImageFromGallery();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Text('Add image'),
                 ),
               ),
               TextField(
