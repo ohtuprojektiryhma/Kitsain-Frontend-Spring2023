@@ -8,8 +8,9 @@ import 'package:kitsain_frontend_spring2023/models/post.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
-import 'package:kitsain_frontend_spring2023/views/createPost/create_post_view.dart';
-import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/feed_image_widget.dart';
+import 'package:kitsain_frontend_spring2023/views/createPost/create_edit_post_view.dart';
+
+import 'feed_image_widget.dart';
 
 class FeedView extends StatefulWidget {
   const FeedView({Key? key});
@@ -20,11 +21,9 @@ class FeedView extends StatefulWidget {
 
 class _FeedViewState extends State<FeedView>
     with AutomaticKeepAliveClientMixin {
-  // postProvider is a reference to the PostProvider class to manage posts
   var postProvider = PostProvider();
 
   @override
-  // Keep the state of the widget when switching between tabs
   bool get wantKeepAlive => true;
 
   void _help() {
@@ -40,10 +39,15 @@ class _FeedViewState extends State<FeedView>
     );
   }
 
-  /// Removes a post from the feed.
   void removePost(Post post) {
     setState(() {
       postProvider.deletePost(post);
+    });
+  }
+
+  void editPost(Post post) {
+    setState(() {
+      postProvider.updatePost(post);
     });
   }
 
@@ -66,6 +70,9 @@ class _FeedViewState extends State<FeedView>
             onRemovePost: (Post removedPost) {
               removePost(removedPost);
             },
+            onEditPost: (Post updatedPost) {
+              editPost(updatedPost);
+            },
           );
         },
       ),
@@ -73,9 +80,8 @@ class _FeedViewState extends State<FeedView>
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreatePostView()),
+            MaterialPageRoute(builder: (context) => CreateEditPostView()),
           ).then((newPost) {
-            // Update the feed with the new post
             if (newPost != null) {
               setState(() {
                 postProvider.addPost(newPost);
@@ -89,22 +95,64 @@ class _FeedViewState extends State<FeedView>
   }
 }
 
-/// A card widget that represents a post.
-///
-/// This widget displays the title, content, likes, and comments of a post.
 class PostCard extends StatefulWidget {
   final Post post;
-
   final Function(Post) onRemovePost;
+  final Function(Post) onEditPost;
 
-  const PostCard({Key? key, required this.post, required this.onRemovePost})
-      : super(key: key);
+  const PostCard({
+    Key? key,
+    required this.post,
+    required this.onRemovePost,
+    required this.onEditPost,
+  }) : super(key: key);
 
   @override
   State<PostCard> createState() => _PostCardState();
 }
 
 class _PostCardState extends State<PostCard> {
+  void _editPost(Post post) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateEditPostView(post: post),
+      ),
+    ).then((updatedPost) {
+      if (updatedPost != null) {
+        widget.onEditPost(updatedPost); // Pass the updated post back
+      }
+    });
+  }
+
+  void _removeConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remove Post'),
+          content: const Text('Are you sure you want to remove this post?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Call the removePost method from FeedView
+                widget.onRemovePost(widget.post);
+              },
+              child: const Text('Remove'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -127,15 +175,13 @@ class _PostCardState extends State<PostCard> {
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_horiz),
                   onSelected: (value) {
-                    // Handle popup menu item selection and logic
                     if (value == 'remove') {
                       _removeConfirmation(context);
                     } else if (value == 'edit') {
-                      // Edit button logic here
+                      _editPost(widget.post);
                     }
                   },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                     const PopupMenuItem<String>(
                       value: 'edit',
                       child: Text('Edit'),
@@ -188,14 +234,11 @@ class _PostCardState extends State<PostCard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          List<Comment> comments =
-                              widget.post.comments.cast<Comment>();
+                          List<Comment> comments = widget.post.comments.cast<Comment>();
                           if (comments.isEmpty) {
                             return const CommentSectionView(comments: []);
                           } else {
-                            return CommentSectionView(
-                              comments: comments,
-                            );
+                            return CommentSectionView(comments: comments);
                           }
                         }),
                       ).then((updatedComments) {
@@ -212,34 +255,6 @@ class _PostCardState extends State<PostCard> {
           ],
         ),
       ),
-    );
-  }
-
-  void _removeConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Remove Post'),
-          content: const Text('Are you sure you want to remove this post?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Call the removePost method from FeedView
-                widget.onRemovePost(widget.post);
-              },
-              child: const Text('Remove'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

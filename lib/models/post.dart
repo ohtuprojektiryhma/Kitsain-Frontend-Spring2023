@@ -60,4 +60,17 @@ class PostProvider extends ChangeNotifier {
   void deletePost(Post post) {
     _posts.remove(post);
   }
+
+  /// Updates an existing post in the list of posts.
+  ///
+  /// The specified post is replaced with the updated post.
+  /// Doesn't update if post's title is changed, title works as id in Post object
+  void updatePost(Post updatedPost) {
+    final index = _posts.indexWhere((post) => post.title == updatedPost.title);
+    if (index != -1) {
+      _posts[index] = updatedPost;
+      notifyListeners(); // Notify listeners of the change
+    }
+  }
+
 }
