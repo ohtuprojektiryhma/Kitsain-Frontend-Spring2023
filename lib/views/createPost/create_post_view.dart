@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_image_widget.dart';
-import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -46,7 +45,7 @@ class CreatePostViewState extends State<CreatePostView> {
       _images.add(File(pickedImage.path));
       setState(() {});
     } on PlatformException catch (e) {
-      print('Failed to pick Image: $e');
+      debugPrint('Failed to pick Image: $e');
     }
   }
 
@@ -61,11 +60,11 @@ class CreatePostViewState extends State<CreatePostView> {
 
       if (pickedImage != null) {
         _images.add(File(pickedImage.path));
-        print('Added image to _images list: $_images');
+        debugPrint('Added image to _images list: $_images');
         setState(() {});
       }
     } on PlatformException catch (e) {
-      print('Failed to pick Image: $e');
+      debugPrint('Failed to pick Image: $e');
     }
     // Add logic to select an image from the gallery
   }
@@ -96,7 +95,9 @@ class CreatePostViewState extends State<CreatePostView> {
       _expiringDate,
     );
 
-    // Add logic to save the post or perform any other actions
+    // TODO Add logic to save the post or perform any other actions
+    // TODO send photo or image file to back-end
+    // TODO send content to back-end
   }
 
   @override
