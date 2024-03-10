@@ -106,3 +106,4 @@ binary/
 
 # Ignore Gradle build output directory
 build
+/ios/Podfile.lock
