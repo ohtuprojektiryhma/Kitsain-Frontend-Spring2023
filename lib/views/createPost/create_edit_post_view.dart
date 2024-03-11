@@ -45,16 +45,54 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
     }
   }
 
+  /// Function for taking an image with camera.
   Future<void> _pickImageFromCamera() async {
-    // Implement image picking from camera
+    try {
+      final pickedImage =
+          await ImagePicker().pickImage(source: ImageSource.camera);
+      if (pickedImage == null) return;
+
+      _images.add(File(pickedImage.path));
+      setState(() {});
+    } on PlatformException catch (e) {
+      debugPrint('Failed to pick Image: $e');
+    }
   }
 
+  /// Function for selecting a picture from gallery.
   Future<void> _pickImageFromGallery() async {
-    // Implement image picking from gallery
+    try {
+      final pickedImage = await ImagePicker().pickImage(
+          imageQuality: 100,
+          maxHeight: 1000,
+          maxWidth: 1000,
+          source: ImageSource.gallery);
+
+      if (pickedImage != null) {
+        _images.add(File(pickedImage.path));
+        debugPrint('Added image to _images list: $_images');
+        setState(() {});
+      }
+    } on PlatformException catch (e) {
+      debugPrint('Failed to pick Image: $e');
+    }
+    // Add logic to select an image from the gallery
   }
 
+  /// Function to select the expiration date of the post
   Future<void> _selectDate(BuildContext context) async {
-    // Implement date selection logic
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _expiringDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _expiringDate) {
+      setState(() {
+        _expiringDate = picked;
+        _dateController.text = _dateFormat.format(_expiringDate);
+      });
+    }
   }
 
   Post _updateOrCreatePost() {
@@ -84,9 +122,38 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                 padding: const EdgeInsets.all(15.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Show dialog to select image source
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Select Image Source'),
+                          actions: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  child: Text('Camera'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    _pickImageFromCamera();
+                                  },
+                                ),
+                                SizedBox(height: 10),
+                                TextButton(
+                                  child: Text('Gallery'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    _pickImageFromGallery();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
-                  child: Text('Add image'),
+                  child: Text('Add Image'),
                 ),
               ),
               TextField(

@@ -5,6 +5,7 @@ import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
+import 'package:kitsain_frontend_spring2023/views/createPost/create_post_view.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
@@ -80,7 +81,7 @@ class _FeedViewState extends State<FeedView>
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreateEditPostView()),
+            MaterialPageRoute(builder: (context) => CreatePostView()),
           ).then((newPost) {
             if (newPost != null) {
               setState(() {
@@ -181,7 +182,8 @@ class _PostCardState extends State<PostCard> {
                       _editPost(widget.post);
                     }
                   },
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
                     const PopupMenuItem<String>(
                       value: 'edit',
                       child: Text('Edit'),
@@ -234,7 +236,8 @@ class _PostCardState extends State<PostCard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          List<Comment> comments = widget.post.comments.cast<Comment>();
+                          List<Comment> comments =
+                              widget.post.comments.cast<Comment>();
                           if (comments.isEmpty) {
                             return const CommentSectionView(comments: []);
                           } else {

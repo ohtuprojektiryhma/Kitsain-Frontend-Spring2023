@@ -154,7 +154,7 @@ class CreatePostViewState extends State<CreatePostView> {
                       },
                     );
                   },
-                  child: Text('Add image'),
+                  child: Text('Add Image'),
                 ),
               ),
               TextField(
