@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
 
 /// TODO:
 /// - Connect user information to comment box; an identifier
 ///   for unique users.
-/// - ListView always displays the topmost item
 
 /// Class for creating the comment section view.
 class CommentSectionView extends StatefulWidget {
@@ -20,12 +20,16 @@ class CommentSectionView extends StatefulWidget {
 
 class _CommentSectionViewState extends State<CommentSectionView> {
   List<Comment> _tempComments = [];
-  TextEditingController _textFieldController = TextEditingController();
+  late TextEditingController _textFieldController;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _tempComments = List.of(widget.comments);
+
+    _textFieldController = TextEditingController();
+    _scrollController = ScrollController();
   }
 
   /// Comment object for storing info about
@@ -46,20 +50,27 @@ class _CommentSectionViewState extends State<CommentSectionView> {
           },
         ),
       ),
-      body: ListView.builder(
-        reverse: true,
-        shrinkWrap: true,
-        itemCount: _tempComments.length,
-        itemBuilder: (context, index) {
-          return CommentBox(
-            comment: _tempComments[index].message,
-            index: index + 1,
-            date: _tempComments[index].date,
-          );
-        },
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 85),
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            reverse: true,
+            shrinkWrap: true,
+            itemCount: _tempComments.length,
+            itemBuilder: (context, index) {
+              return CommentBox(
+                comment: _tempComments[index].message,
+                index: index + 1,
+                date: _tempComments[index].date,
+              );
+            },
+          ),
+        ),
       ),
       bottomSheet: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 15),
         child: Row(
           children: [
             Flexible(
@@ -77,7 +88,9 @@ class _CommentSectionViewState extends State<CommentSectionView> {
                     setState(() {
                       _tempComments.add(myComment);
                     });
+                    FocusManager.instance.primaryFocus?.unfocus();
                     _textFieldController.clear();
+                    _scrollToTop();
                   }
                 },
                 icon: const Icon(Icons.send))
@@ -85,6 +98,13 @@ class _CommentSectionViewState extends State<CommentSectionView> {
         ),
       ),
     );
+  }
+
+  void _scrollToTop(){
+    _scrollController.animateTo(
+        _scrollController.position.minScrollExtent,
+        duration: const Duration(seconds: 1),
+        curve: Curves.decelerate);
   }
 
   @override
@@ -142,7 +162,7 @@ class CommentBox extends StatelessWidget {
                       const Icon(Icons.person),
                       Text('$index'), // This part could display username
                       const SizedBox(width: 30),
-                      Text('${_timeToString(date)}'),
+                      Text(_timeToString(date)),
                     ],
                   ),
                   const SizedBox(height: 15),
