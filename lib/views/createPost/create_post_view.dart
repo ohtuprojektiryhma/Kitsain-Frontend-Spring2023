@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_image_widget.dart';
 import 'package:flutter/material.dart';
@@ -178,6 +179,14 @@ class CreatePostViewState extends State<CreatePostView> {
                 },
               ),
               TextField(
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  CurrencyTextInputFormatter(
+                    decimalDigits: 2,
+                    locale: 'eu',
+                    symbol: '€',
+                  )
+                ],
                 decoration: const InputDecoration(
                   labelText: 'Price',
                 ),

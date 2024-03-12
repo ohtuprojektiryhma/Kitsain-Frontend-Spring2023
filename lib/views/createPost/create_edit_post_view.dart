@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -179,7 +180,15 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                 controller: TextEditingController(text: _description),
               ),
               TextField(
-                decoration: InputDecoration(
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  CurrencyTextInputFormatter(
+                    decimalDigits: 2,
+                    locale: 'eu',
+                    symbol: '€',
+                  )
+                ],
+                decoration: const InputDecoration(
                   labelText: 'Price',
                 ),
                 onChanged: (value) {
