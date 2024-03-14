@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_image_widget.dart';
+import 'dart:math';
+
 
 class CreateEditPostView extends StatefulWidget {
   final Post? post;
@@ -25,7 +27,8 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
 
   final DateFormat _dateFormat = DateFormat('dd.MM.yyyy');
   final TextEditingController _dateController = TextEditingController();
-
+  final TextEditingController _descriptionController = TextEditingController();
+  final FocusNode _descriptionFocusNode = FocusNode();
   @override
   void initState() {
     super.initState();
@@ -157,29 +160,46 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                   child: Text('Add Image'),
                 ),
               ),
-              TextField(
+              TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Title',
                 ),
+                controller: TextEditingController(text: _title)..selection
+                = TextSelection.fromPosition(TextPosition(offset: _title.length)),
                 onChanged: (value) {
                   setState(() {
                     _title = value;
                   });
                 },
-                controller: TextEditingController(text: _title),
               ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _description = value;
-                  });
+              GestureDetector(
+                onTap: () {
+                  // Request focus on the description text field
+                  FocusScope.of(context).requestFocus(_descriptionFocusNode);
                 },
-                controller: TextEditingController(text: _description),
+                child: TextFormField(
+                  focusNode: _descriptionFocusNode,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                  ),
+                  controller: TextEditingController(text: _description)..selection
+                  = TextSelection.fromPosition(TextPosition(offset: _description.length)),
+                  onChanged: (value) {
+                    final selection = TextEditingController().selection;
+                    final start = selection.baseOffset;
+                    final end = selection.extentOffset;
+                    final cursorIndex = max(start, end);
+                    setState(() {
+                      _description = value;
+                      _descriptionController.value = TextEditingValue(
+                        text: value,
+                        selection: TextSelection.collapsed(offset: cursorIndex),
+                      );
+                    });
+                  },
+                ),
               ),
-              TextField(
+              TextFormField(
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   CurrencyTextInputFormatter(
@@ -191,12 +211,13 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                 decoration: const InputDecoration(
                   labelText: 'Price',
                 ),
+                controller: TextEditingController(text: _price)..selection
+                = TextSelection.fromPosition(TextPosition(offset: _price.length)),
                 onChanged: (value) {
                   setState(() {
                     _price = value;
                   });
                 },
-                controller: TextEditingController(text: _price),
               ),
               TextFormField(
                 controller: _dateController,
