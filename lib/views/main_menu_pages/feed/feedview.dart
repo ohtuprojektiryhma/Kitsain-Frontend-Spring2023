@@ -1,6 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:kitsain_frontend_spring2023/LoginController.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
@@ -113,6 +117,9 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
+  // Variable to hold the current user
+  final loginController = Get.put(LoginController());
+
   void _editPost(Post post) {
     Navigator.push(
       context,
@@ -226,9 +233,16 @@ class _PostCardState extends State<PostCard> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  const Icon(Icons.thumb_up_alt_outlined),
-                  const SizedBox(width: 4),
-                  Text(widget.post.likes.toString()),
+                  IconButton(
+                    icon: const Icon(Icons.thumb_up_alt_outlined),
+                    onPressed: () {
+                      setState(() {
+                        widget.post.addUsefulcount(
+                            loginController.googleUser.value!.id);
+                      });
+                    },
+                  ),
+                  Text(widget.post.useful.length.toString()),
                   const SizedBox(width: 16),
                   IconButton(
                     icon: const Icon(Icons.comment_rounded),

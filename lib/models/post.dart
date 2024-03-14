@@ -11,7 +11,7 @@ import 'package:kitsain_frontend_spring2023/database/item.dart';
 /// on the social media feed tab.
 ///
 /// Needed for storing post information locally.
-class Post {
+class Post extends ChangeNotifier {
   /*TODO:
   *  - Functions related to likes
   *  - Functions related to comments
@@ -23,7 +23,7 @@ class Post {
   String description = "EMPTY_DESC";
   String price = "0";
   DateTime expiringDate = DateTime.now();
-  int likes = 0;
+  List<String> useful = [];
   List<Comment> comments = [];
   //Item item;
 
@@ -33,9 +33,22 @@ class Post {
     this.description,
     this.price,
     this.expiringDate, {
-    this.likes = 0,
+    this.useful = const [],
     this.comments = const [],
   });
+
+  /// Adds or removes the given [id] from the [useful] list.
+  ///
+  /// If the [id] is already present in the [useful] list, it will be removed.
+  /// Otherwise, it will be added to the [useful] list.
+  void addUsefulcount(String id) {
+    if (useful.contains(id)) {
+      useful = List.from(useful)..remove(id);
+    } else {
+      useful = List.from(useful)..add(id);
+    }
+    notifyListeners();
+  }
 }
 
 /// A provider class for managing posts.
@@ -72,5 +85,4 @@ class PostProvider extends ChangeNotifier {
       notifyListeners(); // Notify listeners of the change
     }
   }
-
 }
