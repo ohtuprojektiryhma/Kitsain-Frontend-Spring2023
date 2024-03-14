@@ -60,10 +60,49 @@ class _CommentSectionViewState extends State<CommentSectionView> {
             shrinkWrap: true,
             itemCount: _tempComments.length,
             itemBuilder: (context, index) {
-              return CommentBox(
-                comment: _tempComments[index].message,
-                index: index + 1,
-                date: _tempComments[index].date,
+              return GestureDetector(
+                onLongPress: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              ListTile(
+                                textColor: Colors.red,
+                                iconColor: Colors.red,
+                                leading: Icon(Icons.delete),
+                                title: Text('Remove post'),
+                                onTap: (){
+                                  setState(() {
+                                    // TODO: check if user matches comment author
+                                    _removeComment(index);
+                                    Navigator.of(context).pop();
+                                  });
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.edit),
+                                title: Text('Edit'),
+                                onTap: (){
+                                  // TODO: logic for editing comment
+                                },
+                              ),
+                            ]
+                          ),
+                        )
+                      );
+                    }
+                  );
+                },
+                child: CommentBox(
+                  comment: _tempComments[index].message,
+                  author: 'user1', // TODO: implement author
+                  date: _tempComments[index].date,
+                ),
               );
             },
           ),
@@ -107,6 +146,10 @@ class _CommentSectionViewState extends State<CommentSectionView> {
         curve: Curves.decelerate);
   }
 
+  void _removeComment(int index){
+    _tempComments.removeAt(index);
+  }
+
   @override
   void dispose() {
     _textFieldController.dispose();
@@ -116,14 +159,16 @@ class _CommentSectionViewState extends State<CommentSectionView> {
 
 /// Class for individual comment boxes.
 class CommentBox extends StatelessWidget {
+  // TODO: connect author to actual user
+
   final DateTime date;
   final String comment;
-  final int index;
+  final String author;
 
   const CommentBox(
       {super.key,
       required this.comment,
-      required this.index,
+      required this.author,
       required this.date});
 
   /// Converts the time into a pretty string.
@@ -137,38 +182,48 @@ class CommentBox extends StatelessWidget {
      *   > If time was under 1 hour ago -> display minutes
      *   > If time was over 1 hour ago -> display hours
      */
-    return '${t.year}.${t.month}.${t.day}   ${t.hour}:${t.minute}';
+    String minute = t.minute.toString();
+    if (t.minute < 10){
+      minute = '0$minute';
+    }
+    
+    return '${t.year}.${t.month}.${t.day}   ${t.hour}:$minute';
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
-      child: GestureDetector(
-        onLongPress: () {/*TODO: press to delete logic*/},
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 100),
-          child: Container(
-            color: Colors.grey[200],
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(),
-                      const Icon(Icons.person),
-                      Text('$index'), // This part could display username
-                      const SizedBox(width: 30),
-                      Text(_timeToString(date)),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                  Align(alignment: Alignment.centerLeft, child: Text(comment)),
-                ],
-              ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 100),
+        child: Container(
+          color: Colors.grey[200],
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * .5,
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.person),
+                          const SizedBox(width: 5),
+                          Text('$author'),
+                        ],
+                      )
+                    ),
+                    Container(
+                        child: Text(_timeToString(date))),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                Align(alignment: Alignment.centerLeft, child: Text(comment)),
+              ],
             ),
           ),
         ),
