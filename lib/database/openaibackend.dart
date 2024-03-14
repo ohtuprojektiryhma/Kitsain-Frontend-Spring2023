@@ -3,6 +3,8 @@ import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:http/http.dart' as http;
 import 'package:realm/realm.dart';
 
+// This file, as well as the Recipe class needs urgent refactoring
+
 /// Generates a recipe using the parameters
 /// [ingredients] (list of ingredients),
 /// [recipeType] (the type of recipe (eg. vegan)),
@@ -23,15 +25,14 @@ Future<Recipe> generateRecipe(
       '/generate');
   var headers = {"Content-Type": "application/json"};
   var requestBody = json.encode({
-    'ingredients': ingredients,
-    'recipe_type': recipeType,
-    'exp_soon': expSoon,
-    'supplies': supplies,
+    'required_items': expSoon,
+    'pantry': ingredients,
     'pantry_only': pantryOnly,
+    'recipe_type': recipeType,
+    'special_supplies': supplies,
     'language': language
   });
-  print(
-      "$ingredients, $recipeType, $expSoon, $supplies, $pantryOnly, $language");
+  print('Request body: $requestBody');
 
   var response = await http.post(url, headers: headers, body: requestBody);
 
@@ -68,18 +69,20 @@ Future<Recipe> changeRecipe(
       'kitsain-backend-test-ohtuprojekti-staging.apps.ocp-test-0.k8s.it.helsinki.fi',
       '/change');
   var headers = {"Content-Type": "application/json"};
-  var requestBody = json.encode({
-    'change': change,
-    'ingredients': ingredients,
-    'recipe_type': recipeType,
-    'exp_soon': expSoon,
-    'supplies': supplies,
-    'details': details
-  });
+
+  // Refactor this section when the Recipe class gets correct fields.
+  var extremelyHackyDetailsDecoded = json.decode(details!);
+  var extremelyHackyRecipeConstruct = {
+    'recipe_name': '',
+    'ingredients': extremelyHackyDetailsDecoded[0],
+    'instructions': extremelyHackyDetailsDecoded[1]
+  };
+  var requestBody =
+      json.encode({'recipe': extremelyHackyRecipeConstruct, 'change': change});
+  print('Request body: $requestBody');
+
   var response = await http.post(url, headers: headers, body: requestBody);
 
-  print("${change}");
-  print("details: ${details}");
   print('Response status: ${response.statusCode}');
   print('Response body: ${response.body}');
 
