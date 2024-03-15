@@ -8,6 +8,10 @@ import 'package:realm/realm.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:kitsain_frontend_spring2023/database/openfoodfacts.dart';
 
+import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
+import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
+import 'package:get/get.dart';
+
 const List<String> categories = <String>[
   'Choose category',
   'Meat',
@@ -37,6 +41,8 @@ class _NewItemFormState extends State<NewItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _EANCodeField = TextEditingController();
   var _itemName = TextEditingController();
+  final _taskListController = Get.put(TaskListController());
+  final _taskController = Get.put(TaskController());
 
   // These dates control the date string user sees in the form
   var _expDateString = TextEditingController();
@@ -54,6 +60,62 @@ class _NewItemFormState extends State<NewItemForm> {
 
   var _offData;
   UnfocusDisposition _disposition = UnfocusDisposition.scope;
+
+  final _categoryMaps = CategoryMaps();
+
+  void createPantryTaskList() async {
+    var pantryFound = await checkIfPantryListExists();
+    print(pantryFound);
+    if (pantryFound == "not") {
+      _taskListController.createTaskLists("My Pantry");
+    }
+  }
+
+  Future checkIfPantryListExists() async {
+    await _taskListController.getTaskLists();
+    var pantryIndex = "not";
+    if (_taskListController.taskLists.value?.items != null) {
+      int length = _taskListController.taskLists.value?.items!.length as int;
+      for (var i = 0; i < length; i++) {
+        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        if (_taskListController.taskLists.value?.items?[i].title ==
+            "My Pantry") {
+          pantryIndex =
+              _taskListController.taskLists.value?.items?[i].id as String;
+          break;
+        }
+      }
+    }
+    return pantryIndex;
+  }
+
+  createStringOfPantryItemValues(Item pantryItem) {
+    var valuesString = "";
+    valuesString += "location: ${pantryItem.location}\n";
+    valuesString += "category: ${pantryItem.mainCat}\n";
+    valuesString += "opened date: ${pantryItem.openedDate}\n";
+    valuesString += "added date: ${pantryItem.addedDate}\n";
+    valuesString += "details: ${pantryItem.details}\n";
+    return valuesString;
+  }
+
+  Future<void> createPantryItemTask(Item pantryItem) async {
+    final valuesString = createStringOfPantryItemValues(pantryItem);
+    final taskListIndex = await checkIfPantryListExists();
+    _taskController.createTask(
+        pantryItem.name, valuesString, taskListIndex.toString());
+
+    //print(pantryItem.id);
+    print(pantryItem.name);
+
+    print(pantryItem.location);
+    print(_categoryMaps.catEnglish[pantryItem.mainCat]);
+    print(pantryItem.openedDate);
+    print(pantryItem.addedDate);
+    print(pantryItem.details);
+
+    print(pantryItem.expiryDate);
+  }
 
   void _discardChangesDialog(bool discardForm) {
     if (discardForm ||
@@ -524,6 +586,8 @@ class _NewItemFormState extends State<NewItemForm> {
                                   'newItem.expiryDate, ${newItem.expiryDate}');
                               print("MOI PÄÄSIN TÄNNE 2");
                               PantryProxy().upsertItem(newItem);
+                              createPantryTaskList();
+                              createPantryItemTask(newItem);
                               setState(() {});
                               Navigator.pop(context);
                             }
