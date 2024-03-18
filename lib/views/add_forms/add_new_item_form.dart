@@ -99,11 +99,22 @@ class _NewItemFormState extends State<NewItemForm> {
     return valuesString;
   }
 
+  changeFormatOfExpiryDate(String expiryDate) {
+    print("expiryDate: ${expiryDate.replaceAll(' ', 'T')}");
+    return expiryDate.replaceAll(' ', 'T');
+  }
+
   Future<void> createPantryItemTask(Item pantryItem) async {
     final valuesString = createStringOfPantryItemValues(pantryItem);
     final taskListIndex = await checkIfPantryListExists();
-    _taskController.createTask(
-        pantryItem.name, valuesString, taskListIndex.toString());
+    var expiryDateAsString = null;
+    if (pantryItem.expiryDate != null) {
+      expiryDateAsString =
+          changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
+    }
+
+    _taskController.createTask(pantryItem.name, valuesString,
+        taskListIndex.toString(), expiryDateAsString);
 
     //print(pantryItem.id);
     print(pantryItem.name);
