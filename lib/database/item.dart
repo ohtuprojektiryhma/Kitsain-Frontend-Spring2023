@@ -30,6 +30,7 @@ class _Item {
   late String? packaging;
   late String? origins;
   late String? details;
+  late String? googleTaskId;
 }
 
 @RealmModel()

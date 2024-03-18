@@ -32,6 +32,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
     String? packaging,
     String? origins,
     String? details,
+    String? googleTaskId,
     Iterable<String?> categories = const [],
     Iterable<String?> labels = const [],
     Iterable<String?> ingredients = const [],
@@ -63,6 +64,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'packaging', packaging);
     RealmObjectBase.set(this, 'origins', origins);
     RealmObjectBase.set(this, 'details', details);
+    RealmObjectBase.set(this, 'googleTaskId', googleTaskId);
     RealmObjectBase.set<RealmList<String?>>(
         this, 'categories', RealmList<String?>(categories));
     RealmObjectBase.set<RealmList<String?>>(
@@ -228,6 +230,13 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   set details(String? value) => RealmObjectBase.set(this, 'details', value);
 
   @override
+  String? get googleTaskId =>
+      RealmObjectBase.get<String>(this, 'googleTaskId') as String?;
+  @override
+  set googleTaskId(String? value) =>
+      RealmObjectBase.set(this, 'googleTaskId', value);
+
+  @override
   Stream<RealmObjectChanges<Item>> get changes =>
       RealmObjectBase.getChanges<Item>(this);
 
@@ -269,6 +278,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('packaging', RealmPropertyType.string, optional: true),
       SchemaProperty('origins', RealmPropertyType.string, optional: true),
       SchemaProperty('details', RealmPropertyType.string, optional: true),
+      SchemaProperty('googleTaskId', RealmPropertyType.string, optional: true),
     ]);
   }
 }
