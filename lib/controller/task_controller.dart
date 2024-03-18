@@ -20,6 +20,8 @@ class TaskController extends GetxController {
     });
 
     shoppingListItem.refresh();
+
+    return tskList;
   }
 
   createTask(String title, String description, String taskListId, [String? due]) async {
@@ -27,10 +29,12 @@ class TaskController extends GetxController {
     if (due != null) {
       newTask.due = due;
     }
+    var googleTaskId;
     await loginController.taskApiAuthenticated.value!.tasks
         .insert(newTask, taskListId)
         .then((value) async {
       // print('ok ${value.id}');
+      googleTaskId = value.id;
       var newItem =
           ShoppingListItemModel(title, description, false, '${value.id}');
       shoppingListItem.value?.add(newItem);
@@ -38,6 +42,7 @@ class TaskController extends GetxController {
       // tasksList.value?.items?.add(value);
       shoppingListItem.refresh();
     });
+    return googleTaskId;
   }
 
   editTask(String title, String description, String taskListId, String taskId,
