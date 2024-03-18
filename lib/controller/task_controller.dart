@@ -22,9 +22,11 @@ class TaskController extends GetxController {
     shoppingListItem.refresh();
   }
 
-  createTask(String title, String description, String taskListId) async {
+  createTask(String title, String description, String taskListId, [String? due]) async {
     var newTask = Task(title: title, notes: description, status: "needsAction");
-
+    if (due != null) {
+      newTask.due = due;
+    }
     await loginController.taskApiAuthenticated.value!.tasks
         .insert(newTask, taskListId)
         .then((value) async {
