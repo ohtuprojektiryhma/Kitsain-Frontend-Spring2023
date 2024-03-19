@@ -128,15 +128,27 @@ class _PantryViewState extends State<PantryView> {
     }
     return pantryIndex;
   }
-  
+  checkIfItemInrealm(String googleTaskId, RealmResults<Item> realmItems) {
+    var googleTaskIdList = realmItems.map((e) => e.googleTaskId);
+    if (googleTaskIdList.contains(googleTaskId)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  parseDescriptionStringFromGoogleTask(String description) {
+
+  }
+
   savePantryTasksToRealm(index) async {
-    // _pantryProxy.deleteAll();
-    var realmItems = await PantryProxy().getItems();
+    var realmItems = await PantryProxy().getPantryItems();
     var tasks = await _taskController.getTasksList(index);
     for (var i = 0; i < tasks.items.length; i++) {
-      print(tasks.items[i].title);
-      // Implement if googleTaskId not same as in realm insert item
-      _pantryProxy.upsertItem(Item(ObjectId().toString(), tasks.items[i].title, "Pantry", 1, googleTaskId: tasks.items[i].id));
+      if (!checkIfItemInrealm(tasks.items[i].id, realmItems)) {
+        _pantryProxy.upsertItem(Item(ObjectId().toString(), tasks.items[i].title, "Pantry", 1, googleTaskId: tasks.items[i].id));
+      }
     }
   }
 
@@ -151,7 +163,6 @@ class _PantryViewState extends State<PantryView> {
     await savePantryTasksToRealm(index);
     var realmItems = await PantryProxy().getItems();
     print(realmItems);
-    setState(() {});
   }
 
   _receiveItem(Item data) {
@@ -323,7 +334,6 @@ class _PantryViewState extends State<PantryView> {
                     return const CircularProgressIndicator(); // while loading data
                   }
                   final results = data.results;
-                  print("results: ${results}");
                   if (results.isEmpty) {
                     
                     return const Center(
