@@ -27,8 +27,11 @@ class TaskController extends GetxController {
   createTask(String title, String description, String taskListId, [String? due]) async {
     var newTask = Task(title: title, notes: description, status: "needsAction");
     if (due != null) {
-      newTask.due = due;
+      DateTime dueDateTime = DateTime.parse(due);
+      String formattedDueDate = dueDateTime.toUtc().toIso8601String();
+      newTask.due = formattedDueDate;
     }
+    print(newTask.due);
     var googleTaskId;
     await loginController.taskApiAuthenticated.value!.tasks
         .insert(newTask, taskListId)
