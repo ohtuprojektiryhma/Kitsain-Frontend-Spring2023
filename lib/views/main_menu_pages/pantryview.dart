@@ -13,6 +13,7 @@ import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/categories.dart';
 import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
 import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
+import 'package:intl/intl.dart';
 
 // This file only sets the general UI: where are the show and sort buttons
 // and where the main content goes. Item lists are generated in
@@ -128,7 +129,7 @@ class _PantryViewState extends State<PantryView> {
     }
     return pantryIndex;
   }
-  checkIfItemInrealm(String googleTaskId, RealmResults<Item> realmItems) {
+  bool checkIfItemInrealm(String googleTaskId, RealmResults<Item> realmItems) {
     var googleTaskIdList = realmItems.map((e) => e.googleTaskId);
     if (googleTaskIdList.contains(googleTaskId)) {
       return true;
@@ -138,8 +139,68 @@ class _PantryViewState extends State<PantryView> {
     }
   }
 
-  parseDescriptionStringFromGoogleTask(String description) {
+  String _ignoreSubMicro(String s) {
+    // Makes the rfc timestamp able to be parsed through DateTime parser
+    if (s.length > 27) return s.substring(0, 26) + s[s.length - 1];
+    return s;
+  }
 
+  DateTime convertToRealmDateTime(String dateString) {
+    // Parse the date string into a DateTime object
+    DateTime dateTime = DateTime.parse(_ignoreSubMicro(dateString));
+    return dateTime;
+  }
+
+
+  Item parseDescriptionStringFromGoogleTask(String description, Item item) {
+    // Split the valuesString by newline characters
+    List<String> lines = description.split('\n');
+
+    // Loop through each line
+    lines.forEach((line) {
+      // Split each line by colon (:) to separate property name and value
+      List<String> parts = line.split(':');
+
+      // Trim any leading or trailing whitespaces from property name and value
+      String propertyName = parts[0].trim();
+      String propertyValue = parts.length > 1 ? parts[1].trim() : '';
+
+      // Assign values to item properties based on property name
+      switch (propertyName) {
+        case 'location':
+          if (propertyValue != "null") {
+            item.location = propertyValue;
+          }
+          break;
+        case 'category':
+          if (propertyValue != "null") {
+            item.mainCat = int.parse(propertyValue);
+          }
+          break;
+        case 'favorite':
+          if (propertyValue != "null") {
+            bool favorite = propertyValue == 'true';
+            item.favorite = favorite;
+          }
+          break;
+        case 'opened date':
+          if (propertyValue != "null") {
+            item.openedDate = DateTime.parse(propertyValue);
+          }
+          break;
+        case 'added date':
+          if (propertyValue != "null") {
+            item.addedDate = DateTime.parse(propertyValue);
+          }
+          break;
+        case 'details':
+          if (propertyValue != "null") {
+            item.details = propertyValue;
+          }
+          break;
+      }
+      });
+    return item;
   }
 
   savePantryTasksToRealm(index) async {
@@ -147,13 +208,17 @@ class _PantryViewState extends State<PantryView> {
     var tasks = await _taskController.getTasksList(index);
     for (var i = 0; i < tasks.items.length; i++) {
       if (!checkIfItemInrealm(tasks.items[i].id, realmItems)) {
-        _pantryProxy.upsertItem(Item(ObjectId().toString(), tasks.items[i].title, "Pantry", 1, googleTaskId: tasks.items[i].id));
+        var item = Item(ObjectId().toString(), tasks.items[i].title, "Pantry", 1, googleTaskId: tasks.items[i].id);
+        if (tasks.items[i].due != null) {
+          item.expiryDate = convertToRealmDateTime(tasks.items[i].due);
+        }
+        item = parseDescriptionStringFromGoogleTask(tasks.items[i].notes, item);
+        _pantryProxy.upsertItem(item);
       }
     }
   }
 
   getPantryTasks() async {
-    
     await _taskListController.getTaskLists();
     var index = await checkIfPantryListExists();
     

@@ -31,7 +31,6 @@ class TaskController extends GetxController {
       String formattedDueDate = dueDateTime.toUtc().toIso8601String();
       newTask.due = formattedDueDate;
     }
-    print(newTask.due);
     var googleTaskId;
     await loginController.taskApiAuthenticated.value!.tasks
         .insert(newTask, taskListId)
