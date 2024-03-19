@@ -11,6 +11,9 @@ import 'package:realm/realm.dart';
 import 'dart:async';
 import 'package:kitsain_frontend_spring2023/assets/pantry_builder_recipe_generation.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
+import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
+import 'package:get/get.dart';
 
 class CreateNewRecipeForm extends StatefulWidget {
   const CreateNewRecipeForm({super.key});
@@ -54,12 +57,17 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   List<String> optionalItems = [];
   List<String> mustHaveItems = [];
   String language = "English";
+  final _taskListController = Get.put(TaskListController());
+  final _taskController = Get.put(TaskController());
 
   @override
   void initState() {
     super.initState();
     _loadPantryItems();
   }
+
+
+  
 
   // Load pantry items asynchronously
   Future<void> _loadPantryItems() async {
@@ -76,6 +84,55 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       });
     }
   }
+    /*
+  Future checkIfRecipeListExists() async {
+    await _taskListController.getTaskLists();
+    var recipeIndex = "not";
+    if (_taskListController.taskLists.value?.items != null) {
+      int length = _taskListController.taskLists.value?.items!.length as int;
+      for (var i = 0; i < length; i++) {
+        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        if (_taskListController.taskLists.value?.items?[i].title ==
+            "My Recipes") {
+          recipeIndex =
+              _taskListController.taskLists.value?.items?[i].id as String;
+          break;
+        }
+      }
+    }
+    return recipeIndex;
+  }
+
+  createStringOfRecipeValues(Recipe recipe) {
+    var valuesString = "";
+    valuesString += "Name: ${recipe.name}\n";
+    valuesString += "Instructions: ${recipe.details}\n";
+    valuesString += "Ingredients: ${recipe.selectedItems}\n";
+    valuesString += "Type: ${recipe.recipeType}\n";
+    valuesString += "Kitchenware: ${recipe.supplies}\n";
+    valuesString += "+ingredients: ${recipe.expSoon}\n";
+    valuesString += "Pantryonly: ${recipe.pantryonly}\n";
+    return valuesString;
+  }
+
+  changeFormatOfExpiryDate(String expiryDate) {
+    return expiryDate.replaceAll(' ', 'T');
+  }
+
+  Future<void> createPantryItemTask(Recipe recipe) async {
+    final valuesString = createStringOfRecipeValues(recipe);
+    final taskListIndex = await checkIfRecipeListExists();
+    var expiryDateAsString = null;
+    if (pantryItem.expiryDate != null) {
+      expiryDateAsString =
+          changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
+    }
+    var googleTaskId = await _taskController.createTask(pantryItem.name, valuesString,
+        taskListIndex.toString(), expiryDateAsString);
+    pantryItem.googleTaskId = googleTaskId;
+    PantryProxy().upsertItem(pantryItem);
+  }
+    */
 
   String selected = "True";
 
@@ -130,6 +187,9 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     );
   }
 // Choose what items to query from db based on user selection
+
+
+
 
   @override
   Widget build(BuildContext context) {
