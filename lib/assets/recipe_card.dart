@@ -328,6 +328,7 @@ class _RecipeCardState extends State<RecipeCard> {
 
               // the recipe details and changes are sent as parameters
               var changedRecipe = await changeRecipe(
+                  widget.recipe.name,
                   widget.recipe.details,
                   changes,
                   widget.recipe.selectedItems,

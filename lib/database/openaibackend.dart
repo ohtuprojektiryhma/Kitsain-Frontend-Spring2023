@@ -58,6 +58,7 @@ Future<Recipe> generateRecipe(
 /// [pantryOnly] (boolean value whether the recipe only uses items from the pantry or adds new ingredients)
 /// Returns the new modified recipe in a Recipe object
 Future<Recipe> changeRecipe(
+    String name,
     String? details,
     String? change,
     List<String?> ingredients,
@@ -73,7 +74,7 @@ Future<Recipe> changeRecipe(
   // Refactor this section when the Recipe class gets correct fields.
   var extremelyHackyDetailsDecoded = json.decode(details!);
   var extremelyHackyRecipeConstruct = {
-    'recipe_name': '',
+    'recipe_name': name,
     'ingredients': extremelyHackyDetailsDecoded[0],
     'instructions': extremelyHackyDetailsDecoded[1]
   };
