@@ -17,6 +17,12 @@ class LoginController extends GetxController {
 
     googleSignInUser.value = googleSignIn;
 
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.value!.authentication;
+    final String? googleIdToken = googleAuth.idToken;
+
+    print('Google ID token: $googleIdToken');
+
     var httpClient = (await googleSignIn.authenticatedClient())!;
 
     TasksApi taskapi = TasksApi(httpClient);
