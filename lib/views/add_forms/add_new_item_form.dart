@@ -63,13 +63,6 @@ class _NewItemFormState extends State<NewItemForm> {
 
   final _categoryMaps = CategoryMaps();
 
-  void createPantryTaskList() async {
-    var pantryFound = await checkIfPantryListExists();
-    print(pantryFound);
-    if (pantryFound == "not") {
-      _taskListController.createTaskLists("My Pantry");
-    }
-  }
 
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
@@ -100,7 +93,6 @@ class _NewItemFormState extends State<NewItemForm> {
   }
 
   changeFormatOfExpiryDate(String expiryDate) {
-    print("expiryDate: ${expiryDate.replaceAll(' ', 'T')}");
     return expiryDate.replaceAll(' ', 'T');
   }
 
@@ -112,20 +104,10 @@ class _NewItemFormState extends State<NewItemForm> {
       expiryDateAsString =
           changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
     }
-
-    _taskController.createTask(pantryItem.name, valuesString,
+    var googleTaskId = await _taskController.createTask(pantryItem.name, valuesString,
         taskListIndex.toString(), expiryDateAsString);
-
-    //print(pantryItem.id);
-    print(pantryItem.name);
-
-    print(pantryItem.location);
-    print(_categoryMaps.catEnglish[pantryItem.mainCat]);
-    print(pantryItem.openedDate);
-    print(pantryItem.addedDate);
-    print(pantryItem.details);
-
-    print(pantryItem.expiryDate);
+    pantryItem.googleTaskId = googleTaskId;
+    PantryProxy().upsertItem(pantryItem);
   }
 
   void _discardChangesDialog(bool discardForm) {
@@ -596,9 +578,7 @@ class _NewItemFormState extends State<NewItemForm> {
                               print(
                                   'newItem.expiryDate, ${newItem.expiryDate}');
                               print("MOI PÄÄSIN TÄNNE 2");
-                              PantryProxy().upsertItem(newItem);
-                              createPantryTaskList();
-                              createPantryItemTask(newItem);
+                              createPantryItemTask(newItem);                              
                               setState(() {});
                               Navigator.pop(context);
                             }
