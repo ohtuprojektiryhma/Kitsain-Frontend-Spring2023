@@ -84,7 +84,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       });
     }
   }
-    /*
+  /*
   Future checkIfRecipeListExists() async {
     await _taskListController.getTaskLists();
     var recipeIndex = "not";
@@ -115,22 +115,12 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     return valuesString;
   }
 
-  changeFormatOfExpiryDate(String expiryDate) {
-    return expiryDate.replaceAll(' ', 'T');
-  }
-
-  Future<void> createPantryItemTask(Recipe recipe) async {
+  Future<void> createRecipeTask(Recipe recipe) async {
     final valuesString = createStringOfRecipeValues(recipe);
     final taskListIndex = await checkIfRecipeListExists();
-    var expiryDateAsString = null;
-    if (pantryItem.expiryDate != null) {
-      expiryDateAsString =
-          changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
-    }
-    var googleTaskId = await _taskController.createTask(pantryItem.name, valuesString,
-        taskListIndex.toString(), expiryDateAsString);
-    pantryItem.googleTaskId = googleTaskId;
-    PantryProxy().upsertItem(pantryItem);
+    var googleTaskId = await _taskController.createTask(recipe.name, valuesString, taskListIndex.toString());
+    recipe.googleTaskId = googleTaskId;
+    RecipeProxy().upsertRecipe(recipe);
   }
     */
 
