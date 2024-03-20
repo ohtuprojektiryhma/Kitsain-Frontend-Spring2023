@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
+import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
 import 'package:kitsain_frontend_spring2023/views/edit_forms/edit_item_form.dart';
 import 'statuscolor.dart';
 import 'package:kitsain_frontend_spring2023/categories.dart';
+import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
+import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
+import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
+import 'package:get/get.dart';
 
 enum _MenuValues {
   edit,
@@ -33,12 +38,30 @@ class ItemCard extends StatefulWidget {
 }
 
 class _ItemCardState extends State<ItemCard> {
-  void deleteItem(Item item) {
+  final _pantryController = PantryController();
+  final _taskController = Get.put(TaskController());
+  final _taskListController = Get.put(TaskListController());
+
+  deleteItemFromTasks(Item item) async {
+    final taskListIndex = await _pantryController.findPantryIndex();
+    _taskController.deleteTask(taskListIndex, item.googleTaskId as String, 0);
+  }
+
+  void deleteItem(Item item) async {
+    await deleteItemFromTasks(widget.item);
     realm.write(
       () {
         realm.delete(item);
       },
     );
+  }
+
+  editItemTasks(Item item) async {
+    final taskListIndex = await _pantryController.findPantryIndex();
+    print("pääsin ${item.name} ${item.details}");
+    _taskController.editTask(item.name, item.details as String, taskListIndex,
+        item.googleTaskId as String, 0);
+    print("pääsin2 ${item.name} ");
   }
 
   void _editItem(Item item) {
@@ -105,6 +128,7 @@ class _ItemCardState extends State<ItemCard> {
         switch (value) {
           case _MenuValues.edit:
             _editItem(widget.item);
+            editItemTasks(widget.item);
             break;
           case _MenuValues.used:
             PantryProxy().changeLocation(widget.item, "Used");

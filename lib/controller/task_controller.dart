@@ -15,7 +15,10 @@ class TaskController extends GetxController {
     shoppingListItem.value?.clear();
     tskList?.items?.forEach((element) {
       var newItem = ShoppingListItemModel(
-          '${element.title}', element.notes == null ? '' : '${element.notes}', false, '${element.id}');
+          '${element.title}',
+          element.notes == null ? '' : '${element.notes}',
+          false,
+          '${element.id}');
       shoppingListItem.value?.add(newItem);
     });
 
@@ -24,7 +27,8 @@ class TaskController extends GetxController {
     return tskList;
   }
 
-  createTask(String title, String description, String taskListId, [String? due]) async {
+  createTask(String title, String description, String taskListId,
+      [String? due]) async {
     var newTask = Task(title: title, notes: description, status: "needsAction");
     if (due != null) {
       DateTime dueDateTime = DateTime.parse(due);
