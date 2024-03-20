@@ -43,7 +43,7 @@ class _ItemCardState extends State<ItemCard> {
   final _taskListController = Get.put(TaskListController());
 
   deleteItemFromTasks(Item item) async {
-    final taskListIndex = await _pantryController.checkIfPantryListExists();
+    final taskListIndex = await _pantryController.findPantryIndex();
     _taskController.deleteTask(taskListIndex, item.googleTaskId as String, 0);
   }
 
@@ -54,6 +54,14 @@ class _ItemCardState extends State<ItemCard> {
         realm.delete(item);
       },
     );
+  }
+
+  editItemTasks(Item item) async {
+    final taskListIndex = await _pantryController.findPantryIndex();
+    print("pääsin ${item.name} ${item.details}");
+    _taskController.editTask(item.name, item.details as String, taskListIndex,
+        item.googleTaskId as String, 0);
+    print("pääsin2 ${item.name} ");
   }
 
   void _editItem(Item item) {
@@ -120,6 +128,7 @@ class _ItemCardState extends State<ItemCard> {
         switch (value) {
           case _MenuValues.edit:
             _editItem(widget.item);
+            editItemTasks(widget.item);
             break;
           case _MenuValues.used:
             PantryProxy().changeLocation(widget.item, "Used");

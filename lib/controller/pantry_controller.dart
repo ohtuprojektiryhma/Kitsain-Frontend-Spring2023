@@ -6,7 +6,7 @@ import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart'
 class PantryController {
   final _taskListController = Get.put(TaskListController());
 
-  Future checkIfPantryListExists() async {
+  Future findPantryIndex() async {
     await _taskListController.getTaskLists();
     var pantryIndex = "not";
     if (_taskListController.taskLists.value?.items != null) {
