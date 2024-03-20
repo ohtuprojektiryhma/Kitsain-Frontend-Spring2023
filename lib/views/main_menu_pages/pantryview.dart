@@ -104,14 +104,6 @@ class _PantryViewState extends State<PantryView> {
     );
   }
 
-  createPantryTaskList() async {
-    var pantryFound = await checkIfPantryListExists();
-    print("pantryfound: ${pantryFound}");
-    if (pantryFound == "not") {
-      _taskListController.createTaskLists("My Pantry");
-    }
-    await getPantryTasks();
-    }
 
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
@@ -128,15 +120,6 @@ class _PantryViewState extends State<PantryView> {
       }
     }
     return pantryIndex;
-  }
-  bool checkIfItemInrealm(String googleTaskId, RealmResults<Item> realmItems) {
-    var googleTaskIdList = realmItems.map((e) => e.googleTaskId);
-    if (googleTaskIdList.contains(googleTaskId)) {
-      return true;
-    }
-    else {
-      return false;
-    }
   }
 
   String _ignoreSubMicro(String s) {
@@ -203,9 +186,27 @@ class _PantryViewState extends State<PantryView> {
     return item;
   }
 
-  savePantryTasksToRealm(index) async {
-    var realmItems = await PantryProxy().getPantryItems();
-    var tasks = await _taskController.getTasksList(index);
+  bool checkIfItemInrealm(String googleTaskId, RealmResults<Item> realmItems) {
+    var googleTaskIdList = realmItems.map((e) => e.googleTaskId);
+    if (googleTaskIdList.contains(googleTaskId)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  bool checkIfItemInGoogleTasks(String? googleTaskId, tasks) {
+    var googleTaskIdList = tasks.items.map((e) => e.id);
+    if (googleTaskIdList.contains(googleTaskId)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  saveGoogleTasksToRealm(realmItems, tasks) {
     for (var i = 0; i < tasks.items.length; i++) {
       if (!checkIfItemInrealm(tasks.items[i].id, realmItems)) {
         var item = Item(ObjectId().toString(), tasks.items[i].title, "Pantry", 1, googleTaskId: tasks.items[i].id);
@@ -217,15 +218,31 @@ class _PantryViewState extends State<PantryView> {
       }
     }
   }
+  
+  deleteMissingGoogleTasksFromRealm(RealmResults<Item> realmItems, tasks) async {
+    for (var i = 0; i < realmItems.length; i++) {
+      if (!checkIfItemInGoogleTasks(realmItems[i].googleTaskId, tasks)) {
+        _pantryProxy.deleteItem(realmItems[i]);
+      }
+    }
+  }
+
+
+  syncPantryTasksWithRealm(index) async {
+    var realmItems = await PantryProxy().getPantryItems();
+    var tasks = await _taskController.getTasksList(index);
+    saveGoogleTasksToRealm(realmItems, tasks);
+    deleteMissingGoogleTasksFromRealm(realmItems, tasks);
+  }
 
   getPantryTasks() async {
     await _taskListController.getTaskLists();
     var index = await checkIfPantryListExists();
-    
     if (index == "not") {
-      await createPantryTaskList();
+      await _taskListController.createTaskLists("My Pantry");
+      index = await checkIfPantryListExists();
     }
-    await savePantryTasksToRealm(index);
+    await syncPantryTasksWithRealm(index);
     var realmItems = await PantryProxy().getItems();
     print(realmItems);
   }
