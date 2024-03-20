@@ -86,7 +86,7 @@ class _NewItemFormState extends State<NewItemForm> {
     var valuesString = "";
     valuesString += "location: ${pantryItem.location}\n";
     valuesString += "category: ${pantryItem.mainCat}\n";
-    valuesString += "favorite: ${pantryItem.favorite}";
+    valuesString += "favorite: ${pantryItem.favorite}\n";
     valuesString += "opened date: ${pantryItem.openedDate}\n";
     valuesString += "added date: ${pantryItem.addedDate}\n";
     valuesString += "details: ${pantryItem.details}\n";
