@@ -40,11 +40,11 @@ Future<Recipe> generateRecipe(
   var responseMap = json.decode(response.body);
 
   // Amounts in the ingredients map may be strings or numbers, so converting them all to strings
-  responseMap["ingredients"]
-      .updateAll((ingredient, amount) => amount = amount.toString());
+  Map<String, String> convertedIngredients = responseMap["ingredients"]
+      .map((ingredient, amount) => MapEntry(ingredient, amount.toString()));
 
   return Recipe(ObjectId().toString(), responseMap["recipe_name"],
-      ingredients: responseMap["ingredients"],
+      ingredients: convertedIngredients,
       instructions: responseMap["instructions"]);
 }
 
@@ -77,10 +77,10 @@ Future<Recipe> changeRecipe(Recipe recipe, String change) async {
   var responseMap = json.decode(response.body);
 
   // Amounts in the ingredients map may be strings or numbers, so converting them all to strings
-  responseMap["ingredients"]
-      .updateAll((ingredient, amount) => amount = amount.toString());
+  Map<String, String> convertedIngredients = responseMap["ingredients"]
+      .map((ingredient, amount) => MapEntry(ingredient, amount.toString()));
 
   return Recipe(ObjectId().toString(), responseMap["recipe_name"],
-      ingredients: responseMap["ingredients"],
+      ingredients: convertedIngredients,
       instructions: responseMap["instructions"]);
 }
