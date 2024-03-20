@@ -40,12 +40,23 @@ Future<Recipe> generateRecipe(
   var responseMap = json.decode(response.body);
 
   // Amounts in the ingredients map may be strings or numbers, so converting them all to strings
-  Map<String, String> convertedIngredients = responseMap["ingredients"]
-      .map((ingredient, amount) => MapEntry(ingredient, amount.toString()));
+  Map<String, String> convertedIngredients = Map<String, String>.fromIterable(
+    responseMap["ingredients"].keys,
+    value: (key) => responseMap["ingredients"][key].toString(),
+  );
 
-  return Recipe(ObjectId().toString(), responseMap["recipe_name"],
-      ingredients: convertedIngredients,
-      instructions: responseMap["instructions"]);
+  List<String> convertedInstructions = [];
+  for(var step in responseMap["instructions"]){
+    convertedInstructions.add(step);
+  }
+
+  
+  return Recipe(
+    ObjectId().toString(), 
+    responseMap["recipe_name"],
+    ingredients: convertedIngredients,
+    instructions: convertedInstructions,
+  );
 }
 
 /// Changes a recipe with the following values
@@ -77,10 +88,17 @@ Future<Recipe> changeRecipe(Recipe recipe, String change) async {
   var responseMap = json.decode(response.body);
 
   // Amounts in the ingredients map may be strings or numbers, so converting them all to strings
-  Map<String, String> convertedIngredients = responseMap["ingredients"]
-      .map((ingredient, amount) => MapEntry(ingredient, amount.toString()));
+  Map<String, String> convertedIngredients = Map<String, String>.fromIterable(
+    responseMap["ingredients"].keys,
+    value: (key) => responseMap["ingredients"][key].toString(),
+  );
+
+  List<String> convertedInstructions = [];
+  for(var step in responseMap["instructions"]){
+    convertedInstructions.add(step);
+  }
 
   return Recipe(ObjectId().toString(), responseMap["recipe_name"],
       ingredients: convertedIngredients,
-      instructions: responseMap["instructions"]);
+      instructions: convertedInstructions);
 }
