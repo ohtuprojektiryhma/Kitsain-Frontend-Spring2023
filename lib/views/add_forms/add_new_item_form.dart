@@ -63,7 +63,6 @@ class _NewItemFormState extends State<NewItemForm> {
 
   final _categoryMaps = CategoryMaps();
 
-
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
     var pantryIndex = "not";
@@ -105,8 +104,9 @@ class _NewItemFormState extends State<NewItemForm> {
       expiryDateAsString =
           changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
     }
-    var googleTaskId = await _taskController.createTask(pantryItem.name, valuesString,
-        taskListIndex.toString(), expiryDateAsString);
+    print("expiry date: ${pantryItem.expiryDate}");
+    var googleTaskId = await _taskController.createTask(pantryItem.name,
+        valuesString, taskListIndex.toString(), expiryDateAsString);
     pantryItem.googleTaskId = googleTaskId;
     PantryProxy().upsertItem(pantryItem);
   }
@@ -502,7 +502,7 @@ class _NewItemFormState extends State<NewItemForm> {
                             "${pickedDate.day}.${pickedDate.month}.${pickedDate.year}";
 
                         _expDateString.text = expirationDate;
-                        _expDateDT = pickedDate;
+                        _expDateDT = pickedDate.toLocal();
                         _hasExpiryDate = true;
                         print('_expDateDT, ${_expDateDT}');
                         print('pickedDate, ${pickedDate}');
@@ -569,17 +569,20 @@ class _NewItemFormState extends State<NewItemForm> {
                                 "Pantry",
                                 _catInt,
                                 favorite: _favorite,
-                                openedDate: _openDateDT,
-                                expiryDate: _expDateDT,
+                                openedDate: _openDateDT.toLocal(),
+                                expiryDate: _expDateDT.toLocal(),
                                 hasExpiryDate: _hasExpiryDate,
-                                addedDate: DateTime.now().toUtc(),
+                                addedDate: DateTime.now().toLocal(),
                                 details: _details.text,
                               );
+                              print('added date: ${newItem.addedDate}');
+                              print(
+                                  'date time now: ${DateTime.now().toLocal()}');
                               print('_expDateDT, ${_expDateDT}');
                               print(
                                   'newItem.expiryDate, ${newItem.expiryDate}');
                               print("MOI PÄÄSIN TÄNNE 2");
-                              createPantryItemTask(newItem);                              
+                              createPantryItemTask(newItem);
                               setState(() {});
                               Navigator.pop(context);
                             }
