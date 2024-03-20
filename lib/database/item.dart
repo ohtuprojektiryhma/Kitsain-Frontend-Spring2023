@@ -38,12 +38,8 @@ class _Recipe {
   @PrimaryKey()
   late final String id; // This will NOT be shown to the user
   late String name;
-  late String? details;
-  late List<String?> selectedItems;
-  late String? recipeType;
-  late List<String?> supplies;
-  late List<String?> expSoon;
-  late bool? pantryonly;
+  late Map<String, String> ingredients;
+  late List<String> instructions;
 }
 
 class CategoryMaps {

@@ -127,8 +127,8 @@ class _RecipeCardState extends State<RecipeCard> {
         onTap: () {
           showDialog(
             context: context,
-            builder: (BuildContext context) => _buildDetailsScreen(
-                context, widget.recipe.details!, widget.recipe.name),
+            builder: (BuildContext context) =>
+                _buildDetailsScreen(context, widget.recipe),
           );
         },
         child: Card(
@@ -229,12 +229,7 @@ class _RecipeCardState extends State<RecipeCard> {
   ///
   /// Includes [details] presenting the details of the recipe. [recipeName] describes the name of the recipe whose details
   /// are shown. Returns the details screen as alert dialog.
-  Widget _buildDetailsScreen(
-      BuildContext context, String details, String recipeName) {
-    dynamic parsedJson = jsonDecode(details);
-    Map<String, dynamic> ingredients = parsedJson[0];
-    List<dynamic> steps = parsedJson[1];
-
+  Widget _buildDetailsScreen(BuildContext context, Recipe recipe) {
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,7 +237,7 @@ class _RecipeCardState extends State<RecipeCard> {
         children: [
           Expanded(
             child: Text(
-              recipeName,
+              recipe.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -260,11 +255,12 @@ class _RecipeCardState extends State<RecipeCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Ingredients:', style: TextStyle(fontWeight: FontWeight.bold)),
-            for (var entry in ingredients.entries)
+            for (var entry in recipe.ingredients.entries)
               Text('${entry.key}: ${entry.value}'),
             SizedBox(height: 10),
             Text('Steps:', style: TextStyle(fontWeight: FontWeight.bold)),
-            for (int i = 0; i < steps.length; i++) Text(steps[i]),
+            for (int i = 0; i < recipe.instructions.length; i++)
+              Text(recipe.instructions[i]),
           ],
         ),
       ),
@@ -272,8 +268,8 @@ class _RecipeCardState extends State<RecipeCard> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildChangeButton("Change", Colors.grey[200], recipeName),
-            _buildDeleteButton("Delete", Colors.grey[200], recipeName),
+            _buildChangeButton("Change", Colors.grey[200], recipe.name),
+            _buildDeleteButton("Delete", Colors.grey[200], recipe.name),
           ],
         ),
       ],
@@ -327,15 +323,7 @@ class _RecipeCardState extends State<RecipeCard> {
               );
 
               // the recipe details and changes are sent as parameters
-              var changedRecipe = await changeRecipe(
-                  widget.recipe.name,
-                  widget.recipe.details,
-                  changes,
-                  widget.recipe.selectedItems,
-                  widget.recipe.recipeType,
-                  widget.recipe.expSoon,
-                  widget.recipe.supplies,
-                  widget.recipe.pantryonly);
+              var changedRecipe = await changeRecipe(widget.recipe, changes);
 
               navigator.pop();
 
