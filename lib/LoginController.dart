@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/tasks/v1.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:kitsain_frontend_spring2023/services/auth_service.dart';
 
 class LoginController extends GetxController {
   // GoogleSignInAccount? _user;
@@ -13,29 +14,9 @@ class LoginController extends GetxController {
   var accessToken = Rx<String?>(null);
   var taskApiAuthenticated = Rx<TasksApi?>(null);
 
-  Future verifyToken(String token) async {
-    try {
-      http.Response response = await http.post(
-        Uri.parse("http://nocng.id.vn:9090/api/v1/auth/verifyToken"),
-        headers: {
-          'Content-Type': 'application/json',
-          'accept': '*/*',
-        },
-        body: jsonEncode({'accessToken': token}),
-      );
-
-      // Decode the response JSON
-      Map<String, dynamic> responseData = jsonDecode(response.body);
-
-      // Print the response
-      accessToken.value = responseData['accessToken'].toString();
-    } catch (error) {
-      print("error");
-      // Handle any errors that occur during the request
-    }
-  }
-
   Future googleLogin() async {
+    final AuthService authService = Get.put(AuthService());
+
     final googleSignIn = GoogleSignIn(
         scopes: [TasksApi.tasksScope],
         clientId:
@@ -48,7 +29,7 @@ class LoginController extends GetxController {
         await googleUser.value!.authentication;
     final String? googleIdToken = googleAuth.idToken;
 
-    verifyToken(googleIdToken!);
+    authService.verifyToken(googleIdToken!);
 
     var httpClient = (await googleSignIn.authenticatedClient())!;
 

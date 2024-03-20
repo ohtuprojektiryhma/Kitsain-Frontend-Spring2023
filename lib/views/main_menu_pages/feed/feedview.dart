@@ -9,6 +9,7 @@ import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
+import 'package:kitsain_frontend_spring2023/services/auth_service.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_view.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
@@ -119,6 +120,7 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   // Variable to hold the current user
   final loginController = Get.put(LoginController());
+  final authService = Get.put(AuthService());
 
   void _editPost(Post post) {
     Navigator.push(
