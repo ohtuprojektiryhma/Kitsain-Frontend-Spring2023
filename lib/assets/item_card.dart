@@ -59,7 +59,9 @@ class _ItemCardState extends State<ItemCard> {
   editItemTasks(Item item) async {
     final taskListIndex = await _pantryController.findPantryIndex();
     print("pääsin ${item.name} ${item.details}");
-    _taskController.editTask(item.name, item.details as String, taskListIndex,
+    final editedValuesString =
+        _pantryController.createStringOfPantryItemValues(item);
+    _taskController.editTask(item.name, editedValuesString, taskListIndex,
         item.googleTaskId as String, 0);
     print("pääsin2 ${item.name} ");
   }
@@ -128,7 +130,7 @@ class _ItemCardState extends State<ItemCard> {
         switch (value) {
           case _MenuValues.edit:
             _editItem(widget.item);
-            editItemTasks(widget.item);
+
             break;
           case _MenuValues.used:
             PantryProxy().changeLocation(widget.item, "Used");
