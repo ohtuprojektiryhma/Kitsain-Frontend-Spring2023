@@ -14,7 +14,6 @@ import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_s
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_edit_post_view.dart';
-import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/temp_login.dart';
 
 import 'feed_image_widget.dart';
 
@@ -61,17 +60,6 @@ class _FeedViewState extends State<FeedView>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      persistentFooterButtons: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SelectView()),
-            );
-          },
-          child: const Text('Login'),
-        ),
-      ],
       backgroundColor: AppColors.main2,
       appBar: TopBar(
         title: AppLocalizations.of(context)!.feedScreen,
