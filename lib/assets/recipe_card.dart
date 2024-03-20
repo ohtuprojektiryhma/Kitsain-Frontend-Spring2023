@@ -1,23 +1,11 @@
 // ignore_for_file: prefer_const_constructors, sort_child_properties_last
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'dart:convert';
-import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
-import 'package:kitsain_frontend_spring2023/views/edit_forms/edit_item_form.dart';
-import 'statuscolor.dart';
-import 'package:kitsain_frontend_spring2023/categories.dart';
-import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
-enum _MenuValues {
-  edit,
-  delete,
-}
 
 class LoadingDialogWithTimeout extends StatefulWidget {
   @override
