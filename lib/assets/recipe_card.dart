@@ -238,7 +238,7 @@ class _RecipeCardState extends State<RecipeCard> {
         ],
       ),
       content: SingleChildScrollView(
-        child: Column(
+        child:Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -248,7 +248,7 @@ class _RecipeCardState extends State<RecipeCard> {
             SizedBox(height: 10),
             Text('Steps:', style: TextStyle(fontWeight: FontWeight.bold)),
             for (int i = 0; i < recipe.instructions.length; i++)
-              Text(recipe.instructions[i]),
+              Text(recipe.instructions[i].toString()),
           ],
         ),
       ),
