@@ -31,10 +31,21 @@ class TaskController extends GetxController {
       [String? due]) async {
     var newTask = Task(title: title, notes: description, status: "needsAction");
     if (due != null) {
+
+      // Parse due date
       DateTime dueDateTime = DateTime.parse(due);
-      String formattedDueDate = dueDateTime.toUtc().toIso8601String();
+      // Add one day more to prevent the UTC conversion problem
+      dueDateTime = DateTime(dueDateTime.year, dueDateTime.month, dueDateTime.day + 1);
+      // Convert to UTC
+      DateTime dueUtcDateTime = dueDateTime.toUtc();
+
+      // Format as ISO 8601 string
+      String formattedDueDate = dueUtcDateTime.toIso8601String();
+
+      // Assign formatted due date to newTask
       newTask.due = formattedDueDate;
     }
+
     var googleTaskId;
     await loginController.taskApiAuthenticated.value!.tasks
         .insert(newTask, taskListId)
