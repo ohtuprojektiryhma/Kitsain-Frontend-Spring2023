@@ -40,6 +40,7 @@ class _Recipe {
   late String name;
   late Map<String, String> ingredients;
   late List<String> instructions;
+  late String? googleTaskId;
 }
 
 class CategoryMaps {

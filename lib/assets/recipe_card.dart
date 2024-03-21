@@ -6,6 +6,9 @@ import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
+import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
+import 'package:get/get.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
   @override
@@ -44,12 +47,40 @@ class RecipeCard extends StatefulWidget {
   State<RecipeCard> createState() => _RecipeCardState();
 }
 
+
+
 class _RecipeCardState extends State<RecipeCard> {
-  bool _isLoading = true; // Flag to track loading state
-  void deleteItem(Recipe recipe) {
+  final _taskController = Get.put(TaskController());
+  final _taskListController = Get.put(TaskListController());
+
+  deleteRecipeFromTasks(Recipe recipe) async {
+    final taskListIndex = await findRecipeIndex();
+    _taskController.deleteTask(taskListIndex, recipe.googleTaskId as String, 0);
+  }
+
+  void deleteRecipe(Recipe recipe) async {
+    await deleteRecipeFromTasks(recipe);
     realm.write(() {
       realm.delete(recipe);
     });
+  }
+
+  Future findRecipeIndex() async {
+    await _taskListController.getTaskLists();
+    var recipeIndex = "not";
+    if (_taskListController.taskLists.value?.items != null) {
+      int length = _taskListController.taskLists.value?.items!.length as int;
+      for (var i = 0; i < length; i++) {
+        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        if (_taskListController.taskLists.value?.items?[i].title ==
+            "My Recipes") {
+          recipeIndex =
+              _taskListController.taskLists.value?.items?[i].id as String;
+          break;
+        }
+      }
+    }
+    return recipeIndex;
   }
 
   bool showAbbreviation = true;
@@ -352,7 +383,7 @@ class _RecipeCardState extends State<RecipeCard> {
               backgroundColor: Colors.red,
             ),
             onPressed: () {
-              deleteItem(widget.recipe);
+              deleteRecipe(widget.recipe);
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },

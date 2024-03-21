@@ -84,7 +84,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       });
     }
   }
-  /*
+  
   Future checkIfRecipeListExists() async {
     await _taskListController.getTaskLists();
     var recipeIndex = "not";
@@ -103,15 +103,16 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     return recipeIndex;
   }
 
-  createStringOfRecipeValues(Recipe recipe) {
+  String createStringOfRecipeValues(Recipe recipe) {
     var valuesString = "";
-    valuesString += "Name: ${recipe.name}\n";
-    valuesString += "Instructions: ${recipe.details}\n";
-    valuesString += "Ingredients: ${recipe.selectedItems}\n";
-    valuesString += "Type: ${recipe.recipeType}\n";
-    valuesString += "Kitchenware: ${recipe.supplies}\n";
-    valuesString += "+ingredients: ${recipe.expSoon}\n";
-    valuesString += "Pantryonly: ${recipe.pantryonly}\n";
+    valuesString += "Ingredients:\n";
+    recipe.ingredients.forEach((key, value) {
+      valuesString += "$key: $value\n";
+    });
+    valuesString += "\nInstructions:\n";
+    recipe.instructions.forEach((instruction) {
+      valuesString += "$instruction\n";
+    });
     return valuesString;
   }
 
@@ -122,7 +123,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     recipe.googleTaskId = googleTaskId;
     RecipeProxy().upsertRecipe(recipe);
   }
-    */
+    
 
   String selected = "True";
 
@@ -451,7 +452,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           pantryOnly,
           language);
 
-      RecipeProxy().upsertRecipe(generatedRecipe);
+      createRecipeTask(generatedRecipe);
       // clear
       _recipeTypeController.clear();
       _suppliesController.clear();
