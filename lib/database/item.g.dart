@@ -287,11 +287,13 @@ class Recipe extends _Recipe with RealmEntity, RealmObjectBase, RealmObject {
   Recipe(
     String id,
     String name, {
+    String? googleTaskId,
     Iterable<String> instructions = const [],
     Map<String, String> ingredients = const {},
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'googleTaskId', googleTaskId);
     RealmObjectBase.set<RealmList<String>>(
         this, 'instructions', RealmList<String>(instructions));
     RealmObjectBase.set<RealmMap<String>>(
@@ -325,6 +327,13 @@ class Recipe extends _Recipe with RealmEntity, RealmObjectBase, RealmObject {
       throw RealmUnsupportedSetError();
 
   @override
+  String? get googleTaskId =>
+      RealmObjectBase.get<String>(this, 'googleTaskId') as String?;
+  @override
+  set googleTaskId(String? value) =>
+      RealmObjectBase.set(this, 'googleTaskId', value);
+
+  @override
   Stream<RealmObjectChanges<Recipe>> get changes =>
       RealmObjectBase.getChanges<Recipe>(this);
 
@@ -342,6 +351,7 @@ class Recipe extends _Recipe with RealmEntity, RealmObjectBase, RealmObject {
           collectionType: RealmCollectionType.map),
       SchemaProperty('instructions', RealmPropertyType.string,
           collectionType: RealmCollectionType.list),
+      SchemaProperty('googleTaskId', RealmPropertyType.string, optional: true),
     ]);
   }
 }

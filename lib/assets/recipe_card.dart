@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
   @override
@@ -37,22 +37,17 @@ const Color nullTextColor = Color(0xff979797);
 
 class RecipeCard extends StatefulWidget {
   RecipeCard({super.key, required this.recipe});
-
+  
   final Recipe recipe;
-  final TextEditingController _changesController = TextEditingController();
   @override
   State<RecipeCard> createState() => _RecipeCardState();
 }
 
-class _RecipeCardState extends State<RecipeCard> {
-  bool _isLoading = true; // Flag to track loading state
-  void deleteItem(Recipe recipe) {
-    realm.write(() {
-      realm.delete(recipe);
-    });
-  }
 
+
+class _RecipeCardState extends State<RecipeCard> {
   bool showAbbreviation = true;
+  final _recipeController = RecipeController();
 
   @override
   Widget build(BuildContext context) {
@@ -315,7 +310,7 @@ class _RecipeCardState extends State<RecipeCard> {
 
               navigator.pop();
 
-              RecipeProxy().upsertRecipe(changedRecipe);
+              _recipeController.createRecipeTask(changedRecipe);
               changesController.clear();
               navigator.pop();
               navigator.pop();
@@ -352,7 +347,7 @@ class _RecipeCardState extends State<RecipeCard> {
               backgroundColor: Colors.red,
             ),
             onPressed: () {
-              deleteItem(widget.recipe);
+              _recipeController.deleteRecipe(widget.recipe);
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },

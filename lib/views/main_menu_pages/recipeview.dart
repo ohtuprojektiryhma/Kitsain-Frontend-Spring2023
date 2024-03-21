@@ -6,12 +6,10 @@ import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/views/add_forms/create_recipe.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:realm/realm.dart';
-import 'package:get/get.dart';
 import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:kitsain_frontend_spring2023/assets/recipebuilder.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
-import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
-import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class RecipeView extends StatefulWidget {
   const RecipeView({super.key});
@@ -24,11 +22,9 @@ class _RecipeViewState extends State<RecipeView> {
   @override
   void initState() {
     super.initState();
-   // getRecipeTasks();
+    _recipeController.getRecipeTasks();
   }
-  final _taskListController = Get.put(TaskListController());
-  final _taskController = Get.put(TaskController());
-  final _recipeProxy = RecipeProxy();
+  final _recipeController = RecipeController();
   String selectedView = "all";
   String selectedSort = "az";
 
@@ -60,67 +56,6 @@ class _RecipeViewState extends State<RecipeView> {
       },
     );
   }
-
-  /*
-  createRecipeTaskList() async {
-    var recipesFound = await checkIfRecipeListExists();
-    print("recipesfound: ${recipesFound}");
-    if (recipesFound == "not") {
-      _taskListController.createTaskLists("My Recipes");
-    }
-    await getRecipeTasks();
-    }
-
-  Future checkIfRecipeListExists() async {
-    await _taskListController.getTaskLists();
-    var recipeIndex = "not";
-    if (_taskListController.taskLists.value?.items != null) {
-      int length = _taskListController.taskLists.value?.items!.length as int;
-      for (var i = 0; i < length; i++) {
-        if (_taskListController.taskLists.value?.items?[i].title ==
-            "My Recipes") {
-          recipeIndex =
-              _taskListController.taskLists.value?.items?[i].id as String;
-          break;
-        }
-      }
-    }
-    return recipeIndex;
-  }
-  
-  saveRecipeTasksToRealm(index) async {
-    // _pantryProxy.deleteAll();
-    var realmItems = await RecipeProxy().getItems();
-    var tasks = await _taskController.getTasksList(index);
-    for (var i = 0; i < tasks.items.length; i++) {
-      print(tasks.items[i].title);
-      // Implement if googleTaskId not same as in realm insert item
-      _recipeProxy.upsertRecipe(Recipe(
-        ObjectId().toString(),
-        tasks.items[i].title,
-        selectedItems: tasks.items[i].selectedItems, 
-        recipeType: tasks.items[i].recipeType,
-        supplies: tasks.items[i].supplies,
-        expSoon: tasks.items[i].expSoon,
-        pantryonly: tasks.items[i].pantryonly,
-        ));
-    }
-  }
-
-  getRecipeTasks() async {
-    
-    await _taskListController.getTaskLists();
-    var index = await checkIfRecipeListExists();
-    
-    if (index == "not") {
-      await createRecipeTaskList();
-    }
-    await saveRecipeTasksToRealm(index);
-    var realmItems = await RecipeProxy().getItems();
-    print(realmItems);
-    setState(() {});
-  }
-    */
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +134,7 @@ class _RecipeViewState extends State<RecipeView> {
         final results = data.results;
 
         if (results.isEmpty) {
-          return Center(
+          return const Center(
             child: Text(
               "No recipes found",
               style: AppTypography.smallTitle,

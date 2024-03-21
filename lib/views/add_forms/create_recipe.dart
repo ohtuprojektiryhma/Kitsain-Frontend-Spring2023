@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:googleapis/dfareporting/v4.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
-import 'package:kitsain_frontend_spring2023/categories.dart';
-import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
-import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:realm/realm.dart';
 import 'dart:async';
 import 'package:kitsain_frontend_spring2023/assets/pantry_builder_recipe_generation.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
-import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
-import 'package:get/get.dart';
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class CreateNewRecipeForm extends StatefulWidget {
   const CreateNewRecipeForm({super.key});
@@ -57,8 +50,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   List<String> optionalItems = [];
   List<String> mustHaveItems = [];
   String language = "English";
-  final _taskListController = Get.put(TaskListController());
-  final _taskController = Get.put(TaskController());
+  final _recipeController = RecipeController();
 
   @override
   void initState() {
@@ -84,45 +76,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       });
     }
   }
-  /*
-  Future checkIfRecipeListExists() async {
-    await _taskListController.getTaskLists();
-    var recipeIndex = "not";
-    if (_taskListController.taskLists.value?.items != null) {
-      int length = _taskListController.taskLists.value?.items!.length as int;
-      for (var i = 0; i < length; i++) {
-        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
-        if (_taskListController.taskLists.value?.items?[i].title ==
-            "My Recipes") {
-          recipeIndex =
-              _taskListController.taskLists.value?.items?[i].id as String;
-          break;
-        }
-      }
-    }
-    return recipeIndex;
-  }
-
-  createStringOfRecipeValues(Recipe recipe) {
-    var valuesString = "";
-    valuesString += "Name: ${recipe.name}\n";
-    valuesString += "Instructions: ${recipe.details}\n";
-    valuesString += "Ingredients: ${recipe.selectedItems}\n";
-    valuesString += "Type: ${recipe.recipeType}\n";
-    valuesString += "Kitchenware: ${recipe.supplies}\n";
-    valuesString += "+ingredients: ${recipe.expSoon}\n";
-    valuesString += "Pantryonly: ${recipe.pantryonly}\n";
-    return valuesString;
-  }
-
-  Future<void> createRecipeTask(Recipe recipe) async {
-    final valuesString = createStringOfRecipeValues(recipe);
-    final taskListIndex = await checkIfRecipeListExists();
-    var googleTaskId = await _taskController.createTask(recipe.name, valuesString, taskListIndex.toString());
-    recipe.googleTaskId = googleTaskId;
-    RecipeProxy().upsertRecipe(recipe);
-  }
-    */
 
   String selected = "True";
 
@@ -451,7 +404,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           pantryOnly,
           language);
 
-      RecipeProxy().upsertRecipe(generatedRecipe);
+      _recipeController.createRecipeTask(generatedRecipe);
       // clear
       _recipeTypeController.clear();
       _suppliesController.clear();
