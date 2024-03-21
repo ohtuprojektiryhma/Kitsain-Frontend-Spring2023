@@ -3,12 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
-import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
-import 'package:get/get.dart';
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
   @override
@@ -40,9 +37,8 @@ const Color nullTextColor = Color(0xff979797);
 
 class RecipeCard extends StatefulWidget {
   RecipeCard({super.key, required this.recipe});
-
+  
   final Recipe recipe;
-  final TextEditingController _changesController = TextEditingController();
   @override
   State<RecipeCard> createState() => _RecipeCardState();
 }
@@ -50,40 +46,8 @@ class RecipeCard extends StatefulWidget {
 
 
 class _RecipeCardState extends State<RecipeCard> {
-  final _taskController = Get.put(TaskController());
-  final _taskListController = Get.put(TaskListController());
-
-  deleteRecipeFromTasks(Recipe recipe) async {
-    final taskListIndex = await findRecipeIndex();
-    _taskController.deleteTask(taskListIndex, recipe.googleTaskId as String, 0);
-  }
-
-  void deleteRecipe(Recipe recipe) async {
-    await deleteRecipeFromTasks(recipe);
-    realm.write(() {
-      realm.delete(recipe);
-    });
-  }
-
-  Future findRecipeIndex() async {
-    await _taskListController.getTaskLists();
-    var recipeIndex = "not";
-    if (_taskListController.taskLists.value?.items != null) {
-      int length = _taskListController.taskLists.value?.items!.length as int;
-      for (var i = 0; i < length; i++) {
-        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
-        if (_taskListController.taskLists.value?.items?[i].title ==
-            "My Recipes") {
-          recipeIndex =
-              _taskListController.taskLists.value?.items?[i].id as String;
-          break;
-        }
-      }
-    }
-    return recipeIndex;
-  }
-
   bool showAbbreviation = true;
+  final _recipeController = RecipeController();
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +310,7 @@ class _RecipeCardState extends State<RecipeCard> {
 
               navigator.pop();
 
-              RecipeProxy().upsertRecipe(changedRecipe);
+              _recipeController.createRecipeTask(changedRecipe);
               changesController.clear();
               navigator.pop();
               navigator.pop();
@@ -383,7 +347,7 @@ class _RecipeCardState extends State<RecipeCard> {
               backgroundColor: Colors.red,
             ),
             onPressed: () {
-              deleteRecipe(widget.recipe);
+              _recipeController.deleteRecipe(widget.recipe);
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },

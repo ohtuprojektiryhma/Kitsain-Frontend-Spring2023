@@ -127,4 +127,55 @@ class RecipeController {
     print(realmItems);
   }
 
+  String createStringOfRecipeValues(Recipe recipe) {
+    var valuesString = "";
+    valuesString += "Ingredients:\n";
+    recipe.ingredients.forEach((key, value) {
+      valuesString += "$key: $value\n";
+    });
+    valuesString += "\nInstructions:\n";
+    recipe.instructions.forEach((instruction) {
+      valuesString += "$instruction\n";
+    });
+    return valuesString;
+  }
+
+  Future<void> createRecipeTask(Recipe recipe) async {
+    final valuesString = createStringOfRecipeValues(recipe);
+    final taskListIndex = await checkIfRecipeListExists();
+    var googleTaskId = await _taskController.createTask(recipe.name, valuesString, taskListIndex.toString());
+    recipe.googleTaskId = googleTaskId;
+    RecipeProxy().upsertRecipe(recipe);
+  }
+
+  deleteRecipeFromTasks(Recipe recipe) async {
+    final taskListIndex = await findRecipeIndex();
+    _taskController.deleteTask(taskListIndex, recipe.googleTaskId as String, 0);
+  }
+
+  void deleteRecipe(Recipe recipe) async {
+    await deleteRecipeFromTasks(recipe);
+    realm.write(() {
+      realm.delete(recipe);
+    });
+  }
+
+  Future findRecipeIndex() async {
+    await _taskListController.getTaskLists();
+    var recipeIndex = "not";
+    if (_taskListController.taskLists.value?.items != null) {
+      int length = _taskListController.taskLists.value?.items!.length as int;
+      for (var i = 0; i < length; i++) {
+        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        if (_taskListController.taskLists.value?.items?[i].title ==
+            "My Recipes") {
+          recipeIndex =
+              _taskListController.taskLists.value?.items?[i].id as String;
+          break;
+        }
+      }
+    }
+    return recipeIndex;
+  }
+
 }
