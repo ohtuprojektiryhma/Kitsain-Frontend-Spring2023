@@ -9,6 +9,10 @@ class TaskController extends GetxController {
 
   final loginController = Get.put(LoginController());
 
+  /// Returns list of created tasks in a task list
+  ///
+  /// [taskListId] is the google tasks id of the task list.
+  /// Returns the contents (= tasks) of the task list as Tasks object
   getTasksList(String taskListId) async {
     var tskList = await loginController.taskApiAuthenticated.value?.tasks
         .list(taskListId);
@@ -27,16 +31,21 @@ class TaskController extends GetxController {
     return tskList;
   }
 
+  /// Sends created task to the google tasks API
+  ///
+  /// [title] is the task's, e.g. pantry item's, name. [description] is the details of the task.
+  /// [taskListId] is the google tasks id of the task list. [due] is the optional expiry date of a pantry item task.
+  /// Returns the google tasks id of the task list in which the task is inserted.
   createTask(String title, String description, String taskListId,
       [String? due]) async {
     var newTask = Task(title: title, notes: description, status: "needsAction");
 
     if (due != null) {
-
       // Parse due date
       DateTime dueDateTime = DateTime.parse(due);
       // Add one day more to prevent the UTC conversion problem
-      dueDateTime = DateTime(dueDateTime.year, dueDateTime.month, dueDateTime.day + 1);
+      dueDateTime =
+          DateTime(dueDateTime.year, dueDateTime.month, dueDateTime.day + 1);
       // Convert to UTC
       DateTime dueUtcDateTime = dueDateTime.toUtc();
 
@@ -46,7 +55,6 @@ class TaskController extends GetxController {
       // Assign formatted due date to newTask
       newTask.due = formattedDueDate;
     }
-
 
     var googleTaskId;
     await loginController.taskApiAuthenticated.value!.tasks
@@ -64,6 +72,12 @@ class TaskController extends GetxController {
     return googleTaskId;
   }
 
+  /// Edits a task in a task list.
+  ///
+  /// [title] is the task's, e.g. pantry item's, name. [description] is the details of the task.
+  /// [taskListId] is the google tasks id of the task list that includes the task being edited.
+  /// [taskId] is the google task id of the task that's edited.
+  /// [due] is the optional expiry date of a pantry item task.
   editTask(String title, String description, String taskListId, String taskId,
       int index,
       [String? due]) async {
@@ -72,9 +86,17 @@ class TaskController extends GetxController {
 
     var newTask = Task(
         title: title, notes: description, status: "needsAction", id: taskId);
+
     if (due != null) {
       DateTime dueDateTime = DateTime.parse(due);
-      String formattedDueDate = dueDateTime.toUtc().toIso8601String();
+      // Add one day more to prevent the UTC conversion problem
+      dueDateTime =
+          DateTime(dueDateTime.year, dueDateTime.month, dueDateTime.day + 2);
+      // Convert to UTC
+      DateTime dueUtcDateTime = dueDateTime.toUtc();
+      // Format as ISO 8601 string
+      String formattedDueDate = dueUtcDateTime.toIso8601String();
+      // Assign formatted due date to newTask
       newTask.due = formattedDueDate;
     }
     // print('tlid ' + taskListId + ' tid ' + taskId);
@@ -93,6 +115,10 @@ class TaskController extends GetxController {
     });
   }
 
+  /// Deletes a task in a task list.
+  ///
+  /// [taskListId] is the google tasks id of the task list that includes the task being edited.
+  /// [taskId] is the google task id of the task that's deleted.
   deleteTask(String taskListId, String taskId, int index) async {
     // print(' $taskListId    $taskId     $index     ');
 

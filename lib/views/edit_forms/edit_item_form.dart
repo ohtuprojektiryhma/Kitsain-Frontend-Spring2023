@@ -533,6 +533,8 @@ class _EditItemFormState extends State<EditItemForm> {
                                   hasExpiryDate: _hasExpiryDate,
                                   details: _details.text,
                                   googleTaskId: _googleTaskId);
+
+                              PantryProxy().upsertItem(item);
                               _pantryController.editItemTasks(item);
                               setState(() {});
                               Navigator.pop(context);

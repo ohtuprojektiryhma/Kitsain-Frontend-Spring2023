@@ -434,7 +434,7 @@ class _NewItemFormState extends State<NewItemForm> {
                         labelText: "OPENING DATE"),
                     readOnly: true,
                     onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
+                      DateTime? pickedOpeningDate = await showDatePicker(
                         context: context,
                         initialDate: DateTime.now(),
                         firstDate: DateTime(2000),
@@ -456,11 +456,11 @@ class _NewItemFormState extends State<NewItemForm> {
                           );
                         },
                       );
-                      if (pickedDate != null) {
+                      if (pickedOpeningDate != null) {
                         String openedDate =
-                            "${pickedDate.day}.${pickedDate.month}.${pickedDate.year}";
+                            "${pickedOpeningDate.day}.${pickedOpeningDate.month}.${pickedOpeningDate.year}";
                         _openDateString.text = openedDate;
-                        _openDateDT = pickedDate;
+                        _openDateDT = pickedOpeningDate;
                       } else {
                         _openDateString.text = "";
                       }
@@ -475,7 +475,7 @@ class _NewItemFormState extends State<NewItemForm> {
                         labelText: "EXPIRATION DATE"),
                     readOnly: true,
                     onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
+                      DateTime? pickedExpiryDate = await showDatePicker(
                         context: context,
                         initialDate: DateTime.now(),
                         firstDate: DateTime(2000),
@@ -497,15 +497,15 @@ class _NewItemFormState extends State<NewItemForm> {
                           );
                         },
                       );
-                      if (pickedDate != null) {
+                      if (pickedExpiryDate != null) {
                         String expirationDate =
-                            "${pickedDate.day}.${pickedDate.month}.${pickedDate.year}";
+                            "${pickedExpiryDate.day}.${pickedExpiryDate.month}.${pickedExpiryDate.year}";
 
                         _expDateString.text = expirationDate;
-                        _expDateDT = pickedDate.toLocal();
+                        _expDateDT = pickedExpiryDate.toLocal();
                         _hasExpiryDate = true;
                         print('_expDateDT, ${_expDateDT}');
-                        print('pickedDate, ${pickedDate}');
+                        print('pickedDate, ${pickedExpiryDate}');
                         print('expirationDate, ${expirationDate}');
                         print('_expDateString.text, ${_expDateString.text}');
                         print("MOI PÄÄSIN TÄNNE");

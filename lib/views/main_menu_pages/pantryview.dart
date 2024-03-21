@@ -34,6 +34,7 @@ class _PantryViewState extends State<PantryView> {
     super.initState();
     getPantryTasks();
   }
+
   // Default values for what the user sees: all items in alphabetical order
   final _taskListController = Get.put(TaskListController());
   final _taskController = Get.put(TaskController());
@@ -104,7 +105,6 @@ class _PantryViewState extends State<PantryView> {
     );
   }
 
-
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
     var pantryIndex = "not";
@@ -133,7 +133,6 @@ class _PantryViewState extends State<PantryView> {
     DateTime dateTime = DateTime.parse(_ignoreSubMicro(dateString));
     return dateTime;
   }
-
 
   Item parseDescriptionStringFromGoogleTask(String description, Item item) {
     // Split the valuesString by newline characters
@@ -182,7 +181,7 @@ class _PantryViewState extends State<PantryView> {
           }
           break;
       }
-      });
+    });
     return item;
   }
 
@@ -190,8 +189,7 @@ class _PantryViewState extends State<PantryView> {
     var googleTaskIdList = realmItems.map((e) => e.googleTaskId);
     if (googleTaskIdList.contains(googleTaskId)) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -200,8 +198,7 @@ class _PantryViewState extends State<PantryView> {
     var googleTaskIdList = tasks.items.map((e) => e.id);
     if (googleTaskIdList.contains(googleTaskId)) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -209,7 +206,9 @@ class _PantryViewState extends State<PantryView> {
   saveGoogleTasksToRealm(realmItems, tasks) {
     for (var i = 0; i < tasks.items.length; i++) {
       if (!checkIfItemInrealm(tasks.items[i].id, realmItems)) {
-        var item = Item(ObjectId().toString(), tasks.items[i].title, "Pantry", 1, googleTaskId: tasks.items[i].id);
+        var item = Item(
+            ObjectId().toString(), tasks.items[i].title, "Pantry", 1,
+            googleTaskId: tasks.items[i].id);
         if (tasks.items[i].due != null) {
           item.expiryDate = convertToRealmDateTime(tasks.items[i].due);
         }
@@ -218,15 +217,15 @@ class _PantryViewState extends State<PantryView> {
       }
     }
   }
-  
-  deleteMissingGoogleTasksFromRealm(RealmResults<Item> realmItems, tasks) async {
+
+  deleteMissingGoogleTasksFromRealm(
+      RealmResults<Item> realmItems, tasks) async {
     for (var i = 0; i < realmItems.length; i++) {
       if (!checkIfItemInGoogleTasks(realmItems[i].googleTaskId, tasks)) {
         _pantryProxy.deleteItem(realmItems[i]);
       }
     }
   }
-
 
   syncPantryTasksWithRealm(index) async {
     var realmItems = await PantryProxy().getPantryItems();
@@ -244,7 +243,12 @@ class _PantryViewState extends State<PantryView> {
     }
     await syncPantryTasksWithRealm(index);
     var realmItems = await PantryProxy().getItems();
-    print(realmItems);
+    print("REALM ITEMS: ");
+    for (var i = 0; i < realmItems.length; i++) {
+      print(realmItems[i].name);
+      print(realmItems[i].expiryDate);
+      print("");
+    }
   }
 
   _receiveItem(Item data) {
@@ -417,7 +421,6 @@ class _PantryViewState extends State<PantryView> {
                   }
                   final results = data.results;
                   if (results.isEmpty) {
-                    
                     return const Center(
                       child: Text(
                         "No items found",
