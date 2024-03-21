@@ -529,11 +529,11 @@ class _EditItemFormState extends State<EditItemForm> {
                                   widget.item.location, _catInt,
                                   favorite: _favorite,
                                   openedDate: _openDateDT,
+                                  addedDate: DateTime.now(),
                                   expiryDate: _expDateDT,
                                   hasExpiryDate: _hasExpiryDate,
                                   details: _details.text,
                                   googleTaskId: _googleTaskId);
-
                               PantryProxy().upsertItem(item);
                               _pantryController.editItemTasks(item);
                               setState(() {});

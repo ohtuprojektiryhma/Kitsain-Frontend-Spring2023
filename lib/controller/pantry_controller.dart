@@ -45,6 +45,13 @@ class PantryController {
     return expiryDate.replaceAll(' ', 'T');
   }
 
+  addADayToOpenedDate(Item item) {
+    print(DateTime(item.openedDate!.year, item.openedDate!.month,
+        item.openedDate!.day + 1));
+    return DateTime(item.openedDate!.year, item.openedDate!.month,
+        item.openedDate!.day + 1);
+  }
+
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
     var pantryIndex = "not";
@@ -89,12 +96,12 @@ class PantryController {
   }
 
   Future<void> editItemTasks(Item item) async {
+    print("opening date 3: ${item.openedDate}");
     final taskListIndex = await findPantryIndex();
     var expiryDateAsString = null;
     if (item.expiryDate != null) {
       expiryDateAsString = changeFormatOfExpiryDate(item.expiryDate.toString());
     }
-    print("pvm: ${item.addedDate}");
     final editedValuesString = createStringOfPantryItemValues(item);
     var googleTaskId = _taskController.editTask(item.name, editedValuesString,
         taskListIndex, item.googleTaskId as String, 0, expiryDateAsString);
