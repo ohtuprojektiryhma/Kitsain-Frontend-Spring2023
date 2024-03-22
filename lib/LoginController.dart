@@ -11,7 +11,6 @@ class LoginController extends GetxController {
   // GoogleSignInAccount get user => _user!;
   var googleUser = Rx<GoogleSignInAccount?>(null);
   var googleSignInUser = Rx<GoogleSignIn?>(null);
-  var accessToken = Rx<String?>(null);
   var taskApiAuthenticated = Rx<TasksApi?>(null);
 
   Future googleLogin() async {

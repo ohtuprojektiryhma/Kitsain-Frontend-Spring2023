@@ -10,6 +10,7 @@ import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
 import 'package:kitsain_frontend_spring2023/services/auth_service.dart';
+import 'package:kitsain_frontend_spring2023/services/post_service.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_view.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
@@ -28,6 +29,7 @@ class FeedView extends StatefulWidget {
 class _FeedViewState extends State<FeedView>
     with AutomaticKeepAliveClientMixin {
   var postProvider = PostProvider();
+  final PostService postService = PostService();
 
   @override
   bool get wantKeepAlive => true;
@@ -89,6 +91,7 @@ class _FeedViewState extends State<FeedView>
             MaterialPageRoute(builder: (context) => CreatePostView()),
           ).then((newPost) {
             if (newPost != null) {
+              postService.createPost(newPost);
               setState(() {
                 postProvider.addPost(newPost);
               });

@@ -1,13 +1,19 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
-import 'package:kitsain_frontend_spring2023/LoginController.dart';
+import 'package:logger/logger.dart';
 
-class AuthService {
+/// The [AuthService] class is responsible for handling authentication-related operations.
+class AuthService extends GetxController {
+  var logger = Logger(printer: PrettyPrinter());
+
   var accessToken = Rx<String?>(null);
-  final loginController = Get.put(LoginController());
+
+  /// Verifies the provided token by making a POST request to the authentication server.
+  ///
+  /// The [token] parameter is the access token to be verified.
+  /// Returns a [Future] that completes with no return value.
   Future verifyToken(String token) async {
     try {
       http.Response response = await http.post(
@@ -24,7 +30,7 @@ class AuthService {
 
       accessToken.value = responseData['accessToken'].toString();
     } catch (error) {
-      print("error");
+      logger.e("error");
       // Handle any errors that occur during the request
     }
   }
