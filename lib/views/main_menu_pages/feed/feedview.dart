@@ -205,8 +205,13 @@ class _PostCardState extends State<PostCard> {
                 ),
               ],
             ),
+
+
+            // Check if there are images to display
             // Add image holder here
-            feedImageWidget(images: widget.post.images),
+            if (widget.post.images.isNotEmpty)
+              feedImageWidget(images: widget.post.images),
+
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Row(
