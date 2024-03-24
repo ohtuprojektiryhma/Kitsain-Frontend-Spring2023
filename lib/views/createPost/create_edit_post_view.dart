@@ -28,6 +28,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
   final DateFormat _dateFormat = DateFormat('dd.MM.yyyy');
   final TextEditingController _dateController = TextEditingController();
   final FocusNode _descriptionFocusNode = FocusNode();
+  final FocusNode _titleFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -169,7 +170,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                 ),
               ),
               TextFormField(
-                focusNode: _descriptionFocusNode,
+                focusNode: _titleFocusNode,
                 decoration: InputDecoration(
                   labelText: 'Title',
                 ),
