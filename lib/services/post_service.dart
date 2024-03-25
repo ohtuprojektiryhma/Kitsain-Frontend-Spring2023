@@ -34,9 +34,8 @@ class PostService {
       );
 
       if (response.statusCode == 200) {
-        dynamic responseData = jsonDecode(response.body);
+        dynamic responseData = json.decode(utf8.decode(response.bodyBytes));
 
-        // Assuming responseData is a JSON object with a key 'posts' containing a list of posts
         List<dynamic> postsData = responseData['details']['records'];
 
         // Fetch and parse posts concurrently
