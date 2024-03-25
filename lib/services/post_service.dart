@@ -100,6 +100,7 @@ class PostService {
             jsonDecode(response.body)['details'];
 
         String id = postResponse['id'];
+        String user = postResponse['user']['id'];
 
         return Post(
           images: images,
@@ -108,6 +109,7 @@ class PostService {
           price: price,
           expiringDate: expiringDate,
           id: id,
+          userId: user,
         );
       } else {
         // Handle other status codes if needed
@@ -132,9 +134,13 @@ class PostService {
   /// Deletes a post by its ID.
   ///
   /// Throws an exception if the deletion fails.
-  Future<void> deletePost(String id) async {
+  Future<bool> deletePost(String id, String userId) async {
     try {
       // Send a POST request to the server with the post data
+      if (userId != await getUserId()) {
+        logger.e("You are not authorized to delete this post");
+        return false;
+      }
       final response =
           await http.put(Uri.parse('$baseUrl/disable/$id'), headers: {
         'Content-Type': 'application/json',
@@ -144,13 +150,16 @@ class PostService {
 
       if (response.statusCode == 200) {
         logger.i("Post removed successfully");
+        return true;
       } else {
         // Handle other status codes if needed
         logger.e('Request failed with status: ${response.statusCode}');
         //logger.e(response.body);
+        return false;
       }
     } catch (error) {
       logger.e("ERROR: $error");
+      return false;
       // Handle any errors that occur during the request
     }
   }
@@ -240,9 +249,43 @@ class PostService {
         price: json['price'],
         expiringDate: DateTime.parse(json['expringDate']),
         id: json['id'],
+        userId: json['user']['id'],
       );
     } catch (e) {
       throw Exception('Error parsing post: $e');
+    }
+  }
+
+  /// Fetches the user ID from the server.
+  ///
+  /// This method sends a GET request to the server to retrieve the user ID.
+  /// It requires an access token for authentication.
+  /// If the request is successful, it returns the user ID as a string.
+  Future<String> getUserId() async {
+    try {
+      var uri = Uri.parse('http://nocng.id.vn:9090/api/v1/users/me');
+      var response = await http.get(
+        uri,
+        headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer ${accessToken.value}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        dynamic responseData = jsonDecode(response.body);
+
+        // Assuming responseData is a JSON object with a key 'id' containing the user ID
+        String userId = responseData['id'];
+
+        return userId;
+      } else {
+        logger.e(
+            'Failed to load posts: ${response.statusCode} /n ${response.body}');
+        return "";
+      }
+    } catch (e) {
+      throw Exception('Error fetching posts: $e');
     }
   }
 }

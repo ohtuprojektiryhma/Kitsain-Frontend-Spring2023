@@ -84,11 +84,13 @@ class _FeedViewState extends State<FeedView>
   }
 
   /// Removes a post from the list.
-  void removePost(Post post) {
-    setState(() {
-      postService.deletePost(post.id);
-      postProvider.deletePost(post);
-    });
+  Future<void> removePost(Post post) async {
+    bool correctUser = await postService.deletePost(post.id, post.userId);
+    if (correctUser) {
+      setState(() {
+        postProvider.deletePost(post);
+      });
+    }
   }
 
   /// Edits a post in the list.
