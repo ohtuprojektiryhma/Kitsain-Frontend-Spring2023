@@ -63,14 +63,18 @@ class PostService {
     return null;
   }
 
-  /// Creates a new post.
+  /// Creates a new post with the given [images], [title], [description], [price], and [expiringDate].
   ///
-  /// This method takes a [Post] object as a parameter and sends a POST request to the server to create a new post.
-  /// It returns the created [Post] object if the request is successful, otherwise it returns null.
-  Future<Post?> createPost(Post post) async {
+  /// Returns the created [Post] object if successful, otherwise returns null.
+  Future<Post?> createPost(
+      {required List<String> images,
+      required String title,
+      required String description,
+      required String price,
+      required DateTime expiringDate}) async {
     // Format the expiration date of the post
-    String formattedDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        .format(post.expiringDate.toUtc());
+    String formattedDate =
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(expiringDate.toUtc());
 
     try {
       // Send a POST request to the server with the post data
@@ -82,16 +86,29 @@ class PostService {
           'Authorization': 'Bearer ${accessToken.value}',
         },
         body: jsonEncode({
-          'title': post.title,
-          'description': post.description,
-          'price': post.price,
-          'images': post.images,
+          'title': title,
+          'description': description,
+          'price': price,
+          'images': images,
           'expringDate': formattedDate,
         }),
       );
 
       if (response.statusCode == 200) {
         logger.i("Post created successfully");
+        Map<String, dynamic> postResponse =
+            jsonDecode(response.body)['details'];
+
+        String id = postResponse['id'];
+
+        return Post(
+          images: images,
+          title: title,
+          description: description,
+          price: price,
+          expiringDate: expiringDate,
+          id: id,
+        );
       } else {
         // Handle other status codes if needed
         logger.e('Request failed with status: ${response.statusCode}');
@@ -104,7 +121,7 @@ class PostService {
     return null;
   }
 
-  /// Updates an existing post.
+  /// Updates an existing post with the given [post].
   ///
   /// Returns the updated [Post] object if successful, otherwise returns null.
   Future<Post?> updatePost(Post post) async {
@@ -115,8 +132,27 @@ class PostService {
   /// Deletes a post by its ID.
   ///
   /// Throws an exception if the deletion fails.
-  Future<void> deletePost(int id) async {
-    // Logic to delete the post
+  Future<void> deletePost(String id) async {
+    try {
+      // Send a POST request to the server with the post data
+      final response =
+          await http.put(Uri.parse('$baseUrl/disable/$id'), headers: {
+        'Content-Type': 'application/json',
+        'accept': '*/*',
+        'Authorization': 'Bearer ${accessToken.value}',
+      });
+
+      if (response.statusCode == 200) {
+        logger.i("Post removed successfully");
+      } else {
+        // Handle other status codes if needed
+        logger.e('Request failed with status: ${response.statusCode}');
+        //logger.e(response.body);
+      }
+    } catch (error) {
+      logger.e("ERROR: $error");
+      // Handle any errors that occur during the request
+    }
   }
 
   /// Uploads multiple files to the server.
@@ -124,7 +160,6 @@ class PostService {
   /// Takes a list of [File] objects as input and returns a list of [String] filenames.
   /// Returns an empty list if the upload fails.
   Future<String> uploadFile(File file) async {
-    print(file.path);
     try {
       // Create a MultipartFile object
       String fileName = file.path.split('/').last;
@@ -147,7 +182,6 @@ class PostService {
 
       // Convert the streamedResponse into a response
       var response = await http.Response.fromStream(streamedResponse);
-      print(response.body);
 
       // Handle response from the backend
       if (response.statusCode == 200) {
@@ -205,6 +239,7 @@ class PostService {
         description: json['description'],
         price: json['price'],
         expiringDate: DateTime.parse(json['expringDate']),
+        id: json['id'],
       );
     } catch (e) {
       throw Exception('Error parsing post: $e');

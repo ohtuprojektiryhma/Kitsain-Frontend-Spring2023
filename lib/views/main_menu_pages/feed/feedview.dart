@@ -86,6 +86,7 @@ class _FeedViewState extends State<FeedView>
   /// Removes a post from the list.
   void removePost(Post post) {
     setState(() {
+      postService.deletePost(post.id);
       postProvider.deletePost(post);
     });
   }
@@ -129,7 +130,6 @@ class _FeedViewState extends State<FeedView>
             MaterialPageRoute(builder: (context) => CreatePostView()),
           ).then((newPost) async {
             if (newPost != null) {
-              postService.createPost(newPost);
               setState(() {
                 postProvider.addPost(newPost);
               });

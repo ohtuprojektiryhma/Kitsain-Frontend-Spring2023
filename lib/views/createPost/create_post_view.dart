@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/feed_image_widget.dart';
+import 'package:logger/logger.dart';
 
 /// A view for creating a new post.
 ///
@@ -26,6 +27,7 @@ class CreatePostView extends StatefulWidget {
 ///
 /// This state manages the title, image, price, and selected date for the post.
 class CreatePostViewState extends State<CreatePostView> {
+  var logger = Logger(printer: PrettyPrinter());
   final PostService _postService = PostService();
   // Content variables for the content of the post
   final List<String> _images = [];
@@ -87,9 +89,9 @@ class CreatePostViewState extends State<CreatePostView> {
     }
   }
 
-  Post _createPost() {
+  Future<Post?> _createPost() async {
     // Create a Post object using the entered data
-    return Post(
+    return await _postService.createPost(
       images: _images,
       title: _title,
       description: _description,
@@ -208,8 +210,8 @@ class CreatePostViewState extends State<CreatePostView> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  Post newPost = _createPost();
+                onPressed: () async {
+                  Post? newPost = await _createPost();
                   Navigator.pop(context, newPost);
                 },
                 child: Text('Create'),

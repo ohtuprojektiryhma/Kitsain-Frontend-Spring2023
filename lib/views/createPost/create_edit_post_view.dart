@@ -101,7 +101,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
     }
   }
 
-  Post _updateOrCreatePost() {
+  Future<Post?> _updateOrCreatePost() async {
     // Extract values from the form fields
     String title = _title;
     String description = _description;
@@ -109,7 +109,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
     DateTime expiringDate = _expiringDate;
 
     // Create or update the post
-    return Post(
+    return await _postService.createPost(
       images: _images,
       title: title,
       description: description,
@@ -223,8 +223,8 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  Post updatedPost = _updateOrCreatePost();
+                onPressed: () async {
+                  Post? updatedPost = await _updateOrCreatePost();
                   Navigator.pop(context, updatedPost);
                 },
                 child: Text(widget.post != null ? 'Update' : 'Create'),

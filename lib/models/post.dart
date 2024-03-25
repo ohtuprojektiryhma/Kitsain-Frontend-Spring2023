@@ -27,6 +27,7 @@ class Post extends ChangeNotifier {
   DateTime expiringDate = DateTime.now();
   List<String> useful = [];
   List<Comment> comments = [];
+  String id = "";
   //Item item;
 
   Post({
@@ -35,6 +36,7 @@ class Post extends ChangeNotifier {
     required this.description,
     required this.price,
     required this.expiringDate,
+    required this.id,
     this.useful = const [],
     this.comments = const [],
   });
