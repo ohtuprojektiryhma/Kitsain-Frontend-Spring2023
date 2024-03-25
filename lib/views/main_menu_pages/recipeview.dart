@@ -4,7 +4,7 @@ import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/views/add_forms/create_recipe.dart';
-import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
+import 'package:kitsain_frontend_spring2023/views/help_pages/recipe_help_page.dart';
 import 'package:realm/realm.dart';
 import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:kitsain_frontend_spring2023/assets/recipebuilder.dart';
@@ -24,6 +24,7 @@ class _RecipeViewState extends State<RecipeView> {
     super.initState();
     _recipeController.getRecipeTasks();
   }
+
   final _recipeController = RecipeController();
   String selectedView = "all";
   String selectedSort = "az";
@@ -42,7 +43,7 @@ class _RecipeViewState extends State<RecipeView> {
   }
 
   void _showHelp() {
-    _showModalBottomSheet(const PantryHelp());
+    _showModalBottomSheet(const RecipeHelp());
   }
 
   void _showModalBottomSheet(Widget content) {
@@ -97,7 +98,8 @@ class _RecipeViewState extends State<RecipeView> {
     );
   }
 
-  PopupMenuButton<String> _buildPopupMenuButton(String value, IconData icon, String buttonText) {
+  PopupMenuButton<String> _buildPopupMenuButton(
+      String value, IconData icon, String buttonText) {
     return PopupMenuButton(
       initialValue: value,
       onSelected: (value) {
