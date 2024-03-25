@@ -20,8 +20,39 @@ class PostService {
   ///
   /// Returns a list of [Post] objects.
   Future<List<Post>> getPosts() async {
-    // Logic to get all the posts
-    return [];
+    try {
+      var uri = Uri.parse('$baseUrl/feed');
+      var response = await http.get(
+        uri.replace(queryParameters: {
+          'limit': "10",
+          'offset': "0",
+        }),
+        headers: {
+          'accept': '*/*',
+          'Authorization': 'Bearer ${accessToken.value}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        dynamic responseData = jsonDecode(response.body);
+
+        // Assuming responseData is a JSON object with a key 'posts' containing a list of posts
+        List<dynamic> postsData = responseData['details']['records'];
+
+        // Fetch and parse posts concurrently
+        List<Post> posts = await Future.wait(postsData.map((json) async {
+          return await parsePost(json);
+        }));
+
+        logger.i("Posts loaded successfully");
+        return posts;
+      } else {
+        throw Exception(
+            'Failed to load posts: ${response.statusCode} /n ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching posts: $e');
+    }
   }
 
   /// Retrieves a post by its ID.
@@ -41,9 +72,6 @@ class PostService {
     String formattedDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         .format(post.expiringDate.toUtc());
 
-    // Upload the images associated with the post and get their filenames
-    List<String> filenames = await uploadFiles(post.images);
-
     try {
       // Send a POST request to the server with the post data
       final response = await http.post(
@@ -57,21 +85,19 @@ class PostService {
           'title': post.title,
           'description': post.description,
           'price': post.price,
-          'images': filenames,
+          'images': post.images,
           'expringDate': formattedDate,
         }),
       );
 
       if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, print a success message
         logger.i("Post created successfully");
       } else {
         // Handle other status codes if needed
         logger.e('Request failed with status: ${response.statusCode}');
-        // logger.e(response.body);
+        //logger.e(response.body);
       }
     } catch (error) {
-      // Print the error message if an error occurs during the request
       logger.e("ERROR: $error");
       // Handle any errors that occur during the request
     }
@@ -97,22 +123,20 @@ class PostService {
   ///
   /// Takes a list of [File] objects as input and returns a list of [String] filenames.
   /// Returns an empty list if the upload fails.
-  Future<List<String>> uploadFiles(List<File> files) async {
+  Future<String> uploadFile(File file) async {
+    print(file.path);
     try {
-      // Create a list of MultipartFile objects
-      List<http.MultipartFile> multipartFiles = [];
-      for (File file in files) {
-        String fileName = file.path.split('/').last;
-        multipartFiles.add(await http.MultipartFile.fromPath('files', file.path,
-            filename: fileName));
-      }
+      // Create a MultipartFile object
+      String fileName = file.path.split('/').last;
+      var multipartFile = await http.MultipartFile.fromPath('files', file.path,
+          filename: fileName);
 
       // Create a multipart request
       var request = http.MultipartRequest('POST',
           Uri.parse('http://nocng.id.vn:9090/api/v1/files/upload/files'));
 
-      // Add the files to the request
-      request.files.addAll(multipartFiles);
+      // Add the file to the request
+      request.files.add(multipartFile);
       request.headers.addAll({
         'accept': '*/*',
         'Authorization': 'Bearer ${accessToken.value}',
@@ -123,26 +147,67 @@ class PostService {
 
       // Convert the streamedResponse into a response
       var response = await http.Response.fromStream(streamedResponse);
+      print(response.body);
 
       // Handle response from the backend
       if (response.statusCode == 200) {
-        logger.i("Files uploaded successfully");
-        List<Map<String, dynamic>> files =
-            (jsonDecode(response.body) as List<dynamic>)
-                .cast<Map<String, dynamic>>();
-        List<String> filenames =
-            files.map((file) => file['filename']).cast<String>().toList();
-        return filenames;
+        logger.i("File uploaded successfully");
+
+        // Decode the response body
+        dynamic responseData = jsonDecode(response.body);
+
+        // Check if responseData is a list or a single file
+        if (responseData is List) {
+          // If responseData is a list, process each file
+          List<String> filenames = [];
+          for (var fileData in responseData) {
+            filenames.add(fileData['filename']);
+          }
+          // Return list of filenames
+          return filenames.join(', '); // or any other format you prefer
+        } else if (responseData is Map<String, dynamic>) {
+          // If responseData is a single file, extract filename
+          String filename = responseData['filename'];
+          return filename;
+        } else {
+          throw Exception('Unexpected response format');
+        }
       } else {
         // Error handling
-        logger.e('Failed to upload files. Status code: ${response.statusCode}');
-        // logger.e(response.body);
-        return [];
+        logger.e('Failed to upload file. Status code: ${response.statusCode}');
+        logger.e(response.body);
+        return "";
       }
     } catch (e) {
       // Error handling
-      logger.e('Error uploading files: $e');
-      return [];
+      logger.e('Error uploading file: $e');
+      return "";
+    }
+  }
+
+  /// Parses a JSON map into a [Post] object.
+  ///
+  /// The [json] parameter is a map containing the data to be parsed.
+  /// Returns a [Future] that completes with a [Post] object.
+  /// Throws an [Exception] if there is an error parsing the post.
+  Future<Post> parsePost(Map<String, dynamic> json) async {
+    try {
+      // Parse the list of images
+      List<String> images = [];
+      if (json['images'] != null) {
+        images = List<String>.from(json['images']);
+      }
+
+      // Create and return the Post object
+      return Post(
+        images: images,
+        title: json['title'],
+        description: json['description'],
+        price: json['price'],
+        expiringDate: DateTime.parse(json['expringDate']),
+      );
+    } catch (e) {
+      throw Exception('Error parsing post: $e');
     }
   }
 }

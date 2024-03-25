@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class editImageWidget extends StatefulWidget {
-  final List<File> images;
+  final List<String> images;
 
   const editImageWidget({super.key, required this.images});
 
@@ -53,10 +53,10 @@ class _editImageWidgetState extends State<editImageWidget> {
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              widget.images[itemIndex],
+            child: Image.network(
+              'http://nocng.id.vn:9000/commons/${widget.images[itemIndex]}',
               fit: BoxFit.cover,
-              width: 1000,
+              width: double.infinity,
             ),
           ),
           Positioned(

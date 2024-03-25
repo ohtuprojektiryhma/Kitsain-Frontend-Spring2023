@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
+import 'package:kitsain_frontend_spring2023/services/post_service.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_image_widget.dart';
 import 'dart:math';
-
 
 class CreateEditPostView extends StatefulWidget {
   final Post? post;
@@ -19,7 +19,7 @@ class CreateEditPostView extends StatefulWidget {
 }
 
 class _CreateEditPostViewState extends State<CreateEditPostView> {
-  late List<File> _images;
+  late List<String> _images;
   late String _title;
   late String _description;
   late String _price;
@@ -29,6 +29,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
   final TextEditingController _dateController = TextEditingController();
   final FocusNode _descriptionFocusNode = FocusNode();
   final FocusNode _titleFocusNode = FocusNode();
+  final PostService _postService = PostService();
 
   @override
   void initState() {
@@ -57,7 +58,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
           await ImagePicker().pickImage(source: ImageSource.camera);
       if (pickedImage == null) return;
 
-      _images.add(File(pickedImage.path));
+      _images.add(await _postService.uploadFile(File(pickedImage.path)));
       setState(() {});
     } on PlatformException catch (e) {
       debugPrint('Failed to pick Image: $e');
@@ -74,7 +75,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
           source: ImageSource.gallery);
 
       if (pickedImage != null) {
-        _images.add(File(pickedImage.path));
+        _images.add(await _postService.uploadFile(File(pickedImage.path)));
         debugPrint('Added image to _images list: $_images');
         setState(() {});
       }
@@ -100,7 +101,6 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
     }
   }
 
-
   Post _updateOrCreatePost() {
     // Extract values from the form fields
     String title = _title;
@@ -110,11 +110,11 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
 
     // Create or update the post
     return Post(
-      _images,
-      title,
-      description,
-      price,
-      expiringDate,
+      images: _images,
+      title: title,
+      description: description,
+      price: price,
+      expiringDate: expiringDate,
     );
   }
 
