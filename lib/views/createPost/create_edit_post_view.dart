@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
+import 'package:kitsain_frontend_spring2023/services/post_service.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_image_widget.dart';
 import 'dart:math';
-
 
 class CreateEditPostView extends StatefulWidget {
   final Post? post;
@@ -19,7 +19,7 @@ class CreateEditPostView extends StatefulWidget {
 }
 
 class _CreateEditPostViewState extends State<CreateEditPostView> {
-  late List<File> _images;
+  late List<String> _images;
   late String _title;
   late String _description;
   late String _price;
@@ -27,8 +27,10 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
 
   final DateFormat _dateFormat = DateFormat('dd.MM.yyyy');
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
   final FocusNode _descriptionFocusNode = FocusNode();
+  final FocusNode _titleFocusNode = FocusNode();
+  final PostService _postService = PostService();
+
   @override
   void initState() {
     super.initState();
@@ -56,7 +58,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
           await ImagePicker().pickImage(source: ImageSource.camera);
       if (pickedImage == null) return;
 
-      _images.add(File(pickedImage.path));
+      _images.add(await _postService.uploadFile(File(pickedImage.path)));
       setState(() {});
     } on PlatformException catch (e) {
       debugPrint('Failed to pick Image: $e');
@@ -73,7 +75,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
           source: ImageSource.gallery);
 
       if (pickedImage != null) {
-        _images.add(File(pickedImage.path));
+        _images.add(await _postService.uploadFile(File(pickedImage.path)));
         debugPrint('Added image to _images list: $_images');
         setState(() {});
       }
@@ -100,12 +102,19 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
   }
 
   Post _updateOrCreatePost() {
+    // Extract values from the form fields
+    String title = _title;
+    String description = _description;
+    String price = _price;
+    DateTime expiringDate = _expiringDate;
+
+    // Create or update the post
     return Post(
-      _images,
-      _title,
-      _description,
-      _price,
-      _expiringDate,
+      images: _images,
+      title: title,
+      description: description,
+      price: price,
+      expiringDate: expiringDate,
     );
   }
 
@@ -161,43 +170,28 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                 ),
               ),
               TextFormField(
+                focusNode: _titleFocusNode,
                 decoration: InputDecoration(
                   labelText: 'Title',
                 ),
-                controller: TextEditingController(text: _title)..selection
-                = TextSelection.fromPosition(TextPosition(offset: _title.length)),
+                initialValue: _title,
                 onChanged: (value) {
                   setState(() {
                     _title = value;
                   });
                 },
               ),
-              GestureDetector(
-                onTap: () {
-                  // Request focus on the description text field
-                  FocusScope.of(context).requestFocus(_descriptionFocusNode);
-                },
-                child: TextFormField(
-                  focusNode: _descriptionFocusNode,
-                  decoration: InputDecoration(
-                    labelText: 'Description',
-                  ),
-                  controller: TextEditingController(text: _description)..selection
-                  = TextSelection.fromPosition(TextPosition(offset: _description.length)),
-                  onChanged: (value) {
-                    final selection = TextEditingController().selection;
-                    final start = selection.baseOffset;
-                    final end = selection.extentOffset;
-                    final cursorIndex = max(start, end);
-                    setState(() {
-                      _description = value;
-                      _descriptionController.value = TextEditingValue(
-                        text: value,
-                        selection: TextSelection.collapsed(offset: cursorIndex),
-                      );
-                    });
-                  },
+              TextFormField(
+                focusNode: _descriptionFocusNode,
+                decoration: InputDecoration(
+                  labelText: 'Description',
                 ),
+                initialValue: _description,
+                onChanged: (value) {
+                  setState(() {
+                    _description = value;
+                  });
+                },
               ),
               TextFormField(
                 keyboardType: TextInputType.number,
@@ -211,8 +205,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                 decoration: const InputDecoration(
                   labelText: 'Price',
                 ),
-                controller: TextEditingController(text: _price)..selection
-                = TextSelection.fromPosition(TextPosition(offset: _price.length)),
+                initialValue: _price,
                 onChanged: (value) {
                   setState(() {
                     _price = value;

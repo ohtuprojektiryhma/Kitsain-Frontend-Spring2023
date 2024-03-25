@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class feedImageWidget extends StatefulWidget {
-  final List<File> images;
+  final List<String> images;
 
   const feedImageWidget({super.key, required this.images});
 
@@ -52,8 +52,8 @@ class _feedImageWidgetState extends State<feedImageWidget> {
       child: Container(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.file(
-            widget.images[itemIndex],
+          child: Image.network(
+            'http://nocng.id.vn:9000/commons/${widget.images[itemIndex]}',
             fit: BoxFit.cover,
           ),
         ),

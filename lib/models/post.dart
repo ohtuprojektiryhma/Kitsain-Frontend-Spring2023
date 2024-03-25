@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
+import 'package:kitsain_frontend_spring2023/services/post_service.dart';
 
 /// A class for an object that handles information about a post
 /// on the social media feed tab.
@@ -18,7 +20,7 @@ class Post extends ChangeNotifier {
   *  - figure out the proper location for post.dart file
   * */
 
-  List<File> images = [];
+  List<String> images = [];
   String title = "TITLE_HERE";
   String description = "EMPTY_DESC";
   String price = "0";
@@ -27,12 +29,12 @@ class Post extends ChangeNotifier {
   List<Comment> comments = [];
   //Item item;
 
-  Post(
-    this.images,
-    this.title,
-    this.description,
-    this.price,
-    this.expiringDate, {
+  Post({
+    required this.images,
+    required this.title,
+    required this.description,
+    required this.price,
+    required this.expiringDate,
     this.useful = const [],
     this.comments = const [],
   });

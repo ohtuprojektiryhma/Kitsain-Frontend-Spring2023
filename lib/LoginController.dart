@@ -1,21 +1,34 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/tasks/v1.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:kitsain_frontend_spring2023/services/auth_service.dart';
 
 class LoginController extends GetxController {
   // GoogleSignInAccount? _user;
   // GoogleSignInAccount get user => _user!;
   var googleUser = Rx<GoogleSignInAccount?>(null);
   var googleSignInUser = Rx<GoogleSignIn?>(null);
-
   var taskApiAuthenticated = Rx<TasksApi?>(null);
 
   Future googleLogin() async {
-    final googleSignIn = GoogleSignIn(scopes: [TasksApi.tasksScope]);
+    final AuthService authService = Get.put(AuthService());
+
+    final googleSignIn = GoogleSignIn(
+        scopes: [TasksApi.tasksScope],
+        clientId:
+            "709026956129-nt0ged8nsm2hq70ha2n4sne6j2rcplsr.apps.googleusercontent.com");
     googleUser.value = await googleSignIn.signIn();
 
     googleSignInUser.value = googleSignIn;
+
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.value!.authentication;
+    final String? googleIdToken = googleAuth.idToken;
+
+    authService.verifyToken(googleIdToken!);
 
     var httpClient = (await googleSignIn.authenticatedClient())!;
 

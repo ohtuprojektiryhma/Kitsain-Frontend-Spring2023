@@ -9,6 +9,8 @@ import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
+import 'package:kitsain_frontend_spring2023/services/auth_service.dart';
+import 'package:kitsain_frontend_spring2023/services/post_service.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_view.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_section_view.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
@@ -17,6 +19,7 @@ import 'package:kitsain_frontend_spring2023/views/createPost/create_edit_post_vi
 
 import 'feed_image_widget.dart';
 
+/// The feed view widget that displays a list of posts.
 class FeedView extends StatefulWidget {
   const FeedView({Key? key});
 
@@ -27,10 +30,46 @@ class FeedView extends StatefulWidget {
 class _FeedViewState extends State<FeedView>
     with AutomaticKeepAliveClientMixin {
   var postProvider = PostProvider();
+  final PostService postService = PostService();
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadPosts();
+  }
 
   @override
   bool get wantKeepAlive => true;
 
+  /// Loads the posts from the server.
+  Future<void> loadPosts() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      List<Post> newPosts = await postService.getPosts();
+      setState(() {
+        postProvider.posts
+            .addAll(newPosts); // Populate postProvider.posts with newPosts
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error loading posts: $e');
+    }
+  }
+
+  /// Refreshes the posts by clearing the existing posts and loading new ones.
+  Future<void> refreshPosts() async {
+    postProvider.posts.clear();
+    await loadPosts();
+  }
+
+  /// Displays the help information in a modal bottom sheet.
   void _help() {
     showModalBottomSheet(
       context: context,
@@ -44,12 +83,14 @@ class _FeedViewState extends State<FeedView>
     );
   }
 
+  /// Removes a post from the list.
   void removePost(Post post) {
     setState(() {
       postProvider.deletePost(post);
     });
   }
 
+  /// Edits a post in the list.
   void editPost(Post post) {
     setState(() {
       postProvider.updatePost(post);
@@ -86,8 +127,9 @@ class _FeedViewState extends State<FeedView>
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreatePostView()),
-          ).then((newPost) {
+          ).then((newPost) async {
             if (newPost != null) {
+              postService.createPost(newPost);
               setState(() {
                 postProvider.addPost(newPost);
               });
@@ -100,6 +142,7 @@ class _FeedViewState extends State<FeedView>
   }
 }
 
+/// A card widget that displays a post.
 class PostCard extends StatefulWidget {
   final Post post;
   final Function(Post) onRemovePost;
@@ -119,7 +162,9 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   // Variable to hold the current user
   final loginController = Get.put(LoginController());
+  final authService = Get.put(AuthService());
 
+  /// Edits a post.
   void _editPost(Post post) {
     Navigator.push(
       context,
@@ -133,6 +178,7 @@ class _PostCardState extends State<PostCard> {
     });
   }
 
+  /// Shows a confirmation dialog before removing a post.
   void _removeConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -203,8 +249,12 @@ class _PostCardState extends State<PostCard> {
                 ),
               ],
             ),
+
+            // Check if there are images to display
             // Add image holder here
-            feedImageWidget(images: widget.post.images),
+            if (widget.post.images.isNotEmpty)
+              feedImageWidget(images: widget.post.images),
+
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Row(

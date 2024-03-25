@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
+import 'package:kitsain_frontend_spring2023/services/post_service.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,8 +26,9 @@ class CreatePostView extends StatefulWidget {
 ///
 /// This state manages the title, image, price, and selected date for the post.
 class CreatePostViewState extends State<CreatePostView> {
+  final PostService _postService = PostService();
   // Content variables for the content of the post
-  final List<File> _images = [];
+  final List<String> _images = [];
   String _title = '';
   String _description = '';
   String _price = '';
@@ -43,7 +45,7 @@ class CreatePostViewState extends State<CreatePostView> {
           await ImagePicker().pickImage(source: ImageSource.camera);
       if (pickedImage == null) return;
 
-      _images.add(File(pickedImage.path));
+      _images.add(await _postService.uploadFile(File(pickedImage.path)));
       setState(() {});
     } on PlatformException catch (e) {
       debugPrint('Failed to pick Image: $e');
@@ -60,8 +62,7 @@ class CreatePostViewState extends State<CreatePostView> {
           source: ImageSource.gallery);
 
       if (pickedImage != null) {
-        _images.add(File(pickedImage.path));
-        debugPrint('Added image to _images list: $_images');
+        _images.add(await _postService.uploadFile(File(pickedImage.path)));
         setState(() {});
       }
     } on PlatformException catch (e) {
@@ -89,11 +90,11 @@ class CreatePostViewState extends State<CreatePostView> {
   Post _createPost() {
     // Create a Post object using the entered data
     return Post(
-      _images,
-      _title,
-      _description,
-      _price,
-      _expiringDate,
+      images: _images,
+      title: _title,
+      description: _description,
+      price: _price,
+      expiringDate: _expiringDate,
     );
 
     // TODO Add logic to save the post or perform any other actions
