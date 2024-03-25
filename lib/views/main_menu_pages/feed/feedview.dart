@@ -156,6 +156,7 @@ class _FeedViewState extends State<FeedView>
             if (newPost != null) {
               setState(() {
                 postProvider.addPost(newPost);
+                refreshPosts();
               });
             }
           });
@@ -187,6 +188,23 @@ class _PostCardState extends State<PostCard> {
   // Variable to hold the current user
   final loginController = Get.put(LoginController());
   final authService = Get.put(AuthService());
+  final postService = PostService();
+  late String userId;
+  bool isOwner = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserId();
+  }
+
+  Future<void> fetchUserId() async {
+    final fetchedUserId = await postService.getUserId();
+    setState(() {
+      userId = fetchedUserId;
+      isOwner = widget.post.userId == userId;
+    });
+  }
 
   /// Edits a post.
   void _editPost(Post post) {
@@ -250,27 +268,32 @@ class _PostCardState extends State<PostCard> {
                     fontSize: 16,
                   ),
                 ),
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_horiz),
-                  onSelected: (value) {
-                    if (value == 'remove') {
-                      _removeConfirmation(context);
-                    } else if (value == 'edit') {
-                      _editPost(widget.post);
-                    }
-                  },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
-                      value: 'edit',
-                      child: Text('Edit'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'remove',
-                      child: Text('Remove'),
-                    ),
-                  ],
-                ),
+                if (isOwner)
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_horiz),
+                    onSelected: (value) {
+                      if (value == 'remove') {
+                        _removeConfirmation(context);
+                      } else if (value == 'edit') {
+                        _editPost(widget.post);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'edit',
+                        child: Text('Edit'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'remove',
+                        child: Text('Remove'),
+                      ),
+                    ],
+                  ),
+                if (!isOwner)
+                  const SizedBox(
+                    height: 40,
+                  ),
               ],
             ),
 
