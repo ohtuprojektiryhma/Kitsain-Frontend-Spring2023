@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/LoginController.dart';
+import 'package:kitsain_frontend_spring2023/main.dart';
 import 'package:kitsain_frontend_spring2023/views/homepage2.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
@@ -61,7 +62,7 @@ class _TopBarState extends State<TopBar> {
             ),
             TextButton(
               onPressed: () {
-                _signOut();
+                _signOut(context);
               },
               child: Text(
                 'LOG OUT',
@@ -78,10 +79,15 @@ class _TopBarState extends State<TopBar> {
     // todo
   }
 
-  _signOut() async {
+  _signOut(BuildContext context) async {
     await _loginController.googleSignInUser.value?.signOut();
-    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => HomePage2()), (route) => false);
+
+    // Navigate back to the root of the app to trigger a reload
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const MyApp()),
+      (route) => false,
+    );
   }
 
   @override
