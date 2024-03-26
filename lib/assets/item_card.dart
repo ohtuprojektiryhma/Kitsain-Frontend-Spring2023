@@ -414,7 +414,7 @@ class _ItemCardState extends State<ItemCard> {
                           if (widget.item.openedDate != null) ...[
                             Text(
                               DateFormat('d.M.yyyy').format(
-                                widget.item.openedDate!.toLocal(),
+                                widget.item.openedDate!,
                               ),
                               style: AppTypography.smallTitle,
                             )
@@ -463,6 +463,7 @@ class _ItemCardState extends State<ItemCard> {
                             IconButton(
                               onPressed: () {
                                 PantryProxy().toggleItemFavorite(widget.item);
+                                _pantryController.editItemTasks(widget.item);
                               },
                               icon: const Icon(Icons.favorite,
                                   color: Colors.black),
@@ -471,6 +472,7 @@ class _ItemCardState extends State<ItemCard> {
                             IconButton(
                               onPressed: () {
                                 PantryProxy().toggleItemFavorite(widget.item);
+                                _pantryController.editItemTasks(widget.item);
                               },
                               icon: const Icon(Icons.favorite_border,
                                   color: Colors.grey),

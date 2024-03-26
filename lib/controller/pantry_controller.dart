@@ -109,7 +109,6 @@ class PantryController {
         taskListIndex, item.googleTaskId as String, 0, expiryDateAsString);
   }
 
-
   String _ignoreSubMicro(String s) {
     // Makes the rfc timestamp able to be parsed through DateTime parser
     if (s.length > 27) return s.substring(0, 26) + s[s.length - 1];

@@ -154,7 +154,7 @@ class _EditItemFormState extends State<EditItemForm> {
     }
 
     if (widget.item.openedDate != null) {
-      _openDateDT = widget.item.openedDate!.toLocal();
+      _openDateDT = widget.item.openedDate!;
       String openedDate =
           "${_openDateDT.day}.${_openDateDT.month}.${_openDateDT.year}";
       _openDateString.text = openedDate;
@@ -428,7 +428,7 @@ class _EditItemFormState extends State<EditItemForm> {
                         String openedDate =
                             "${pickedDate.day}.${pickedDate.month}.${pickedDate.year}";
                         _openDateString.text = openedDate;
-                        _openDateDT = pickedDate.toLocal();
+                        _openDateDT = pickedDate;
                       } else {
                         _openDateString.text = "";
                       }
@@ -525,16 +525,18 @@ class _EditItemFormState extends State<EditItemForm> {
                           ),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
+                              var addedDate = DateTime.now();
                               var item = Item(widget.item.id, _itemName.text,
                                   widget.item.location, _catInt,
                                   favorite: _favorite,
                                   openedDate: _openDateDT,
-                                  addedDate: DateTime.now(),
+                                  addedDate: addedDate,
                                   expiryDate: _expDateDT,
                                   hasExpiryDate: _hasExpiryDate,
                                   details: _details.text,
                                   googleTaskId: _googleTaskId);
                               PantryProxy().upsertItem(item);
+
                               _pantryController.editItemTasks(item);
                               setState(() {});
                               Navigator.pop(context);
