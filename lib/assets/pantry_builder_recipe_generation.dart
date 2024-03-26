@@ -70,7 +70,7 @@ class PantryBuilderLogic extends State<PantryBuilder>{
         continue;
       }
 
-      if (item.expiryDate!.difference(currentDate).inDays <=
+      if (item.expiryDate!.difference(currentDate).inDays <
           expirationTimeInDays) {
         expiringItems.add(item);
       }
