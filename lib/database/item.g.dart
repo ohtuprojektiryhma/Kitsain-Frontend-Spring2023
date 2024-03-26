@@ -32,6 +32,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
     String? packaging,
     String? origins,
     String? details,
+    String? googleTaskId,
     Iterable<String?> categories = const [],
     Iterable<String?> labels = const [],
     Iterable<String?> ingredients = const [],
@@ -63,6 +64,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'packaging', packaging);
     RealmObjectBase.set(this, 'origins', origins);
     RealmObjectBase.set(this, 'details', details);
+    RealmObjectBase.set(this, 'googleTaskId', googleTaskId);
     RealmObjectBase.set<RealmList<String?>>(
         this, 'categories', RealmList<String?>(categories));
     RealmObjectBase.set<RealmList<String?>>(
@@ -228,6 +230,13 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
   set details(String? value) => RealmObjectBase.set(this, 'details', value);
 
   @override
+  String? get googleTaskId =>
+      RealmObjectBase.get<String>(this, 'googleTaskId') as String?;
+  @override
+  set googleTaskId(String? value) =>
+      RealmObjectBase.set(this, 'googleTaskId', value);
+
+  @override
   Stream<RealmObjectChanges<Item>> get changes =>
       RealmObjectBase.getChanges<Item>(this);
 
@@ -269,6 +278,7 @@ class Item extends _Item with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('packaging', RealmPropertyType.string, optional: true),
       SchemaProperty('origins', RealmPropertyType.string, optional: true),
       SchemaProperty('details', RealmPropertyType.string, optional: true),
+      SchemaProperty('googleTaskId', RealmPropertyType.string, optional: true),
     ]);
   }
 }
@@ -277,24 +287,17 @@ class Recipe extends _Recipe with RealmEntity, RealmObjectBase, RealmObject {
   Recipe(
     String id,
     String name, {
-    String? details,
-    String? recipeType,
-    bool? pantryonly,
-    Iterable<String?> selectedItems = const [],
-    Iterable<String?> supplies = const [],
-    Iterable<String?> expSoon = const [],
+    String? googleTaskId,
+    Iterable<String> instructions = const [],
+    Map<String, String> ingredients = const {},
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
-    RealmObjectBase.set(this, 'details', details);
-    RealmObjectBase.set(this, 'recipeType', recipeType);
-    RealmObjectBase.set(this, 'pantryonly', pantryonly);
-    RealmObjectBase.set<RealmList<String?>>(
-        this, 'selectedItems', RealmList<String?>(selectedItems));
-    RealmObjectBase.set<RealmList<String?>>(
-        this, 'supplies', RealmList<String?>(supplies));
-    RealmObjectBase.set<RealmList<String?>>(
-        this, 'expSoon', RealmList<String?>(expSoon));
+    RealmObjectBase.set(this, 'googleTaskId', googleTaskId);
+    RealmObjectBase.set<RealmList<String>>(
+        this, 'instructions', RealmList<String>(instructions));
+    RealmObjectBase.set<RealmMap<String>>(
+        this, 'ingredients', RealmMap<String>(ingredients));
   }
 
   Recipe._();
@@ -310,44 +313,25 @@ class Recipe extends _Recipe with RealmEntity, RealmObjectBase, RealmObject {
   set name(String value) => RealmObjectBase.set(this, 'name', value);
 
   @override
-  String? get details =>
-      RealmObjectBase.get<String>(this, 'details') as String?;
+  RealmMap<String> get ingredients =>
+      RealmObjectBase.get<String>(this, 'ingredients') as RealmMap<String>;
   @override
-  set details(String? value) => RealmObjectBase.set(this, 'details', value);
-
-  @override
-  RealmList<String?> get selectedItems =>
-      RealmObjectBase.get<String?>(this, 'selectedItems') as RealmList<String?>;
-  @override
-  set selectedItems(covariant RealmList<String?> value) =>
+  set ingredients(covariant RealmMap<String> value) =>
       throw RealmUnsupportedSetError();
 
   @override
-  String? get recipeType =>
-      RealmObjectBase.get<String>(this, 'recipeType') as String?;
+  RealmList<String> get instructions =>
+      RealmObjectBase.get<String>(this, 'instructions') as RealmList<String>;
   @override
-  set recipeType(String? value) =>
-      RealmObjectBase.set(this, 'recipeType', value);
-
-  @override
-  RealmList<String?> get supplies =>
-      RealmObjectBase.get<String?>(this, 'supplies') as RealmList<String?>;
-  @override
-  set supplies(covariant RealmList<String?> value) =>
+  set instructions(covariant RealmList<String> value) =>
       throw RealmUnsupportedSetError();
 
   @override
-  RealmList<String?> get expSoon =>
-      RealmObjectBase.get<String?>(this, 'expSoon') as RealmList<String?>;
+  String? get googleTaskId =>
+      RealmObjectBase.get<String>(this, 'googleTaskId') as String?;
   @override
-  set expSoon(covariant RealmList<String?> value) =>
-      throw RealmUnsupportedSetError();
-
-  @override
-  bool? get pantryonly =>
-      RealmObjectBase.get<bool>(this, 'pantryonly') as bool?;
-  @override
-  set pantryonly(bool? value) => RealmObjectBase.set(this, 'pantryonly', value);
+  set googleTaskId(String? value) =>
+      RealmObjectBase.set(this, 'googleTaskId', value);
 
   @override
   Stream<RealmObjectChanges<Recipe>> get changes =>
@@ -363,15 +347,11 @@ class Recipe extends _Recipe with RealmEntity, RealmObjectBase, RealmObject {
     return const SchemaObject(ObjectType.realmObject, Recipe, 'Recipe', [
       SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
-      SchemaProperty('details', RealmPropertyType.string, optional: true),
-      SchemaProperty('selectedItems', RealmPropertyType.string,
-          optional: true, collectionType: RealmCollectionType.list),
-      SchemaProperty('recipeType', RealmPropertyType.string, optional: true),
-      SchemaProperty('supplies', RealmPropertyType.string,
-          optional: true, collectionType: RealmCollectionType.list),
-      SchemaProperty('expSoon', RealmPropertyType.string,
-          optional: true, collectionType: RealmCollectionType.list),
-      SchemaProperty('pantryonly', RealmPropertyType.bool, optional: true),
+      SchemaProperty('ingredients', RealmPropertyType.string,
+          collectionType: RealmCollectionType.map),
+      SchemaProperty('instructions', RealmPropertyType.string,
+          collectionType: RealmCollectionType.list),
+      SchemaProperty('googleTaskId', RealmPropertyType.string, optional: true),
     ]);
   }
 }

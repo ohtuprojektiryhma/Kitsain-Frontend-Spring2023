@@ -75,7 +75,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
           openedDate: null,
           expiryDate: null,
           hasExpiryDate: false,
-          addedDate: DateTime.now().toUtc(),
+          addedDate: DateTime.now().toLocal(),
           details: itemDescription,
         );
 

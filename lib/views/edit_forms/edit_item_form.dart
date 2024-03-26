@@ -4,6 +4,7 @@ import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
 import 'package:kitsain_frontend_spring2023/database/openfoodfacts.dart';
+import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
 
 const List<String> categories = <String>[
   'ITEM CATEGORY',
@@ -52,6 +53,7 @@ class _EditItemFormState extends State<EditItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _EANCodeField = TextEditingController();
   var _itemName = TextEditingController();
+  final _pantryController = PantryController();
 
   // These dates control the date string user sees in the form
   var _expDateString = TextEditingController();
@@ -60,6 +62,7 @@ class _EditItemFormState extends State<EditItemForm> {
   // These values are actually saved to the db as DateTime
   var _openDateDT;
   var _expDateDT;
+  var _googleTaskId;
 
   bool _favorite = false;
   String _category = 'ITEM CATEGORY';
@@ -79,7 +82,8 @@ class _EditItemFormState extends State<EditItemForm> {
         _details.text == widget.item.details &&
         _expDateDT == widget.item.expiryDate &&
         _openDateDT == widget.item.openedDate &&
-        _catInt == widget.item.mainCat;
+        _catInt == widget.item.mainCat &&
+        _googleTaskId == widget.item.googleTaskId;
   }
 
   void _discardChangesDialog(bool discardForm) {
@@ -142,6 +146,7 @@ class _EditItemFormState extends State<EditItemForm> {
     _category = catEnglish[widget.item.mainCat];
     _favorite = widget.item.favorite;
     _catInt = widget.item.mainCat;
+    _googleTaskId = widget.item.googleTaskId;
 
     // Optional fields
     if (widget.item.barcode != null) {
@@ -423,7 +428,7 @@ class _EditItemFormState extends State<EditItemForm> {
                         String openedDate =
                             "${pickedDate.day}.${pickedDate.month}.${pickedDate.year}";
                         _openDateString.text = openedDate;
-                        _openDateDT = pickedDate.toUtc();
+                        _openDateDT = pickedDate.toLocal();
                       } else {
                         _openDateString.text = "";
                       }
@@ -462,7 +467,7 @@ class _EditItemFormState extends State<EditItemForm> {
                         String expirationDate =
                             "${pickedDate.day}.${pickedDate.month}.${pickedDate.year}";
                         _expDateString.text = expirationDate;
-                        _expDateDT = pickedDate.toUtc();
+                        _expDateDT = pickedDate.toLocal();
                         _hasExpiryDate = true;
                       } else {
                         _expDateString.text = "";
@@ -524,10 +529,13 @@ class _EditItemFormState extends State<EditItemForm> {
                                   widget.item.location, _catInt,
                                   favorite: _favorite,
                                   openedDate: _openDateDT,
+                                  addedDate: DateTime.now(),
                                   expiryDate: _expDateDT,
                                   hasExpiryDate: _hasExpiryDate,
-                                  details: _details.text);
+                                  details: _details.text,
+                                  googleTaskId: _googleTaskId);
                               PantryProxy().upsertItem(item);
+                              _pantryController.editItemTasks(item);
                               setState(() {});
                               Navigator.pop(context);
                             }

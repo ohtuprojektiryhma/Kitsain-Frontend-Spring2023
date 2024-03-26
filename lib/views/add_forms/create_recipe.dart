@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:googleapis/dfareporting/v4.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
-import 'package:kitsain_frontend_spring2023/categories.dart';
-import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
-import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:realm/realm.dart';
 import 'dart:async';
 import 'package:kitsain_frontend_spring2023/assets/pantry_builder_recipe_generation.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class CreateNewRecipeForm extends StatefulWidget {
   const CreateNewRecipeForm({super.key});
@@ -52,6 +48,13 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   var _pantryItems;
 
 
+
+  bool _isLoading = true; // Flag to track loading state
+  List<String> optionalItems = [];
+  List<String> mustHaveItems = [];
+  String language = "English";
+  final _recipeController = RecipeController();
+
   @override
   void initState() {
     super.initState();
@@ -63,11 +66,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
                 });
               }
 
-  onOptionalItemsChanged (optionalItems) {
-          setState(() {
-            this.optionalItems = optionalItems;
-          });
-        }
   // Load pantry items asynchronously
   Future<void> _loadPantryItems() async {
     try {
@@ -142,6 +140,9 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     );
   }
 // Choose what items to query from db based on user selection
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -413,7 +414,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           pantryOnly,
           language);
 
-      RecipeProxy().upsertRecipe(generatedRecipe);
+      _recipeController.createRecipeTask(generatedRecipe);
       // clear
       _recipeTypeController.clear();
       _suppliesController.clear();

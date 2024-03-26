@@ -1,23 +1,11 @@
 // ignore_for_file: prefer_const_constructors, sort_child_properties_last
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'dart:convert';
-import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
-import 'package:kitsain_frontend_spring2023/views/edit_forms/edit_item_form.dart';
-import 'statuscolor.dart';
-import 'package:kitsain_frontend_spring2023/categories.dart';
-import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
-enum _MenuValues {
-  edit,
-  delete,
-}
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
   @override
@@ -49,22 +37,17 @@ const Color nullTextColor = Color(0xff979797);
 
 class RecipeCard extends StatefulWidget {
   RecipeCard({super.key, required this.recipe});
-
+  
   final Recipe recipe;
-  final TextEditingController _changesController = TextEditingController();
   @override
   State<RecipeCard> createState() => _RecipeCardState();
 }
 
-class _RecipeCardState extends State<RecipeCard> {
-  bool _isLoading = true; // Flag to track loading state
-  void deleteItem(Recipe recipe) {
-    realm.write(() {
-      realm.delete(recipe);
-    });
-  }
 
+
+class _RecipeCardState extends State<RecipeCard> {
   bool showAbbreviation = true;
+  final _recipeController = RecipeController();
 
   @override
   Widget build(BuildContext context) {
@@ -127,8 +110,8 @@ class _RecipeCardState extends State<RecipeCard> {
         onTap: () {
           showDialog(
             context: context,
-            builder: (BuildContext context) => _buildDetailsScreen(
-                context, widget.recipe.details!, widget.recipe.name),
+            builder: (BuildContext context) =>
+                _buildDetailsScreen(context, widget.recipe),
           );
         },
         child: Card(
@@ -229,12 +212,7 @@ class _RecipeCardState extends State<RecipeCard> {
   ///
   /// Includes [details] presenting the details of the recipe. [recipeName] describes the name of the recipe whose details
   /// are shown. Returns the details screen as alert dialog.
-  Widget _buildDetailsScreen(
-      BuildContext context, String details, String recipeName) {
-    dynamic parsedJson = jsonDecode(details);
-    Map<String, dynamic> ingredients = parsedJson[0];
-    List<dynamic> steps = parsedJson[1];
-
+  Widget _buildDetailsScreen(BuildContext context, Recipe recipe) {
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,7 +220,7 @@ class _RecipeCardState extends State<RecipeCard> {
         children: [
           Expanded(
             child: Text(
-              recipeName,
+              recipe.name,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -255,16 +233,17 @@ class _RecipeCardState extends State<RecipeCard> {
         ],
       ),
       content: SingleChildScrollView(
-        child: Column(
+        child:Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Ingredients:', style: TextStyle(fontWeight: FontWeight.bold)),
-            for (var entry in ingredients.entries)
+            for (var entry in recipe.ingredients.entries)
               Text('${entry.key}: ${entry.value}'),
             SizedBox(height: 10),
             Text('Steps:', style: TextStyle(fontWeight: FontWeight.bold)),
-            for (int i = 0; i < steps.length; i++) Text(steps[i]),
+            for (int i = 0; i < recipe.instructions.length; i++)
+              Text(recipe.instructions[i].toString()),
           ],
         ),
       ),
@@ -272,8 +251,8 @@ class _RecipeCardState extends State<RecipeCard> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildChangeButton("Change", Colors.grey[200], recipeName),
-            _buildDeleteButton("Delete", Colors.grey[200], recipeName),
+            _buildChangeButton("Change", Colors.grey[200], recipe.name),
+            _buildDeleteButton("Delete", Colors.grey[200], recipe.name),
           ],
         ),
       ],
@@ -327,18 +306,11 @@ class _RecipeCardState extends State<RecipeCard> {
               );
 
               // the recipe details and changes are sent as parameters
-              var changedRecipe = await changeRecipe(
-                  widget.recipe.details,
-                  changes,
-                  widget.recipe.selectedItems,
-                  widget.recipe.recipeType,
-                  widget.recipe.expSoon,
-                  widget.recipe.supplies,
-                  widget.recipe.pantryonly);
+              var changedRecipe = await changeRecipe(widget.recipe, changes);
 
               navigator.pop();
 
-              RecipeProxy().upsertRecipe(changedRecipe);
+              _recipeController.createRecipeTask(changedRecipe);
               changesController.clear();
               navigator.pop();
               navigator.pop();
@@ -375,7 +347,7 @@ class _RecipeCardState extends State<RecipeCard> {
               backgroundColor: Colors.red,
             ),
             onPressed: () {
-              deleteItem(widget.recipe);
+              _recipeController.deleteRecipe(widget.recipe);
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },

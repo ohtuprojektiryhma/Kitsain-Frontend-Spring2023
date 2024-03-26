@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
@@ -10,6 +11,10 @@ import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
 import 'package:kitsain_frontend_spring2023/assets/itembuilder.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/categories.dart';
+import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
+import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
+import 'package:intl/intl.dart';
+import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
 
 // This file only sets the general UI: where are the show and sort buttons
 // and where the main content goes. Item lists are generated in
@@ -25,7 +30,16 @@ class PantryView extends StatefulWidget {
 }
 
 class _PantryViewState extends State<PantryView> {
+  @override
+  void initState() {
+    super.initState();
+    PantryController().getPantryTasks();
+  }
+
   // Default values for what the user sees: all items in alphabetical order
+  final _taskListController = Get.put(TaskListController());
+  final _taskController = Get.put(TaskController());
+  final _pantryProxy = PantryProxy();
   String selectedView = "all";
   String selectedSort = "az";
 
@@ -48,6 +62,7 @@ class _PantryViewState extends State<PantryView> {
   // Choose what items to query from db based on user selection
   RealmResults<Item>? chosenStream(String selectedView) {
     if (selectedView == "all" || selectedView == "bycat") {
+      print("items: ${_pantryProxy.getPantryItems(selectedSort)}");
       return PantryProxy().getPantryItems(selectedSort);
     } else if (selectedView == "opened") {
       return PantryProxy().getOpenedItems(selectedSort);
@@ -260,7 +275,6 @@ class _PantryViewState extends State<PantryView> {
                     return const CircularProgressIndicator(); // while loading data
                   }
                   final results = data.results;
-
                   if (results.isEmpty) {
                     return const Center(
                       child: Text(

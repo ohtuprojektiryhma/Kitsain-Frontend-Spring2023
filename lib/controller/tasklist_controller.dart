@@ -10,7 +10,7 @@ class TaskListController extends GetxController {
     var tskList =
         await loginController.taskApiAuthenticated.value?.tasklists.list();
     taskLists.value = tskList;
-    print(taskLists.value?.items?.length);
+    print("Length: ${taskLists.value?.items?.length}");
   }
 
   createTaskLists(String name) async {

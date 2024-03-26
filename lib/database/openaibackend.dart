@@ -4,18 +4,18 @@ import 'package:http/http.dart' as http;
 import 'package:realm/realm.dart';
 
 /// Generates a recipe using the parameters
-/// [ingredients] (list of ingredients),
+/// [pantry] (list of ingredients),
 /// [recipeType] (the type of recipe (eg. vegan)),
-/// [expSoon] (list of must have items in the recipe)
-/// [supplies] (list of kitchen supplies available for use in the recipe),
+/// [requiredItems] (list of must have items in the recipe)
+/// [specialSupplies] (list of kitchen supplies available for use in the recipe),
 /// [pantryOnly] (boolean value whether the recipe only uses items from the pantry or adds new ingredients)
 /// [language] (in which language is the recipe generated in)
 /// Returns a Recipe object with the generated recipe from ChatGPT
 Future<Recipe> generateRecipe(
-    List<String> ingredients,
+    List<String> pantry,
     String recipeType,
-    List<String> expSoon,
-    List<String> supplies,
+    List<String> requiredItems,
+    List<String> specialSupplies,
     bool pantryOnly,
     String language) async {
   var url = Uri.https(
@@ -23,15 +23,14 @@ Future<Recipe> generateRecipe(
       '/generate');
   var headers = {"Content-Type": "application/json"};
   var requestBody = json.encode({
-    'ingredients': ingredients,
-    'recipe_type': recipeType,
-    'exp_soon': expSoon,
-    'supplies': supplies,
+    'required_items': requiredItems,
+    'pantry': pantry,
     'pantry_only': pantryOnly,
+    'recipe_type': recipeType,
+    'special_supplies': specialSupplies,
     'language': language
   });
-  print(
-      "$ingredients, $recipeType, $expSoon, $supplies, $pantryOnly, $language");
+  print('Request body: $requestBody');
 
   var response = await http.post(url, headers: headers, body: requestBody);
 
@@ -40,13 +39,24 @@ Future<Recipe> generateRecipe(
 
   var responseMap = json.decode(response.body);
 
-  return Recipe(ObjectId().toString(), responseMap["recipe_name"],
-      selectedItems: ingredients,
-      recipeType: recipeType,
-      expSoon: expSoon,
-      supplies: supplies,
-      details: json
-          .encode([responseMap["ingredients"], responseMap["instructions"]]));
+  // Amounts in the ingredients map may be strings or numbers, so converting them all to strings
+  Map<String, String> convertedIngredients = Map<String, String>.fromIterable(
+    responseMap["ingredients"].keys,
+    value: (key) => responseMap["ingredients"][key].toString(),
+  );
+
+  List<String> convertedInstructions = [];
+  for(var step in responseMap["instructions"]){
+    convertedInstructions.add(step);
+  }
+
+  
+  return Recipe(
+    ObjectId().toString(), 
+    responseMap["recipe_name"],
+    ingredients: convertedIngredients,
+    instructions: convertedInstructions,
+  );
 }
 
 /// Changes a recipe with the following values
@@ -56,38 +66,39 @@ Future<Recipe> generateRecipe(
 /// [supplies] (list of kitchen supplies available for use in the recipe),
 /// [pantryOnly] (boolean value whether the recipe only uses items from the pantry or adds new ingredients)
 /// Returns the new modified recipe in a Recipe object
-Future<Recipe> changeRecipe(
-    String? details,
-    String? change,
-    List<String?> ingredients,
-    String? recipeType,
-    List<String?> expSoon,
-    List<String?> supplies,
-    bool? pantryOnly) async {
+Future<Recipe> changeRecipe(Recipe recipe, String change) async {
   var url = Uri.https(
       'kitsain-backend-test-ohtuprojekti-staging.apps.ocp-test-0.k8s.it.helsinki.fi',
       '/change');
   var headers = {"Content-Type": "application/json"};
-  var requestBody = json.encode({
-    'change': change,
-    'ingredients': ingredients,
-    'recipe_type': recipeType,
-    'exp_soon': expSoon,
-    'supplies': supplies,
-    'details': details
-  });
+
+  var requestRecipe = {
+    'recipe_name': recipe.name,
+    'ingredients': recipe.ingredients,
+    'instructions': recipe.instructions
+  };
+  var requestBody = json.encode({'recipe': requestRecipe, 'change': change});
+  print('Request body: $requestBody');
+
   var response = await http.post(url, headers: headers, body: requestBody);
 
-  print("${change}");
-  print("details: ${details}");
   print('Response status: ${response.statusCode}');
   print('Response body: ${response.body}');
 
   var responseMap = json.decode(response.body);
 
-  /* The Recipe class only has these few fields so we have to hack the recipe data into those existing fields.
-   * Change this when Recipe class gets more complete. */
+  // Amounts in the ingredients map may be strings or numbers, so converting them all to strings
+  Map<String, String> convertedIngredients = Map<String, String>.fromIterable(
+    responseMap["ingredients"].keys,
+    value: (key) => responseMap["ingredients"][key].toString(),
+  );
+
+  List<String> convertedInstructions = [];
+  for(var step in responseMap["instructions"]){
+    convertedInstructions.add(step);
+  }
+
   return Recipe(ObjectId().toString(), responseMap["recipe_name"],
-      details: json
-          .encode([responseMap["ingredients"], responseMap["instructions"]]));
+      ingredients: convertedIngredients,
+      instructions: convertedInstructions);
 }
