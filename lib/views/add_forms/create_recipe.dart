@@ -53,6 +53,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   List<String> optionalItems = [];
   List<String> mustHaveItems = [];
   String language = "English";
+  String selected = "True";
   final _recipeController = RecipeController();
 
   @override
@@ -83,11 +84,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       });
     }
   }
-  bool _isLoading = true; // Flag to track loading state
-  List<String> optionalItems = [];
-  List<String> mustHaveItems = [];
-  String language = "English";
-  String selected = "True";
+  
 
   final TextEditingController _recipeTypeController = TextEditingController();
   final TextEditingController _suppliesController = TextEditingController();
