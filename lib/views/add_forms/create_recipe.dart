@@ -47,8 +47,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   var _itemName = TextEditingController();
   var _pantryItems;
 
-
-
   bool _isLoading = true; // Flag to track loading state
   List<String> optionalItems = [];
   List<String> mustHaveItems = [];
@@ -61,11 +59,12 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     super.initState();
     _loadPantryItems();
   }
+
   onMustHaveItemsChanged(mustHaveItems) {
-                setState(() {
-                  this.mustHaveItems = mustHaveItems;
-                });
-              }
+    setState(() {
+      this.mustHaveItems = mustHaveItems;
+    });
+  }
 
   // Load pantry items asynchronously
   Future<void> _loadPantryItems() async {
@@ -84,7 +83,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       });
     }
   }
-  
 
   final TextEditingController _recipeTypeController = TextEditingController();
   final TextEditingController _suppliesController = TextEditingController();
@@ -137,9 +135,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     );
   }
 // Choose what items to query from db based on user selection
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -274,8 +269,8 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
               onOptionalItemsChanged: (optionalItems) {
                 setState(() {
                   this.optionalItems = optionalItems;
-                });}
-                ),
+                });
+              }),
           SizedBox(height: MediaQuery.of(context).size.height * 0.05),
           _buildActionButtons(),
         ],

@@ -11,6 +11,9 @@ class PantryController {
   final _taskController = Get.put(TaskController());
   final _pantryProxy = PantryProxy();
 
+  /// Finds the Google Tasks index of My Pantry tasklist
+  ///
+  /// Returns the index of the My Pantry tasklist
   Future findPantryIndex() async {
     await _taskListController.getTaskLists();
     var pantryIndex = "not";
@@ -29,6 +32,10 @@ class PantryController {
     return pantryIndex;
   }
 
+  /// Checks if pantry item exists as a task in the My Pantry tasklist.
+  ///
+  /// [pantryItemGoogleTaskIndex] is the google task index of the Pantry Item
+  /// and [taskListIndex] is the google tasklist index of the My Pantry tasklist.
   Future checkIfPantryItemExists(
       String pantryItemGoogleTaskIndex, String taskListIndex) async {
     await _taskListController.getTaskLists();
@@ -43,17 +50,16 @@ class PantryController {
     }
   }
 
+  /// Changes format of item's expiry date so that it's recognized by Google Tasks.
+  ///
+  /// [expiryDate] is the expiry date of the pantry item. Returns correct format of expiry date.
   changeFormatOfExpiryDate(String expiryDate) {
     return expiryDate.replaceAll(' ', 'T');
   }
 
-  addADayToOpenedDate(Item item) {
-    print(DateTime(item.openedDate!.year, item.openedDate!.month,
-        item.openedDate!.day + 1));
-    return DateTime(item.openedDate!.year, item.openedDate!.month,
-        item.openedDate!.day + 1);
-  }
-
+  /// Checks if My Pantry tasklist exists.
+  ///
+  /// Returns the Google Tasks index of My Pantry tasklist. Returns String "not" if it doesn't exist.
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
     var pantryIndex = "not";
@@ -72,6 +78,9 @@ class PantryController {
     return pantryIndex;
   }
 
+  /// Creates a task of pantry item to be added and upserts it to Realm.
+  ///
+  /// [pantryItem] is the pantry item to be added.
   Future<void> createPantryItemTask(Item pantryItem) async {
     final valuesString = createStringOfPantryItemValues(pantryItem);
     final taskListIndex = await checkIfPantryListExists();
@@ -86,6 +95,9 @@ class PantryController {
     PantryProxy().upsertItem(pantryItem);
   }
 
+  /// Creates a string of all pantry item details.
+  ///
+  /// [pantryItem] is the pantry item that contains the details to be stringified.
   createStringOfPantryItemValues(Item pantryItem) {
     var valuesString = "";
     valuesString += "location: ${pantryItem.location}\n";
@@ -97,6 +109,9 @@ class PantryController {
     return valuesString;
   }
 
+  /// Edits the pantry item in Google Tasks with provided changes.
+  ///
+  /// [item] is the pantry item with its updated properties.
   Future<void> editItemTasks(Item item) async {
     print("opening date 3: ${item.openedDate}");
     final taskListIndex = await findPantryIndex();
@@ -108,7 +123,6 @@ class PantryController {
     var googleTaskId = _taskController.editTask(item.name, editedValuesString,
         taskListIndex, item.googleTaskId as String, 0, expiryDateAsString);
   }
-
 
   String _ignoreSubMicro(String s) {
     // Makes the rfc timestamp able to be parsed through DateTime parser
@@ -191,6 +205,9 @@ class PantryController {
     }
   }
 
+  /// Saves whatever is in Google Tasks to realm
+  ///
+  /// [realmItems] are the items that are in realm and [tasks] are the items that are in Google Tasks
   saveGoogleTasksToRealm(realmItems, tasks) {
     var notes = "";
     for (var i = 0; i < tasks.items.length; i++) {
@@ -210,6 +227,9 @@ class PantryController {
     }
   }
 
+  /// Deletes items from Realm that aren't in Google Tasks
+  ///
+  /// [realmItems] are the items that are in realm and [tasks] are the items that are in Google Tasks
   deleteMissingGoogleTasksFromRealm(
       RealmResults<Item> realmItems, tasks) async {
     for (var i = 0; i < realmItems.length; i++) {
@@ -219,6 +239,9 @@ class PantryController {
     }
   }
 
+  /// Does the syncing between Google Tasks and Realm
+  ///
+  /// [index] is the My Pantry tasklist index
   syncPantryTasksWithRealm(index) async {
     var realmItems = await PantryProxy().getPantryItems();
     var tasks = await _taskController.getTasksList(index);
@@ -226,6 +249,7 @@ class PantryController {
     deleteMissingGoogleTasksFromRealm(realmItems, tasks);
   }
 
+  /// Gets the tasks(=pantry items) from My Pantry tasklist
   getPantryTasks() async {
     await _taskListController.getTaskLists();
     var index = await checkIfPantryListExists();

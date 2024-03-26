@@ -128,6 +128,9 @@ class PantryProxy with ChangeNotifier {
   */
 
   bool upsertItem(Item item) {
+    item.openedDate = DateTime(item.openedDate!.year, item.openedDate!.month,
+        item.openedDate!.day + 1);
+    item.addedDate = item.addedDate!.add(const Duration(hours: 2));
     try {
       realm.write(() {
         realm.add<Item>(item, update: true);
