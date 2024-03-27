@@ -5,12 +5,25 @@ import 'package:mockito/mockito.dart';
 import 'package:realm/realm.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter/material.dart';
-
 class MockRealmResults<T> extends Mock implements RealmResults<T> {
+  List<T> items;
+
+  MockRealmResults(this.items);
+
   @override
-  int get length => 0;
+  int get length => items.length;
+
   @override
-  Iterator<T> get iterator => <T>[].iterator;
+  Iterator<T> get iterator => items.iterator;
+
+
+  @override
+  T operator [](int index) {
+    if (index >= 0 && index < items.length) {
+      return items[index];
+    }
+    throw Exception('Index out of range: $index');
+  }
 }
 
 void main() {
@@ -19,22 +32,21 @@ void main() {
   late List<Item> mockItems;
   group('end-to-end test', () {
     setUp(() {
-      mockRealmResults = MockRealmResults<Item>();
       mockItems = <Item>[
         Item(ObjectId().toString(), "Apple", "Pantry", 3),
-        Item(ObjectId().toString(), "Banana", "Pantry", 3),
+        Item(ObjectId().toString(), "Banana", "Pantry", 3)
       ];
+      mockRealmResults = MockRealmResults<Item>(mockItems);
 
     });
 
     testWidgets('When adding pantry items to the ingredient list for recipe they are put into the optional items list at first',
         (tester) async {
 
-
       // Load app widget with the mocked RealmResults
       var thisMustHaveItems = <String>[];
       var thisOptionalItems = <String>[];
-      await tester.pumpWidget(PantryBuilderTestWrapper(
+      var widget = PantryBuilderTestWrapper(
         sortMethod: "az",
         items: mockRealmResults,
         onMustHaveItemsChanged: (mustHaveItems) {
@@ -43,18 +55,18 @@ void main() {
         onOptionalItemsChanged: (optionalItems) {
           thisOptionalItems = optionalItems;
         },
-      ));
-      expect(find.text("Rest of the ingredients"), findsOneWidget);
-      print(mockItems[0].name);
+      );
+      await tester.pumpWidget(widget);
+  
+      
+      await tester.pumpAndSettle(); // Wait for animations to complete
       expect(find.text(mockItems[0].name), findsOneWidget);
-      /*
       await tester.tap(find.text(mockItems[0].name)); // Tap on the first item on rest on the list
       await tester.pumpAndSettle(); // Wait for animations to complete
 
       // Verify that the item is moved to the appropriate list
       expect(thisMustHaveItems.contains(mockItems[0].name), false);
       expect(thisOptionalItems.contains(mockItems[0].name), true);
-      */
     });
   });
 }
