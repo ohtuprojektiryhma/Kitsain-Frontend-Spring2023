@@ -54,7 +54,11 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   Map<String, String> mustHaveItemsDict = {};
   Map<String, String> itemNamesAndAmounts = {};
   String language = "English";
+
   String selected = "True";
+
+  int number = 1;
+
   final _recipeController = RecipeController();
 
   @override
@@ -195,6 +199,23 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     );
   }
 
+  Widget _buildNumberDropdown() {
+    return DropdownButton<int>(
+      value: number,
+      onChanged: (int? newValue) {
+        setState(() {
+          number = newValue!;
+        });
+      },
+      items: <int>[1, 2, 3].map<DropdownMenuItem<int>>((int value) {
+        return DropdownMenuItem<int>(
+          value: value,
+          child: Text(value.toString()),
+        );
+      }).toList(),
+    );
+  }
+
   /// Builds the close button for the recipe generating form.
   ///
   /// Returns close button.
@@ -261,6 +282,12 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           const Text("Select language for the recipe:",
               style: AppTypography.heading4),
           _buildLanguageDropdown(),
+          SizedBox(
+            height: MediaQuery.of(context).size.width * 0.15,
+          ),
+          const Text("How many recipes do you want?:",
+              style: AppTypography.heading4),
+          _buildNumberDropdown(),
           SizedBox(height: MediaQuery.of(context).size.height * 0.05),
           PantryBuilder(
               items: _pantryItems,
@@ -415,7 +442,8 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
             supplies
           ], // temporary solution. rather ask the user for an actual list
           pantryOnly,
-          language);
+          language,
+          number);
 
       _recipeController.createRecipeTask(generatedRecipe);
       // clear
