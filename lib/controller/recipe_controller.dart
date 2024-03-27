@@ -47,7 +47,7 @@ class RecipeController {
     }
   }
 
-  bool checkIfItemInGoogleTasks(String? googleTaskId, tasks) {
+  bool checkIfRecipeInGoogleTasks(String? googleTaskId, tasks) {
     var googleTaskIdList = tasks.items.map((e) => e.id);
     if (googleTaskIdList.contains(googleTaskId)) {
       return true;
@@ -72,42 +72,49 @@ class RecipeController {
     }
   }
   List<String> getInstructions(String notes) {
-    RegExp exp = RegExp(r'Instructions: \[(.*?)\]');
-    Iterable<RegExpMatch> matches = exp.allMatches(notes);
-    if (matches.isNotEmpty) {
-      String instructionsString = matches.first.group(1) ?? "";
-      return instructionsString.split(',').map((instruction) => instruction.trim()).toList();
-    }
-    return [];
+    List<String> recipeParts = notes.split('\n\n');
+    String instructionsSection = recipeParts[1];
+    List<String> instructions = parseInstructions(instructionsSection);
+    
+    return instructions;
   }
 
-  Map<String, String> getIngredients(String notes) {
-    RegExp exp = RegExp(r'Ingredients: {(.*?)}');
-    Iterable<RegExpMatch> matches = exp.allMatches(notes);
-    if (matches.isNotEmpty) {
-      String ingredientsString = matches.first.group(1) ?? "";
-      List<String> ingredientsList = ingredientsString.split(',').map((ingredient) => ingredient.trim()).toList();
-      Map<String, String> ingredientsMap = {};
-      ingredientsList.forEach((ingredient) {
-        List<String> parts = ingredient.split(':');
-        if (parts.length == 2) {
-          ingredientsMap[parts[0].trim()] = parts[1].trim();
-        }
-      });
-      return ingredientsMap;
+  List<String> parseInstructions(String instructionsSection) {
+    List<String> lines = instructionsSection.split('\n');
+    List<String> steps = [];
+    for (String line in lines.skip(1)) {
+      steps.add(line.trim());
     }
-    return {};
+  return steps;
   }
+
+
+  Map<String, String> getIngredients(String notes) {
+    List<String> recipeParts = notes.split('\n\n');
+    String ingredientspart = recipeParts[0];
+    Map<String, String> ingredients = parseIngredients(ingredientspart);
+    return ingredients;
+  }
+
+  Map<String, String> parseIngredients(String ingredientsSection) {
+    List<String> lines = ingredientsSection.split('\n');
+    Map<String, String> ingredients = {};
+    for (String line in lines.skip(1)) {
+      List<String> parts = line.split(': ');
+      ingredients[parts[0]] = parts[1];
+    }
+    return ingredients;
+}
 
   deleteMissingGoogleTasksFromRealm(RealmResults<Recipe> realmItems, tasks) async {
     for (var i = 0; i < realmItems.length; i++) {
-      if (!checkIfItemInGoogleTasks(realmItems[i].googleTaskId, tasks)) {
+      if (!checkIfRecipeInGoogleTasks(realmItems[i].googleTaskId, tasks)) {
         _recipeProxy.deleteRecipe(realmItems[i]);
       }
     }
   }
   
-  syncPantryTasksWithRealm(index) async {
+  syncRecipeTasksWithRealm(index) async {
     var realmItems = await RecipeProxy().getRecipes();
     var tasks = await _taskController.getTasksList(index);
     print("testing");
@@ -122,7 +129,7 @@ class RecipeController {
       await _taskListController.createTaskLists("My Recipes");
       index = await checkIfRecipeListExists();
     }
-    await syncPantryTasksWithRealm(index);
+    await syncRecipeTasksWithRealm(index);
     var realmItems = await RecipeProxy().getItems();
     print(realmItems);
   }
