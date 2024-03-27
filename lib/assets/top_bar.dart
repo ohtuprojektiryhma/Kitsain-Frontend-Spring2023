@@ -4,6 +4,9 @@ import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/LoginController.dart';
 import 'package:kitsain_frontend_spring2023/views/homepage2.dart';
+import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
+import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class TopBar extends StatefulWidget implements PreferredSizeWidget {
   const TopBar({
@@ -22,6 +25,7 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final Function helpFunction;
   final String backgroundImageName;
   final Color titleBackgroundColor;
+  
 
   @override
   State<TopBar> createState() => _TopBarState();
@@ -34,7 +38,8 @@ class _TopBarState extends State<TopBar> {
   final _loginController = Get.put(LoginController());
   VisualDensity _topIconsDensity =
       VisualDensity(horizontal: -4.0, vertical: -4.0);
-
+  final _recipeController = RecipeController();
+  final _pantryProxy = PantryProxy();
   _openAccountSettings(BuildContext context) {
     showDialog(
       context: context,
@@ -74,9 +79,105 @@ class _TopBarState extends State<TopBar> {
     );
   }
 
-  _openSettings() {
-    // todo
+  _openSettings(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'Settings',
+            style: AppTypography.paragraph.copyWith(color: AppColors.main1),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              /* TextButton(
+                onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (confirmationContext) {
+                    return AlertDialog(
+                      title: Text("Clear Pantry"),
+                      content: Text("Are you sure you want to clear the pantry?"),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(confirmationContext); 
+                            _pantryProxy.deleteAll();
+                            Navigator.pop(context); 
+                          },
+                          child: Text("Yes"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(confirmationContext);
+                          },
+                          child: Text("No"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+                child: Text(
+                  'CLEAR PANTRY()',
+                  style: AppTypography.category.copyWith(color: AppColors.main1),
+                ),
+              ), */
+              TextButton(
+                onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (confirmationContext) {
+                    return AlertDialog(
+                      title: Text("Clear Recipes"),
+                      content: Text("Are you sure you want to clear the recipes?"),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(confirmationContext);
+                              _recipeController.deleteAllRecipes();
+                            Navigator.pop(context); 
+                          },
+                          child: Text("Yes"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(confirmationContext);
+                          },
+                          child: Text("No"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+                child: Text(
+                  'CLEAR RECIPES',
+                  style: AppTypography.category.copyWith(color: AppColors.main1),
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'CANCEL',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
+
 
   _signOut() async {
     await _loginController.googleSignInUser.value?.signOut();
@@ -130,7 +231,7 @@ class _TopBarState extends State<TopBar> {
                     IconButton(
                       visualDensity: _topIconsDensity,
                       padding: EdgeInsets.zero,
-                      onPressed: () => _openSettings(),
+                      onPressed: () => _openSettings(context),
                       icon: const Icon(
                         Icons.settings,
                         color: AppColors.main2,

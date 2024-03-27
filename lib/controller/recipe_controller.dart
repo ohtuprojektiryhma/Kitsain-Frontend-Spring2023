@@ -160,6 +160,17 @@ class RecipeController {
     });
   }
 
+  deleteAllRecipesFromTasks() async {
+    _taskListController.deleteRecipeTaskList();
+  }
+
+  void deleteAllRecipes() async {
+    await deleteAllRecipesFromTasks();
+    realm.write(() {
+      realm.deleteAll<Recipe>();
+    });
+  }
+
   Future findRecipeIndex() async {
     await _taskListController.getTaskLists();
     var recipeIndex = "not";
