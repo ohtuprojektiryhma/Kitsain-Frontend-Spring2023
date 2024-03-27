@@ -16,6 +16,7 @@ import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_s
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_edit_post_view.dart';
+import 'package:logger/logger.dart';
 
 import 'feed_image_widget.dart';
 
@@ -29,18 +30,29 @@ class FeedView extends StatefulWidget {
 
 class _FeedViewState extends State<FeedView>
     with AutomaticKeepAliveClientMixin {
+  var logger = Logger(printer: PrettyPrinter());
   var postProvider = PostProvider();
   final PostService postService = PostService();
   bool isLoading = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     loadPosts();
+
+    // Add listener to scroll controller
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   /// Loads the posts from the server.
   Future<void> loadPosts() async {
@@ -51,15 +63,14 @@ class _FeedViewState extends State<FeedView>
     try {
       List<Post> newPosts = await postService.getPosts();
       setState(() {
-        postProvider.posts
-            .addAll(newPosts); // Populate postProvider.posts with newPosts
+        postProvider.posts.addAll(newPosts);
         isLoading = false;
       });
     } catch (e) {
       setState(() {
         isLoading = false;
       });
-      print('Error loading posts: $e');
+      logger.e('Error loading posts: $e');
     }
   }
 
@@ -67,6 +78,14 @@ class _FeedViewState extends State<FeedView>
   Future<void> refreshPosts() async {
     postProvider.posts.clear();
     await loadPosts();
+  }
+
+  /// Scroll listener method to detect when the user scrolls to the top of the feed.
+  void _scrollListener() {
+    if (_scrollController.position.pixels == -1) {
+      // User has scrolled to the top, fetch new posts
+      refreshPosts();
+    }
   }
 
   /// Displays the help information in a modal bottom sheet.
@@ -84,10 +103,13 @@ class _FeedViewState extends State<FeedView>
   }
 
   /// Removes a post from the list.
-  void removePost(Post post) {
-    setState(() {
-      postProvider.deletePost(post);
-    });
+  Future<void> removePost(Post post) async {
+    bool correctUser = await postService.deletePost(post.id, post.userId);
+    if (correctUser) {
+      setState(() {
+        postProvider.deletePost(post);
+      });
+    }
   }
 
   /// Edits a post in the list.
@@ -99,7 +121,6 @@ class _FeedViewState extends State<FeedView>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       backgroundColor: AppColors.main2,
       appBar: TopBar(
@@ -108,19 +129,23 @@ class _FeedViewState extends State<FeedView>
         backgroundImageName: 'assets/images/pantry_banner_B1.jpg',
         titleBackgroundColor: AppColors.titleBackgroundBrown,
       ),
-      body: ListView.builder(
-        itemCount: postProvider.posts.length,
-        itemBuilder: (context, index) {
-          return PostCard(
-            post: postProvider.posts[index],
-            onRemovePost: (Post removedPost) {
-              removePost(removedPost);
-            },
-            onEditPost: (Post updatedPost) {
-              editPost(updatedPost);
-            },
-          );
-        },
+      body: RefreshIndicator(
+        onRefresh: refreshPosts,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: postProvider.posts.length,
+          itemBuilder: (context, index) {
+            return PostCard(
+              post: postProvider.posts[index],
+              onRemovePost: (Post removedPost) {
+                removePost(removedPost);
+              },
+              onEditPost: (Post updatedPost) {
+                editPost(updatedPost);
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -129,9 +154,9 @@ class _FeedViewState extends State<FeedView>
             MaterialPageRoute(builder: (context) => CreatePostView()),
           ).then((newPost) async {
             if (newPost != null) {
-              postService.createPost(newPost);
               setState(() {
                 postProvider.addPost(newPost);
+                refreshPosts();
               });
             }
           });
@@ -163,6 +188,23 @@ class _PostCardState extends State<PostCard> {
   // Variable to hold the current user
   final loginController = Get.put(LoginController());
   final authService = Get.put(AuthService());
+  final postService = PostService();
+  late String userId;
+  bool isOwner = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserId();
+  }
+
+  Future<void> fetchUserId() async {
+    final fetchedUserId = await postService.getUserId();
+    setState(() {
+      userId = fetchedUserId;
+      isOwner = widget.post.userId == userId;
+    });
+  }
 
   /// Edits a post.
   void _editPost(Post post) {
@@ -226,27 +268,32 @@ class _PostCardState extends State<PostCard> {
                     fontSize: 16,
                   ),
                 ),
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_horiz),
-                  onSelected: (value) {
-                    if (value == 'remove') {
-                      _removeConfirmation(context);
-                    } else if (value == 'edit') {
-                      _editPost(widget.post);
-                    }
-                  },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
-                      value: 'edit',
-                      child: Text('Edit'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'remove',
-                      child: Text('Remove'),
-                    ),
-                  ],
-                ),
+                if (isOwner)
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_horiz),
+                    onSelected: (value) {
+                      if (value == 'remove') {
+                        _removeConfirmation(context);
+                      } else if (value == 'edit') {
+                        _editPost(widget.post);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'edit',
+                        child: Text('Edit'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'remove',
+                        child: Text('Remove'),
+                      ),
+                    ],
+                  ),
+                if (!isOwner)
+                  const SizedBox(
+                    height: 40,
+                  ),
               ],
             ),
 

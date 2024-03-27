@@ -179,7 +179,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   Text(
                                     AppLocalizations.of(context)!
-                                        .pantryTabLabel,
+                                        .historyTabLabel,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: 10),
                                   ),
@@ -216,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                             );
                           },
                           onMove: (details) {
-                            DefaultTabController.of(context).animateTo(0);
+                            DefaultTabController.of(context).animateTo(3);
                           },
                         ),
                         DragTarget(
