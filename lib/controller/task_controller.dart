@@ -33,12 +33,19 @@ class TaskController extends GetxController {
 
   /// Sends created task to the google tasks API
   ///
-  /// [title] is the task's, e.g. pantry item's, name. [description] is the details of the task.
+  /// [itemName] is the task's, e.g. pantry item's, name. [description] is the details of the task.
   /// [taskListId] is the google tasks id of the task list. [due] is the optional expiry date of a pantry item task.
   /// Returns the google tasks id of the task list in which the task is inserted.
-  createTask(String title, String description, String taskListId,
-      [String? due]) async {
-    var newTask = Task(title: title, notes: description, status: "needsAction");
+  createTask(String itemName, String description, String taskListId,
+      [String? due, String? amount]) async {
+    var itemAmount = amount;
+    if (amount == null) {
+      itemAmount = "";
+    }
+    var newTask = Task(
+        title: "${itemName} ${itemAmount}".trimRight(),
+        notes: description,
+        status: "needsAction");
 
     if (due != null) {
       // Parse due date
@@ -63,7 +70,7 @@ class TaskController extends GetxController {
       // print('ok ${value.id}');
       googleTaskId = value.id;
       var newItem =
-          ShoppingListItemModel(title, description, false, '${value.id}');
+          ShoppingListItemModel(itemName, description, false, '${value.id}');
       shoppingListItem.value?.add(newItem);
       await getTasksList(taskListId);
       // tasksList.value?.items?.add(value);
@@ -78,14 +85,23 @@ class TaskController extends GetxController {
   /// [taskListId] is the google tasks id of the task list that includes the task being edited.
   /// [taskId] is the google task id of the task that's edited.
   /// [due] is the optional expiry date of a pantry item task.
-  editTask(String title, String description, String taskListId, String taskId,
-      int index,
-      [String? due]) async {
-    var newItem = ShoppingListItemModel(title, description, false, taskId);
+  editTask(String itemName, String description, String taskListId,
+      String taskId, int index,
+      [String? due, String? amount]) async {
+    var itemAmount = amount;
+    print("editAmount: ${amount}");
+    if (amount == null) {
+      itemAmount = "";
+    }
+    var newItem = ShoppingListItemModel(
+        "${itemName} ${itemAmount}".trimRight(), description, false, taskId);
     shoppingListItem.value?.insert(index, newItem);
 
     var newTask = Task(
-        title: title, notes: description, status: "needsAction", id: taskId);
+        title: "${itemName} ${itemAmount}".trimRight(),
+        notes: description,
+        status: "needsAction",
+        id: taskId);
 
     if (due != null) {
       DateTime dueDateTime = DateTime.parse(due);

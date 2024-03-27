@@ -89,8 +89,12 @@ class PantryController {
       expiryDateAsString =
           changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
     }
-    var googleTaskId = await _taskController.createTask(pantryItem.name,
-        valuesString, taskListIndex.toString(), expiryDateAsString);
+    var googleTaskId = await _taskController.createTask(
+        pantryItem.name,
+        valuesString,
+        taskListIndex.toString(),
+        expiryDateAsString,
+        pantryItem.amount);
     pantryItem.googleTaskId = googleTaskId;
     PantryProxy().upsertItem(pantryItem);
   }
@@ -120,8 +124,14 @@ class PantryController {
       expiryDateAsString = changeFormatOfExpiryDate(item.expiryDate.toString());
     }
     final editedValuesString = createStringOfPantryItemValues(item);
-    var googleTaskId = _taskController.editTask(item.name, editedValuesString,
-        taskListIndex, item.googleTaskId as String, 0, expiryDateAsString);
+    var googleTaskId = _taskController.editTask(
+        item.name,
+        editedValuesString,
+        taskListIndex,
+        item.googleTaskId as String,
+        0,
+        expiryDateAsString,
+        item.amount);
   }
 
   String _ignoreSubMicro(String s) {
@@ -154,6 +164,11 @@ class PantryController {
         case 'location':
           if (propertyValue != "null") {
             item.location = propertyValue;
+          }
+          break;
+        case 'amount':
+          if (propertyValue != "null") {
+            item.amount = propertyValue;
           }
           break;
         case 'category':

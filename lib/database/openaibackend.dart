@@ -17,7 +17,8 @@ Future<Recipe> generateRecipe(
     List<String> requiredItems,
     List<String> specialSupplies,
     bool pantryOnly,
-    String language) async {
+    String language,
+    int number) async {
   var url = Uri.https(
       'kitsain-backend-test-ohtuprojekti-staging.apps.ocp-test-0.k8s.it.helsinki.fi',
       '/generate');
@@ -28,7 +29,8 @@ Future<Recipe> generateRecipe(
     'pantry_only': pantryOnly,
     'recipe_type': recipeType,
     'special_supplies': specialSupplies,
-    'language': language
+    'language': language,
+    'number': number
   });
   print('Request body: $requestBody');
 
@@ -46,13 +48,12 @@ Future<Recipe> generateRecipe(
   );
 
   List<String> convertedInstructions = [];
-  for(var step in responseMap["instructions"]){
+  for (var step in responseMap["instructions"]) {
     convertedInstructions.add(step);
   }
 
-  
   return Recipe(
-    ObjectId().toString(), 
+    ObjectId().toString(),
     responseMap["recipe_name"],
     ingredients: convertedIngredients,
     instructions: convertedInstructions,
@@ -94,11 +95,10 @@ Future<Recipe> changeRecipe(Recipe recipe, String change) async {
   );
 
   List<String> convertedInstructions = [];
-  for(var step in responseMap["instructions"]){
+  for (var step in responseMap["instructions"]) {
     convertedInstructions.add(step);
   }
 
   return Recipe(ObjectId().toString(), responseMap["recipe_name"],
-      ingredients: convertedIngredients,
-      instructions: convertedInstructions);
+      ingredients: convertedIngredients, instructions: convertedInstructions);
 }

@@ -41,6 +41,7 @@ class _NewItemFormState extends State<NewItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _EANCodeField = TextEditingController();
   var _itemName = TextEditingController();
+  var _itemAmount = TextEditingController();
   final _taskListController = Get.put(TaskListController());
   final _taskController = Get.put(TaskController());
 
@@ -105,10 +106,15 @@ class _NewItemFormState extends State<NewItemForm> {
           changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
     }
     print("expiry date: ${pantryItem.expiryDate}");
-    var googleTaskId = await _taskController.createTask(pantryItem.name,
-        valuesString, taskListIndex.toString(), expiryDateAsString);
+    var googleTaskId = await _taskController.createTask(
+        pantryItem.name,
+        valuesString,
+        taskListIndex.toString(),
+        expiryDateAsString,
+        pantryItem.amount);
     pantryItem.googleTaskId = googleTaskId;
     PantryProxy().upsertItem(pantryItem);
+    print("pantry item amount: ${pantryItem.amount}");
   }
 
   void _discardChangesDialog(bool discardForm) {
@@ -362,6 +368,26 @@ class _NewItemFormState extends State<NewItemForm> {
                         ))
                   ]),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                  Stack(children: [
+                    TextFormField(
+                      style: AppTypography.paragraph,
+                      controller: _itemAmount,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        labelText: 'AMOUNT / QUANTITY',
+                      ),
+                    ),
+                    const Positioned(
+                        right: 27,
+                        top: 15,
+                        child: Icon(
+                          Icons.keyboard_alt_outlined,
+                          color: AppColors.main3,
+                        ))
+                  ]),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -574,14 +600,8 @@ class _NewItemFormState extends State<NewItemForm> {
                                 hasExpiryDate: _hasExpiryDate,
                                 addedDate: DateTime.now().toLocal(),
                                 details: _details.text,
+                                amount: _itemAmount.text,
                               );
-                              print('added date: ${newItem.addedDate}');
-                              print(
-                                  'date time now: ${DateTime.now().toLocal()}');
-                              print('_expDateDT, ${_expDateDT}');
-                              print(
-                                  'newItem.expiryDate, ${newItem.expiryDate}');
-                              print("MOI PÄÄSIN TÄNNE 2");
                               createPantryItemTask(newItem);
                               setState(() {});
                               Navigator.pop(context);

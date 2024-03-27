@@ -53,6 +53,7 @@ class _EditItemFormState extends State<EditItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _EANCodeField = TextEditingController();
   var _itemName = TextEditingController();
+  var _itemAmount = TextEditingController();
   final _pantryController = PantryController();
 
   // These dates control the date string user sees in the form
@@ -143,6 +144,7 @@ class _EditItemFormState extends State<EditItemForm> {
 
     // Mandatory fields
     _itemName.text = widget.item.name;
+    _itemAmount.text = widget.item.amount as String;
     _category = catEnglish[widget.item.mainCat];
     _favorite = widget.item.favorite;
     _catInt = widget.item.mainCat;
@@ -323,6 +325,26 @@ class _EditItemFormState extends State<EditItemForm> {
                         }
                         return null;
                       },
+                    ),
+                    const Positioned(
+                        right: 27,
+                        top: 15,
+                        child: Icon(
+                          Icons.keyboard_alt_outlined,
+                          color: AppColors.main3,
+                        ))
+                  ]),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                  Stack(children: [
+                    TextFormField(
+                      style: AppTypography.paragraph,
+                      controller: _itemAmount,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(),
+                        labelText: 'AMOUNT / QUANTITY',
+                      ),
                     ),
                     const Positioned(
                         right: 27,
@@ -534,7 +556,8 @@ class _EditItemFormState extends State<EditItemForm> {
                                   expiryDate: _expDateDT,
                                   hasExpiryDate: _hasExpiryDate,
                                   details: _details.text,
-                                  googleTaskId: _googleTaskId);
+                                  googleTaskId: _googleTaskId,
+                                  amount: _itemAmount.text);
                               PantryProxy().upsertItem(item);
 
                               _pantryController.editItemTasks(item);

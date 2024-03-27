@@ -50,8 +50,15 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   bool _isLoading = true; // Flag to track loading state
   List<String> optionalItems = [];
   List<String> mustHaveItems = [];
+  Map<String, String> optionalItemsDict = {};
+  Map<String, String> mustHaveItemsDict = {};
+  Map<String, String> itemNamesAndAmounts = {};
   String language = "English";
+
   String selected = "True";
+
+  int number = 1;
+
   final _recipeController = RecipeController();
 
   @override
@@ -72,7 +79,8 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       // Call your method to get pantry items
 
       _pantryItems = await PantryProxy().getPantryItems();
-      print(_pantryItems);
+      _itemNamesAndAmountsBuilder();
+      print(itemNamesAndAmounts);
     } catch (e) {
       // Handle any potential errors
       print("Error loading pantry items: $e");
@@ -191,6 +199,23 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     );
   }
 
+  Widget _buildNumberDropdown() {
+    return DropdownButton<int>(
+      value: number,
+      onChanged: (int? newValue) {
+        setState(() {
+          number = newValue!;
+        });
+      },
+      items: <int>[1, 2, 3].map<DropdownMenuItem<int>>((int value) {
+        return DropdownMenuItem<int>(
+          value: value,
+          child: Text(value.toString()),
+        );
+      }).toList(),
+    );
+  }
+
   /// Builds the close button for the recipe generating form.
   ///
   /// Returns close button.
@@ -257,6 +282,12 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           const Text("Select language for the recipe:",
               style: AppTypography.heading4),
           _buildLanguageDropdown(),
+          SizedBox(
+            height: MediaQuery.of(context).size.width * 0.15,
+          ),
+          const Text("How many recipes do you want?:",
+              style: AppTypography.heading4),
+          _buildNumberDropdown(),
           SizedBox(height: MediaQuery.of(context).size.height * 0.05),
           PantryBuilder(
               items: _pantryItems,
@@ -276,6 +307,13 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
         ],
       ),
     );
+  }
+
+  _itemNamesAndAmountsBuilder() {
+    for (var i = 0; i < _pantryItems.length; i++) {
+      itemNamesAndAmounts[_pantryItems[i].name] = _pantryItems[i].amount;
+    }
+    return itemNamesAndAmounts;
   }
 
   /// Builds the text fields utilized in recipe generating form.
@@ -404,7 +442,8 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
             supplies
           ], // temporary solution. rather ask the user for an actual list
           pantryOnly,
-          language);
+          language,
+          number);
 
       _recipeController.createRecipeTask(generatedRecipe);
       // clear
