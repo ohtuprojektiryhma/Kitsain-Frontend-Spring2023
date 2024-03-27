@@ -384,7 +384,8 @@ class _ItemCardState extends State<ItemCard> {
                     onExpansionChanged: (val) =>
                         setState(() => showAbbreviation = !val),
                     title: Text(
-                      widget.item.name.toUpperCase(),
+                      "${widget.item.name.toUpperCase()} ${widget.item.amount}"
+                          .trimRight(),
                       style:
                           AppTypography.heading3.copyWith(color: Colors.black),
                     ),

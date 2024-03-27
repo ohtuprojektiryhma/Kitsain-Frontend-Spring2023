@@ -46,13 +46,12 @@ Future<Recipe> generateRecipe(
   );
 
   List<String> convertedInstructions = [];
-  for(var step in responseMap["instructions"]){
+  for (var step in responseMap["instructions"]) {
     convertedInstructions.add(step);
   }
 
-  
   return Recipe(
-    ObjectId().toString(), 
+    ObjectId().toString(),
     responseMap["recipe_name"],
     ingredients: convertedIngredients,
     instructions: convertedInstructions,
@@ -94,11 +93,10 @@ Future<Recipe> changeRecipe(Recipe recipe, String change) async {
   );
 
   List<String> convertedInstructions = [];
-  for(var step in responseMap["instructions"]){
+  for (var step in responseMap["instructions"]) {
     convertedInstructions.add(step);
   }
 
   return Recipe(ObjectId().toString(), responseMap["recipe_name"],
-      ingredients: convertedIngredients,
-      instructions: convertedInstructions);
+      ingredients: convertedIngredients, instructions: convertedInstructions);
 }

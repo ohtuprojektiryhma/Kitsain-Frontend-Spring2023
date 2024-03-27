@@ -50,6 +50,9 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   bool _isLoading = true; // Flag to track loading state
   List<String> optionalItems = [];
   List<String> mustHaveItems = [];
+  Map<String, String> optionalItemsDict = {};
+  Map<String, String> mustHaveItemsDict = {};
+  Map<String, String> itemNamesAndAmounts = {};
   String language = "English";
   String selected = "True";
   final _recipeController = RecipeController();
@@ -72,7 +75,8 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       // Call your method to get pantry items
 
       _pantryItems = await PantryProxy().getPantryItems();
-      print(_pantryItems);
+      _itemNamesAndAmountsBuilder();
+      print(itemNamesAndAmounts);
     } catch (e) {
       // Handle any potential errors
       print("Error loading pantry items: $e");
@@ -276,6 +280,13 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
         ],
       ),
     );
+  }
+
+  _itemNamesAndAmountsBuilder() {
+    for (var i = 0; i < _pantryItems.length; i++) {
+      itemNamesAndAmounts[_pantryItems[i].name] = _pantryItems[i].amount;
+    }
+    return itemNamesAndAmounts;
   }
 
   /// Builds the text fields utilized in recipe generating form.
