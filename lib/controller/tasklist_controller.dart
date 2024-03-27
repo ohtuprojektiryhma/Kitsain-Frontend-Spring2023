@@ -46,4 +46,28 @@ class TaskListController extends GetxController {
       taskLists.refresh();
     });
   }
+
+  deleteRecipeTaskList() async {
+    final id = await checkIfRecipeListExists();
+    await loginController.taskApiAuthenticated.value!.tasklists
+        .delete(id);
+      taskLists.refresh(); 
+  }  
+  Future checkIfRecipeListExists() async {
+      await getTaskLists();
+      var recipeIndex = "not";
+      if (taskLists.value?.items != null) {
+        int length = taskLists.value?.items!.length as int;
+        for (var i = 0; i < length; i++) {
+          if (taskLists.value?.items?[i].title ==
+              "My Recipes") {
+            recipeIndex =
+                taskLists.value?.items?[i].id as String;
+            break;
+          }
+        }
+      }
+    return recipeIndex;
+  }
+
 }
