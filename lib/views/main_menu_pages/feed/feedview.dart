@@ -16,6 +16,7 @@ import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/comment_s
 import 'package:kitsain_frontend_spring2023/views/help_pages/pantry_help_page.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_edit_post_view.dart';
+import 'package:kitsain_frontend_spring2023/services/comment_service.dart';
 import 'package:logger/logger.dart';
 
 import 'feed_image_widget.dart';
@@ -188,7 +189,9 @@ class _PostCardState extends State<PostCard> {
   // Variable to hold the current user
   final loginController = Get.put(LoginController());
   final authService = Get.put(AuthService());
+  var logger = Logger(printer: PrettyPrinter());
   final postService = PostService();
+  final CommentService commentService = CommentService();
   late String userId;
   bool isOwner = false;
 
@@ -196,6 +199,7 @@ class _PostCardState extends State<PostCard> {
   void initState() {
     super.initState();
     fetchUserId();
+    //loadComments();
   }
 
   Future<void> fetchUserId() async {
@@ -347,12 +351,17 @@ class _PostCardState extends State<PostCard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          List<Comment> comments =
-                              widget.post.comments.cast<Comment>();
+                          List<Comment> comments = widget.post.comments.cast<Comment>();
                           if (comments.isEmpty) {
-                            return const CommentSectionView(comments: []);
+                            return CommentSectionView(
+                                parentID: widget.post.id,
+                                comments: const []
+                            );
                           } else {
-                            return CommentSectionView(comments: comments);
+                            return CommentSectionView(
+                                parentID: widget.post.id,
+                                comments: comments
+                            );
                           }
                         }),
                       ).then((updatedComments) {

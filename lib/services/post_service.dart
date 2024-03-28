@@ -6,12 +6,14 @@ import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
 import 'package:http/http.dart' as http;
 import 'package:kitsain_frontend_spring2023/services/auth_service.dart';
+import 'package:kitsain_frontend_spring2023/services/comment_service.dart';
 import 'package:logger/logger.dart';
 
 /// A service class for managing posts.
 class PostService {
   final accessToken = Get.put(AuthService()).accessToken;
   var logger = Logger(printer: PrettyPrinter());
+  final CommentService commentService = CommentService();
 
   // Base URL for the API
   final String baseUrl = 'http://nocng.id.vn:9090/api/v1/posts';
@@ -249,6 +251,7 @@ class PostService {
         expiringDate: DateTime.parse(json['expringDate']),
         id: json['id'],
         userId: json['user']['id'],
+        comments: await commentService.getComments(json['id'])
       );
     } catch (e) {
       throw Exception('Error parsing post: $e');
