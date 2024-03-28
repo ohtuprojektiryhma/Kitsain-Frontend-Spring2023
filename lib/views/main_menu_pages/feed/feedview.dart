@@ -210,6 +210,14 @@ class _PostCardState extends State<PostCard> {
     });
   }
 
+  Future<void> markPostUseful() async {
+    await postService.markPostUseful(widget.post.id);
+    Post? updatedPost = await postService.getPostById(widget.post.id);
+    setState(() {
+      if (updatedPost != null) widget.post.useful = updatedPost.useful;
+    });
+  }
+
   /// Edits a post.
   void _editPost(Post post) {
     Navigator.push(
@@ -337,13 +345,10 @@ class _PostCardState extends State<PostCard> {
                   IconButton(
                     icon: const Icon(Icons.thumb_up_alt_outlined),
                     onPressed: () {
-                      setState(() {
-                        widget.post.addUsefulcount(
-                            loginController.googleUser.value!.id);
-                      });
+                      markPostUseful();
                     },
                   ),
-                  Text(widget.post.useful.length.toString()),
+                  Text(widget.post.useful.toString()),
                   const SizedBox(width: 16),
                   IconButton(
                     icon: const Icon(Icons.comment_rounded),
@@ -351,17 +356,14 @@ class _PostCardState extends State<PostCard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
-                          List<Comment> comments = widget.post.comments.cast<Comment>();
+                          List<Comment> comments =
+                              widget.post.comments.cast<Comment>();
                           if (comments.isEmpty) {
                             return CommentSectionView(
-                                parentID: widget.post.id,
-                                comments: const []
-                            );
+                                parentID: widget.post.id, comments: const []);
                           } else {
                             return CommentSectionView(
-                                parentID: widget.post.id,
-                                comments: comments
-                            );
+                                parentID: widget.post.id, comments: comments);
                           }
                         }),
                       ).then((updatedComments) {

@@ -59,8 +59,28 @@ class PostService {
   /// Retrieves a post by its ID.
   ///
   /// Returns a [Post] object if found, otherwise returns null.
-  Future<Post?> getPost(int id) async {
-    // Logic to get a post by id
+  Future<Post?> getPostById(String id) async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/$id'), headers: {
+        'Content-Type': 'application/json',
+        'accept': '*/*',
+        'Authorization': 'Bearer ${accessToken.value}',
+      });
+
+      if (response.statusCode == 200) {
+        logger.i("Post loaded successfully");
+        Map<String, dynamic> postResponse = jsonDecode(response.body);
+
+        return parsePost(postResponse);
+      } else {
+        // Handle other status codes if needed
+        logger.e('Request failed with status: ${response.statusCode}');
+        logger.e(response.body);
+      }
+    } catch (error) {
+      logger.e("ERROR: $error");
+      // Handle any errors that occur during the request
+    }
     return null;
   }
 
@@ -244,15 +264,15 @@ class PostService {
 
       // Create and return the Post object
       return Post(
-        images: images,
-        title: json['title'],
-        description: json['description'],
-        price: json['price'],
-        expiringDate: DateTime.parse(json['expringDate']),
-        id: json['id'],
-        userId: json['user']['id'],
-        comments: await commentService.getComments(json['id'])
-      );
+          images: images,
+          title: json['title'],
+          description: json['description'],
+          price: json['price'],
+          expiringDate: DateTime.parse(json['expringDate']),
+          id: json['id'],
+          userId: json['user']['id'],
+          comments: await commentService.getComments(json['id']),
+          useful: json['favourite']);
     } catch (e) {
       throw Exception('Error parsing post: $e');
     }
@@ -288,6 +308,25 @@ class PostService {
       }
     } catch (e) {
       throw Exception('Error fetching posts: $e');
+    }
+  }
+
+  Future<void> markPostUseful(String postId) async {
+    try {
+      var uri = Uri.parse('http://nocng.id.vn:9090/api/v1/favorites/$postId');
+      var response = await http.put(uri, headers: {
+        'accept': '*/*',
+        'Authorization': 'Bearer ${accessToken.value}',
+      });
+
+      if (response.statusCode == 200) {
+        logger.i("Post marked as useful");
+      } else {
+        logger.e(
+            'Failed to mark post as useful: ${response.statusCode} /n ${response.body}');
+      }
+    } catch (e) {
+      logger.e('Error marking post as useful: $e');
     }
   }
 }

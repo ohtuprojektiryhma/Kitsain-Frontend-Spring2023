@@ -27,8 +27,8 @@ class CommentService {
           'offset': "0",
         }),
         headers: {
-        'accept': '*/*',
-        'Authorization': 'Bearer ${accessToken.value}',
+          'accept': '*/*',
+          'Authorization': 'Bearer ${accessToken.value}',
         },
       );
 
@@ -40,7 +40,8 @@ class CommentService {
         List<dynamic> commentData = responseData['details']['records'];
 
         // Fetch and parse posts concurrently
-        List<Comment> comments = await Future.wait(commentData.map((json) async {
+        List<Comment> comments =
+            await Future.wait(commentData.map((json) async {
           return await parseComment(json);
         }));
 
@@ -50,7 +51,6 @@ class CommentService {
         throw Exception(
             'Failed to load posts: ${response.statusCode} /n ${response.body}');
       }
-
     } catch (e) {
       throw Exception('Error fetching comments: $e');
     }
@@ -59,29 +59,28 @@ class CommentService {
   /// Creates a new post with the given [images], [title], [description], [price], and [expiringDate].
   ///
   /// Returns the created [Post] object if successful, otherwise returns null.
-  Future<void> postComment({
-    required String postID,
-    required String user,
-    required String content,
-    required DateTime date}) async {
+  Future<void> postComment(
+      {required String postID,
+      required String user,
+      required String content,
+      required DateTime date}) async {
     // Format the expiration date of the post
     String formattedDate =
-    DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(date.toUtc());
+        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(date.toUtc());
 
     try {
       // Send a POST request to the server with the post data
 
-      final response = await http.post(
-        Uri.parse(baseUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'accept': '*/*',
-          'Authorization': 'Bearer ${accessToken.value}',
-        },
-        body: jsonEncode({
-          'content': content,
-          'postId': postID,
-        }));
+      final response = await http.post(Uri.parse(baseUrl),
+          headers: {
+            'Content-Type': 'application/json',
+            'accept': '*/*',
+            'Authorization': 'Bearer ${accessToken.value}',
+          },
+          body: jsonEncode({
+            'content': content,
+            'postId': postID,
+          }));
 
       if (response.statusCode == 200) {
         logger.i("Comment posted successfully");
@@ -98,7 +97,6 @@ class CommentService {
 
   Future<Comment> parseComment(Map<String, dynamic> json) async {
     try {
-      print(json['id']);
       return Comment(
         postID: json['id'],
         author: json['userName'],
