@@ -69,7 +69,8 @@ class PostService {
 
       if (response.statusCode == 200) {
         logger.i("Post loaded successfully");
-        Map<String, dynamic> postResponse = jsonDecode(response.body);
+        Map<String, dynamic> postResponse =
+            jsonDecode(response.body)['details'];
 
         return parsePost(postResponse);
       } else {
