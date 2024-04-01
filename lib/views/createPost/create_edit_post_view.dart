@@ -2,40 +2,51 @@ import 'dart:io';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
 import 'package:kitsain_frontend_spring2023/services/post_service.dart';
 import 'package:kitsain_frontend_spring2023/views/createPost/create_post_image_widget.dart';
 import 'dart:math';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 
 class CreateEditPostView extends StatefulWidget {
   final Post? post;
+  final List<String>? existingImages;
 
-  const CreateEditPostView({Key? key, this.post}) : super(key: key);
+  const CreateEditPostView({Key? key, this.post, this.existingImages}) : super(key: key);
 
   @override
   _CreateEditPostViewState createState() => _CreateEditPostViewState();
 }
 
 class _CreateEditPostViewState extends State<CreateEditPostView> {
-  late List<String> _images;
-  late String _title;
-  late String _description;
-  late String _price;
-  late DateTime _expiringDate;
-
+  var logger = Logger(printer: PrettyPrinter());
+  final PostService _postService = PostService();
+  late List<String> _images = [];
+  String _id = '';
+  String _title = '';
+  String _description = '';
+  String _price = '';
+  DateTime _expiringDate = DateTime.now();
+  List<File> tempImages = [];
   final DateFormat _dateFormat = DateFormat('dd.MM.yyyy');
   final TextEditingController _dateController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool imageSelected = true;
   final FocusNode _descriptionFocusNode = FocusNode();
   final FocusNode _titleFocusNode = FocusNode();
-  final PostService _postService = PostService();
+
 
   @override
   void initState() {
     super.initState();
     if (widget.post != null) {
-      _images = List.from(widget.post!.images);
+      _id = widget.post!.id;
+      _images = List.from(widget.existingImages ?? []);
       _title = widget.post!.title;
       _description = widget.post!.description;
       _price = widget.post!.price;
@@ -55,11 +66,12 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
   Future<void> _pickImageFromCamera() async {
     try {
       final pickedImage =
-          await ImagePicker().pickImage(source: ImageSource.camera);
+      await ImagePicker().pickImage(source: ImageSource.camera);
       if (pickedImage == null) return;
-
-      _images.add(await _postService.uploadFile(File(pickedImage.path)));
-      setState(() {});
+      tempImages.add(File(pickedImage.path));
+      setState(() {
+        imageSelected = tempImages.isNotEmpty;
+      });
     } on PlatformException catch (e) {
       debugPrint('Failed to pick Image: $e');
     }
@@ -69,20 +81,21 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
   Future<void> _pickImageFromGallery() async {
     try {
       final pickedImage = await ImagePicker().pickImage(
-          imageQuality: 100,
-          maxHeight: 1000,
-          maxWidth: 1000,
-          source: ImageSource.gallery);
+        imageQuality: 100,
+        maxHeight: 1000,
+        maxWidth: 1000,
+        source: ImageSource.gallery,
+      );
 
       if (pickedImage != null) {
-        _images.add(await _postService.uploadFile(File(pickedImage.path)));
-        debugPrint('Added image to _images list: $_images');
-        setState(() {});
+        tempImages.add(File(pickedImage.path));
+        setState(() {
+          imageSelected = tempImages.isNotEmpty;
+        });
       }
     } on PlatformException catch (e) {
       debugPrint('Failed to pick Image: $e');
     }
-    // Add logic to select an image from the gallery
   }
 
   /// Function to select the expiration date of the post
@@ -102,21 +115,41 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
   }
 
   Future<Post?> _updateOrCreatePost() async {
-    // Extract values from the form fields
-    String title = _title;
-    String description = _description;
-    String price = _price;
-    DateTime expiringDate = _expiringDate;
+    try {
+      // Upload images
+      for (var image in tempImages) {
+        _images.add(await _postService.uploadFile(image));
+      }
 
-    // Create or update the post
-    return await _postService.createPost(
-      images: _images,
-      title: title,
-      description: description,
-      price: price,
-      expiringDate: expiringDate,
-    );
+      // Check if it's an update operation
+      if (widget.post != null) {
+        // Update the existing post
+        return await _postService.updatePost(
+          id: _id,
+          images: _images,
+          title: _title,
+          description: _description,
+          price: _price,
+          expiringDate: _expiringDate,
+        );
+      } else {
+        // Create a new post
+        return await _postService.createPost(
+          images: _images,
+          title: _title,
+          description: _description,
+          price: _price,
+          expiringDate: _expiringDate,
+        );
+      }
+    } catch (error) {
+      // Handle errors
+      print('Error in _updateOrCreatePost: $error');
+      // Return null to indicate failure
+      return null;
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -130,9 +163,14 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
           child: Column(
             children: [
               editImageWidget(
-                images: const [],
-                stringImages: _images,
+                images: tempImages,
+                stringImages: widget.existingImages ?? [],
               ),
+              if ((widget.existingImages?.isEmpty ?? true ) && !imageSelected)
+                const Text(
+                  'Select at least one image to create a post.',
+                  style: TextStyle(color: Colors.red),
+                ),
               const SizedBox(height: 5),
               Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -154,7 +192,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                                     _pickImageFromCamera();
                                   },
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                                 TextButton(
                                   child: Text('Gallery'),
                                   onPressed: () {
@@ -183,6 +221,12 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                     _title = value;
                   });
                 },
+                validator: (value) {
+                if (value == null || value.isEmpty) {
+                return "Please enter title";
+                }
+                return null;
+                },
               ),
               TextFormField(
                 focusNode: _descriptionFocusNode,
@@ -194,6 +238,12 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                   setState(() {
                     _description = value;
                   });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter description";
+                  }
+                  return null;
                 },
               ),
               TextFormField(
@@ -214,6 +264,12 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                     _price = value;
                   });
                 },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please enter price";
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 controller: _dateController,
@@ -227,8 +283,17 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () async {
-                  Post? updatedPost = await _updateOrCreatePost();
-                  Navigator.pop(context, updatedPost);
+                  try {
+                    print('button pressed');
+
+                    Post? updatedPost = await _updateOrCreatePost();
+                    print('Updated Post: $updatedPost'); // Add this line
+                    Navigator.pop(context, updatedPost);
+                    print('Navigation to previous screen executed'); // Add this line
+                  } catch (e) {
+                    print(e);
+                  }
+
                 },
                 child: Text(widget.post != null ? 'Update' : 'Create'),
               ),

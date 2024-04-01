@@ -42,6 +42,30 @@ class Post extends ChangeNotifier {
     this.useful = 0,
     this.comments = const [],
   });
+  // Serialize the Post object to a JSON map
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'price': price,
+      'expiringDate': expiringDate.toIso8601String(),
+      'images': images,
+    };
+  }
+
+  // Deserialize the JSON map to a Post object
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      price: json['price'],
+      expiringDate: DateTime.parse(json['expiringDate']),
+      images: List<String>.from(json['images']),
+      userId: json['userId']
+    );
+  }
 }
 
 /// A provider class for managing posts.
@@ -52,6 +76,8 @@ class PostProvider extends ChangeNotifier {
   final List<Post> _posts = [];
 
   List<Post> get posts => _posts;
+
+
 
   /// Adds a new post to the list of posts.
   ///
@@ -70,9 +96,8 @@ class PostProvider extends ChangeNotifier {
   /// Updates an existing post in the list of posts.
   ///
   /// The specified post is replaced with the updated post.
-  /// Doesn't update if post's title is changed, title works as id in Post object
   void updatePost(Post updatedPost) {
-    final index = _posts.indexWhere((post) => post.title == updatedPost.title);
+    final index = _posts.indexWhere((post) => post.id == updatedPost.id);
     if (index != -1) {
       _posts[index] = updatedPost;
       notifyListeners(); // Notify listeners of the change

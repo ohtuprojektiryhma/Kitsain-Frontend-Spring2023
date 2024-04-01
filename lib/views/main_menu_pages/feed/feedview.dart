@@ -64,7 +64,7 @@ class _FeedViewState extends State<FeedView>
     try {
       List<Post> newPosts = await postService.getPosts();
       setState(() {
-        postProvider.posts.addAll(newPosts);
+        postProvider.posts.addAll(newPosts); // Filter out null posts
         isLoading = false;
       });
     } catch (e) {
@@ -114,9 +114,11 @@ class _FeedViewState extends State<FeedView>
   }
 
   /// Edits a post in the list.
-  void editPost(Post post) {
+  void editPost(Post post) async {
+
     setState(() {
       postProvider.updatePost(post);
+      refreshPosts();
     });
   }
 
@@ -152,7 +154,7 @@ class _FeedViewState extends State<FeedView>
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreatePostView()),
+            MaterialPageRoute(builder: (context) => CreateEditPostView(existingImages: [])),
           ).then((newPost) async {
             if (newPost != null) {
               setState(() {
@@ -194,6 +196,7 @@ class _PostCardState extends State<PostCard> {
   final CommentService commentService = CommentService();
   late String userId;
   bool isOwner = false;
+  var postProvider = PostProvider();
 
   @override
   void initState() {
@@ -219,17 +222,18 @@ class _PostCardState extends State<PostCard> {
   }
 
   /// Edits a post.
-  void _editPost(Post post) {
-    Navigator.push(
+  void _editPost(Post post) async {
+// Navigate to the CreateEditPostView and wait for the result
+    final updatedPost = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => CreateEditPostView(post: post),
-      ),
-    ).then((updatedPost) {
-      if (updatedPost != null) {
-        widget.onEditPost(updatedPost); // Pass the updated post back
-      }
-    });
+      MaterialPageRoute(builder: (context) => CreateEditPostView(post: post, existingImages: post.images)),
+    );
+
+    // Check if the updatedPost is not null
+    if (updatedPost != null) {
+      // Pass the updated post back to the FeedView
+      widget.onEditPost(updatedPost);
+    }
   }
 
   /// Shows a confirmation dialog before removing a post.

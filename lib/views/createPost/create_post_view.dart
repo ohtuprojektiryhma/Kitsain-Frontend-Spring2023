@@ -1,4 +1,4 @@
-import 'dart:ffi';
+/**import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
@@ -260,3 +260,4 @@ class CreatePostViewState extends State<CreatePostView> {
     );
   }
 }
+**/

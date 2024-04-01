@@ -112,7 +112,7 @@ class PostService {
           'description': description,
           'price': price,
           'images': images,
-          'expringDate': formattedDate,
+          'expiringDate': formattedDate,
         }),
       );
 
@@ -148,10 +148,56 @@ class PostService {
   /// Updates an existing post with the given [post].
   ///
   /// Returns the updated [Post] object if successful, otherwise returns null.
-  Future<Post?> updatePost(Post post) async {
-    // Logic to update the post
+  Future<Post?> updatePost({
+    required String id,
+    required List<String> images,
+    required String title,
+    required String description,
+    required String price,
+    required DateTime expiringDate,
+  }) async {
+    try {
+      // Get the existing post by ID
+      Post? existingPost = await getPostById(id);
+
+      if (existingPost != null) {
+        // Update only if the existing post is not null
+        existingPost.title = title;
+        existingPost.description = description;
+        existingPost.price = price;
+        existingPost.expiringDate = expiringDate;
+        existingPost.images = images;
+
+        // Send a PUT request to update the post on the server
+        final response = await http.put(
+          Uri.parse(baseUrl + '/$id'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${accessToken.value}',
+          },
+          body: jsonEncode(existingPost.toJson()), // Serialize only the updated fields
+        );
+
+        if (response.statusCode == 200) {
+          logger.i("Post updated successfully");
+          // Deserialize the updated post and return it
+          Map<String, dynamic> postResponse = jsonDecode(response.body);
+          return Post.fromJson(postResponse);
+        } else {
+          // Handle other status codes if needed
+          logger.e('Failed to update post: ${response.statusCode}');
+        }
+      } else {
+        // Handle case when existing post is null
+        logger.e('Existing post with ID $id not found');
+      }
+    } catch (error) {
+      logger.e("Error updating post: $error");
+    }
+    // Return null if the update fails
     return null;
   }
+
 
   /// Deletes a post by its ID.
   ///
@@ -258,22 +304,29 @@ class PostService {
   Future<Post> parsePost(Map<String, dynamic> json) async {
     try {
       // Parse the list of images
-      List<String> images = [];
-      if (json['images'] != null) {
-        images = List<String>.from(json['images']);
-      }
+      List<String> images = json['images'] != null ? List<String>.from(json['images']) : [];
+
+      // Parse other fields with null checks and error handling
+      String title = json['title'] ?? '';
+      String description = json['description'] ?? '';
+      String price = json['price'] ?? '';
+      DateTime expiringDate = json['expringDate'] != null ? DateTime.parse(json['expringDate']) : DateTime.now();
+      String id = json['id'] ?? '';
+      String userId = json['user'] != null ? json['user']['id'] ?? '' : '';
+      int useful = json['favourite'] ?? false;
 
       // Create and return the Post object
       return Post(
-          images: images,
-          title: json['title'],
-          description: json['description'],
-          price: json['price'],
-          expiringDate: DateTime.parse(json['expringDate']),
-          id: json['id'],
-          userId: json['user']['id'],
-          comments: await commentService.getComments(json['id']),
-          useful: json['favourite']);
+        images: images,
+        title: title,
+        description: description,
+        price: price,
+        expiringDate: expiringDate,
+        id: id,
+        userId: userId,
+        comments: await commentService.getComments(json['id']),
+        useful: useful,
+      );
     } catch (e) {
       throw Exception('Error parsing post: $e');
     }

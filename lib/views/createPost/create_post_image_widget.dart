@@ -6,8 +6,7 @@ class editImageWidget extends StatefulWidget {
   final List<File> images;
   final List<String> stringImages;
 
-  const editImageWidget(
-      {super.key, required this.images, required this.stringImages});
+  const editImageWidget({Key? key, required this.images, required this.stringImages}) : super(key: key);
 
   @override
   _editImageWidgetState createState() => _editImageWidgetState();
@@ -20,16 +19,14 @@ class _editImageWidgetState extends State<editImageWidget> {
       height: 355,
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: widget.images.isNotEmpty
-          ? _buildCarousel(context)
-          : Container(
-              height: 250,
-              color: Colors.grey,
-            ),
+      child: _buildCarousel(context),
     );
   }
 
   Widget _buildCarousel(BuildContext context) {
+    List<String> allImages = [...widget.stringImages];
+    allImages.addAll(widget.images.map((file) => file.path));
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -38,9 +35,9 @@ class _editImageWidgetState extends State<editImageWidget> {
           width: MediaQuery.of(context).size.width,
           child: PageView.builder(
             controller: PageController(viewportFraction: 0.9),
-            itemCount: widget.images.length,
+            itemCount: allImages.length,
             itemBuilder: (BuildContext context, int itemIndex) {
-              return _buildCarouselItem(context, itemIndex);
+              return _buildCarouselItem(context, allImages[itemIndex]);
             },
           ),
         )
@@ -48,47 +45,17 @@ class _editImageWidgetState extends State<editImageWidget> {
     );
   }
 
-  Widget _buildCarouselItem(BuildContext context, int itemIndex) {
+  Widget _buildCarouselItem(BuildContext context, String imagePath) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4.0),
-      child: Stack(
-        children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: widget.images.isNotEmpty
-                ? Image.file(
-                    widget.images[itemIndex],
-                    fit: BoxFit.cover,
-                    width: 1000,
-                  )
-                : Image.network(
-                    'http://nocng.id.vn:9mons/${widget.stringImages[itemIndex]}',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
+      child: Container(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            'http://nocng.id.vn:9000/commons/$imagePath',
+            fit: BoxFit.cover,
           ),
-          Positioned(
-            right: 4,
-            top: 4,
-            child: GestureDetector(
-              onTap: () {
-                // Add your logic to delete the image
-                setState(() {
-                  widget.images.removeAt(itemIndex);
-                });
-              },
-              child: const CircleAvatar(
-                backgroundColor: Colors.red,
-                radius: 16,
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
