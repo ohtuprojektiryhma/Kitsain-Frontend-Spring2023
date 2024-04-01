@@ -148,6 +148,7 @@ class PostService {
   /// Updates an existing post with the given [post].
   ///
   /// Returns the updated [Post] object if successful, otherwise returns null.
+  /// Currently gives an error even tho it does update the post
   Future<Post?> updatePost({
     required String id,
     required List<String> images,
