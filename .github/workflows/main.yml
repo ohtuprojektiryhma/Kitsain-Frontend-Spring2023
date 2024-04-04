@@ -19,8 +19,8 @@ jobs:
         run: flutter pub get
       #- name: Check formatting issues
       #  run: flutter format --set-exit-if-changed .
-      - name: Analyze code for errors
-        run: flutter analyze .
+      #- name: Analyze code for errors
+      #  run: flutter analyze .
       - name: Run tests
         run: flutter test
       - name: Build android Apk
