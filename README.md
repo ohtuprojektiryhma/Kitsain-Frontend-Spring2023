@@ -25,3 +25,7 @@ The backlog is set to private according to customer's wishes.
 
 - [Retrospectives](https://github.com/ohtuprojektiryhma/kitsain/wiki/Retrospektiivit)
 
+## Testing
+The program is tested with unit tests to test that all the functions work properly and with integration tests to see that the widgets work properly with the logic.
+### Integration testing
+Integration tests can be run from the test directory with the command `flutter test integration_test`
