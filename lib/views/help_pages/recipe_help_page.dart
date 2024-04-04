@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
@@ -37,11 +36,11 @@ class _RecipeHelp extends State<RecipeHelp> {
       list.add(Text(line, style: AppTypography.paragraph));
       //After last row don't add empty space
       if (line != paragraph[paragraph.length - 1]) {
-        list.add(SizedBox(height: 3));
+        list.add(const SizedBox(height: 3));
       }
     }
 
-    return new Column(children: list);
+    return Column(children: list);
   }
 
   @override
@@ -52,7 +51,7 @@ class _RecipeHelp extends State<RecipeHelp> {
         body: ListView(children: <Widget>[
           Column(
             children: [
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: Align(
@@ -69,37 +68,37 @@ class _RecipeHelp extends State<RecipeHelp> {
                   ),
                 ),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Text(
                 "WHAT'S IN\nMY RECIPES?",
                 style: AppTypography.heading2.copyWith(color: AppColors.main3),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               _createParagraph(paragraphs[0], true),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
                 height: MediaQuery.of(context).size.height * 0.3,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/images/delete_or_edit.png"),
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _createParagraph(paragraphs[1], true),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
                 height: MediaQuery.of(context).size.height * 0.3,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/images/create_recipe.png"),
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _createParagraph(paragraphs[2], true),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               SizedBox(
                 width: 100,
                 height: 50,
@@ -113,13 +112,13 @@ class _RecipeHelp extends State<RecipeHelp> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(
+                  child: const Text(
                     "GOT IT",
                     style: AppTypography.category,
                   ),
                 ),
               ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
             ],
           ),
         ]),

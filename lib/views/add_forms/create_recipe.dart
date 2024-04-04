@@ -17,6 +17,8 @@ class CreateNewRecipeForm extends StatefulWidget {
 }
 
 class LoadingDialogWithTimeout extends StatefulWidget {
+  const LoadingDialogWithTimeout({super.key});
+
   @override
   _LoadingDialogWithTimeoutState createState() =>
       _LoadingDialogWithTimeoutState();
@@ -44,7 +46,7 @@ class _LoadingDialogWithTimeoutState extends State<LoadingDialogWithTimeout> {
 @override
 class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   final _formKey = GlobalKey<FormState>();
-  var _itemName = TextEditingController();
+  final _itemName = TextEditingController();
   var _pantryItems;
 
   bool _isLoading = true; // Flag to track loading state
@@ -78,7 +80,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     try {
       // Call your method to get pantry items
 
-      _pantryItems = await PantryProxy().getPantryItems();
+      _pantryItems = PantryProxy().getPantryItems();
       _itemNamesAndAmountsBuilder();
       print(itemNamesAndAmounts);
     } catch (e) {
@@ -173,7 +175,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   ///
   /// Returns indicator.
   Widget _buildLoadingIndicator() {
-    return Center(
+    return const Center(
       child: CircularProgressIndicator(),
     );
   }
@@ -325,7 +327,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     return TextFormField(
       style: AppTypography.paragraph,
       controller: controller,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(),
@@ -362,7 +364,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   ///
   /// Returns buttons
   Widget _buildActionButtons() {
-    bool isLoading = false; // Set this to true when waiting for createRecipe
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -377,7 +378,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
             foregroundColor: Colors.white,
           ),
           onPressed: () async {
-            if (isLoading) return; // Do nothing if loading
 
             showDialog(
               context: context,
@@ -407,7 +407,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   }
 
   Widget _loadingDialog(BuildContext context) {
-    return LoadingDialogWithTimeout();
+    return const LoadingDialogWithTimeout();
   }
 
   /// Builds template for buttons used in recipe form

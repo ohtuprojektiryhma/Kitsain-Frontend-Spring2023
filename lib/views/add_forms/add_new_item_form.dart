@@ -40,14 +40,14 @@ class NewItemForm extends StatefulWidget {
 class _NewItemFormState extends State<NewItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _EANCodeField = TextEditingController();
-  var _itemName = TextEditingController();
-  var _itemAmount = TextEditingController();
+  final _itemName = TextEditingController();
+  final _itemAmount = TextEditingController();
   final _taskListController = Get.put(TaskListController());
   final _taskController = Get.put(TaskController());
 
   // These dates control the date string user sees in the form
-  var _expDateString = TextEditingController();
-  var _openDateString = TextEditingController();
+  final _expDateString = TextEditingController();
+  final _openDateString = TextEditingController();
 
   // These values are actually saved to the db as DateTime
   var _openDateDT;
@@ -57,12 +57,11 @@ class _NewItemFormState extends State<NewItemForm> {
   bool _hasExpiryDate = false;
   String _category = "Choose category";
   var _catInt;
-  var _details = TextEditingController();
+  final _details = TextEditingController();
 
   var _offData;
-  UnfocusDisposition _disposition = UnfocusDisposition.scope;
+  final UnfocusDisposition _disposition = UnfocusDisposition.scope;
 
-  final _categoryMaps = CategoryMaps();
 
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
@@ -70,7 +69,7 @@ class _NewItemFormState extends State<NewItemForm> {
     if (_taskListController.taskLists.value?.items != null) {
       int length = _taskListController.taskLists.value?.items!.length as int;
       for (var i = 0; i < length; i++) {
-        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        print("$i: ${_taskListController.taskLists.value?.items?[i].title}");
         if (_taskListController.taskLists.value?.items?[i].title ==
             "My Pantry") {
           pantryIndex =
@@ -100,7 +99,7 @@ class _NewItemFormState extends State<NewItemForm> {
   Future<void> createPantryItemTask(Item pantryItem) async {
     final valuesString = createStringOfPantryItemValues(pantryItem);
     final taskListIndex = await checkIfPantryListExists();
-    var expiryDateAsString = null;
+    var expiryDateAsString;
     if (pantryItem.expiryDate != null) {
       expiryDateAsString =
           changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
@@ -401,7 +400,7 @@ class _NewItemFormState extends State<NewItemForm> {
                             .copyWith(color: Colors.black),
                         menuMaxHeight: 200,
                         value: _category,
-                        icon: Icon(Icons.arrow_drop_down),
+                        icon: const Icon(Icons.arrow_drop_down),
                         decoration:
                             const InputDecoration.collapsed(hintText: ''),
                         onChanged: (String? value) {
@@ -530,10 +529,10 @@ class _NewItemFormState extends State<NewItemForm> {
                         _expDateString.text = expirationDate;
                         _expDateDT = pickedExpiryDate.toLocal();
                         _hasExpiryDate = true;
-                        print('_expDateDT, ${_expDateDT}');
-                        print('pickedDate, ${pickedExpiryDate}');
-                        print('expirationDate, ${expirationDate}');
-                        print('_expDateString.text, ${_expDateString.text}');
+                        print('_expDateDT, $_expDateDT');
+                        print('pickedDate, $pickedExpiryDate');
+                        print('expirationDate, $expirationDate');
+                        print('_expDateString.text, $_expDateString.text');
                         print("MOI PÄÄSIN TÄNNE");
                       } else {
                         _expDateString.text = "";

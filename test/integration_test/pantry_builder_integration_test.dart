@@ -78,12 +78,12 @@ class PantryBuilderTestWrapper extends StatelessWidget {
   final Function(List<String>) onMustHaveItemsChanged;
 
   const PantryBuilderTestWrapper({
-    Key? key,
+    super.key,
     required this.sortMethod,
     required this.items,
     required this.onOptionalItemsChanged,
     required this.onMustHaveItemsChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

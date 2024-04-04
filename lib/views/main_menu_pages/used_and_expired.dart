@@ -95,7 +95,7 @@ class _UsedAndExpiredState extends State<UsedAndExpired> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(data.name),
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       },

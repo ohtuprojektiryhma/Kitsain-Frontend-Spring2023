@@ -8,6 +8,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
+  const LoadingDialogWithTimeout({super.key});
+
   @override
   _LoadingDialogWithTimeoutState createState() =>
       _LoadingDialogWithTimeoutState();
@@ -36,7 +38,7 @@ const Color nullStatusColor = Color(0xffF0EBE5);
 const Color nullTextColor = Color(0xff979797);
 
 class RecipeCard extends StatefulWidget {
-  RecipeCard({super.key, required this.recipe});
+  const RecipeCard({super.key, required this.recipe});
   
   final Recipe recipe;
   @override

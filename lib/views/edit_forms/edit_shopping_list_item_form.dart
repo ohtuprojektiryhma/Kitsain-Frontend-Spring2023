@@ -27,7 +27,7 @@ class EditShoppingListItemForm extends StatefulWidget {
 class _EditItemFormState extends State<EditShoppingListItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _EANCodeField = TextEditingController();
-  var _itemName = TextEditingController();
+  final _itemName = TextEditingController();
   String dropdownValue = categories.first;
 
   void _discardChangesDialog() {

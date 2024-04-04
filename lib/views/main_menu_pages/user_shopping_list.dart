@@ -37,8 +37,8 @@ class _UserShoppingListState extends State<UserShoppingList> {
     setState(
       () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("$data"),
-          duration: Duration(seconds: 2),
+          content: Text(data),
+          duration: const Duration(seconds: 2),
         ));
       },
     );
@@ -97,16 +97,14 @@ class _UserShoppingListState extends State<UserShoppingList> {
     taskController.tasksListRemove.value?.forEach(
       (element) {
         taskController.shoppingListItem.value?[element].checkBox = false;
-        print('$element' +
-            '${taskController.shoppingListItem.value?[element].checkBox}');
+        print('$element' '${taskController.shoppingListItem.value?[element].checkBox}');
       },
     );
 
     taskController.tasksListRemove.value?.forEach(
       (element) {
         taskController.shoppingListItem.value?[element].checkBox = false;
-        print('$element' +
-            '${taskController.shoppingListItem.value?[element].checkBox}');
+        print('$element' '${taskController.shoppingListItem.value?[element].checkBox}');
       },
     );
     taskController.tasksListRemove.value?.clear();
@@ -117,7 +115,6 @@ class _UserShoppingListState extends State<UserShoppingList> {
 
   @override
   void initState() {
-    // TODO: implement initState
     taskController.tasksListRemove.value?.clear();
     super.initState();
   }
@@ -176,7 +173,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(4),
                   ),
                   child: DragTarget(
                     builder: (
@@ -199,8 +196,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
                 const Icon(
                   Icons.arrow_forward_ios,
                   size:
-                      16, // TODO: base this on the font size of surrounding text
-                  // TODO: e.g., fontsize 16 => icon size 16
+                      16,
                 ),
                 const SizedBox(width: 2),
                 Text(widget.taskListName, style: AppTypography.paragraph),
@@ -211,13 +207,13 @@ class _UserShoppingListState extends State<UserShoppingList> {
               children: [
                 TextButton(
                   onPressed: () => _deselectAll(),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(4),
+                  ),
                   child: Text(
                     'DESELECT ALL',
                     style:
                         AppTypography.smallTitle.copyWith(color: Colors.black),
-                  ),
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.all(4),
                   ),
                 ),
               ],
@@ -228,7 +224,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
                 return Obx(
                   () {
                     return ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       itemCount: taskController.shoppingListItem.value?.length,
@@ -262,7 +258,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Container(
+                SizedBox(
                   width: bottomButtonWidth,
                   child: OutlinedButton(
                     style: ButtonStyle(
@@ -277,7 +273,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
                           const BorderSide(width: 3, color: AppColors.main1)),
                     ),
                     onPressed: _removeSelectedItems,
-                    child: Text(
+                    child: const Text(
                       'REMOVE ITEMS\nFROM LIST',
                       style: AppTypography.category,
                       textAlign: TextAlign.center,
@@ -285,7 +281,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
                   ),
                 ),
                 const Spacer(),
-                Container(
+                SizedBox(
                   width: bottomButtonWidth,
                   child: OutlinedButton(
                     style: ButtonStyle(
@@ -298,7 +294,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
                           (states) => AppColors.main1),
                     ),
                     onPressed: _moveSelectedItemsToPantry,
-                    child: Text(
+                    child: const Text(
                       'ADD ITEMS\nTO PANTRY',
                       style: AppTypography.category,
                       textAlign: TextAlign.center,

@@ -9,7 +9,7 @@ void main() {
 
   testWidgets('Create new recipe form test', (WidgetTester tester) async {
     // Build the widget
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: CreateNewRecipeForm(),
     ));
     // Verify initial state
@@ -30,7 +30,7 @@ void main() {
     expect(find.byType(CreateNewRecipeForm), findsNothing);
 
     // Re-open form
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: CreateNewRecipeForm(),
     ));
 

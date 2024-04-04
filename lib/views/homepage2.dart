@@ -1,15 +1,15 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:get/get.dart';
 import 'package:googleapis/tasks/v1.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
-import 'package:kitsain_frontend_spring2023/LoginController.dart';
+import 'package:kitsain_frontend_spring2023/login_controller.dart';
 import 'package:kitsain_frontend_spring2023/main.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 
+// ignore: must_be_immutable
 class HomePage2 extends StatelessWidget {
   HomePage2({super.key});
 
@@ -34,7 +34,7 @@ class HomePage2 extends StatelessWidget {
                 color: AppColors.expiresIn7PlusDays,
                 width: 3
             ),
-            borderRadius: BorderRadius.all(Radius.circular(35)),
+            borderRadius: const BorderRadius.all(Radius.circular(35)),
           ),
           child: Column(
             children: [
@@ -48,7 +48,7 @@ class HomePage2 extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     child: ClipRRect(
                       clipBehavior: Clip.antiAlias,
-                      borderRadius: BorderRadius.all(Radius.circular(25)),
+                      borderRadius: const BorderRadius.all(Radius.circular(25)),
                       child: Image.asset(
                         "assets/images/sign_in.jpg",
                         height: MediaQuery.of(context).size.height * .6,
@@ -58,7 +58,7 @@ class HomePage2 extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                     child: Text(
                       'WELCOME\nTO\nKITSAIN!',
                       style: AppTypography.heading2.copyWith(color: AppColors.loginTitleColor),
@@ -69,16 +69,16 @@ class HomePage2 extends StatelessWidget {
               ),
               SignInButton(
                 Buttons.Google,
-                shape: RoundedRectangleBorder(
-                    side: new BorderSide(color: Colors.white),
+                shape: const RoundedRectangleBorder(
+                    side: BorderSide(color: Colors.white),
                     borderRadius:
-                        new BorderRadius.all(new Radius.circular(10))),
+                        BorderRadius.all(Radius.circular(10))),
                 onPressed: () async {
                   await loginController.googleLogin();
                   await taskListController.getTaskLists();
 
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: ((context) => HomePage(
+                      builder: ((context) => const HomePage(
                             title: 'Kitsain MVP Spring 2023',
                           ))));
 

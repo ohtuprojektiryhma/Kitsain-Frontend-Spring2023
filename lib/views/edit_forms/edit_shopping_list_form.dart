@@ -50,17 +50,17 @@ class _EditItemFormState extends State<EditShoppingListForm> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.05,
                   child: FloatingActionButton(
-                    child: Icon(Icons.close),
+                    child: const Icon(Icons.close),
                     onPressed: () => _discardChangesDialog(),
                   ),
                 )
               ],
             ),
             SizedBox( height: MediaQuery.of(context).size.height * 0.03),
-            Text(
+            const Text(
               'EDIT\nSHOPPING\nLIST',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             SizedBox( height: MediaQuery.of(context).size.height * 0.03),
             Stack(
@@ -78,7 +78,7 @@ class _EditItemFormState extends State<EditShoppingListForm> {
                       return null;
                     },
                   ),
-                  Positioned(
+                  const Positioned(
                       right: 27,
                       top: 15,
                       child: Icon(Icons.keyboard_alt_outlined)
@@ -94,7 +94,7 @@ class _EditItemFormState extends State<EditShoppingListForm> {
                   width: MediaQuery.of(context).size.height * 0.15,
                   child: ElevatedButton(
                     onPressed: () => _discardChangesDialog(),
-                    child: Text('CANCEL'),
+                    child: const Text('CANCEL'),
                   ),
                 ),
                 SizedBox( width: MediaQuery.of(context).size.width * 0.05),
@@ -107,7 +107,7 @@ class _EditItemFormState extends State<EditShoppingListForm> {
                         print("OK");
                       }
                     },
-                    child: Text('  DONE  '),
+                    child: const Text('  DONE  '),
                   ),
                 ),
               ],

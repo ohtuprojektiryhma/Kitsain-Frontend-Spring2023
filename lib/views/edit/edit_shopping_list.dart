@@ -80,7 +80,7 @@ class _EditItemFormState extends State<EditShoppingListForm> {
                   child: FloatingActionButton(
                     foregroundColor: AppColors.main2,
                     backgroundColor: AppColors.main3,
-                    child: Icon(Icons.close),
+                    child: const Icon(Icons.close),
                     onPressed: () => _discardChangesDialog(),
                   ),
                 )
@@ -127,7 +127,7 @@ class _EditItemFormState extends State<EditShoppingListForm> {
                           const BorderSide(width: 3, color: AppColors.main3)),
                     ),
                     onPressed: () => _discardChangesDialog(),
-                    child: Text(
+                    child: const Text(
                       'CANCEL',
                       style: AppTypography.category,
                     ),
@@ -153,7 +153,7 @@ class _EditItemFormState extends State<EditShoppingListForm> {
                         Navigator.pop(context);
                       }
                     },
-                    child: Text(
+                    child: const Text(
                       '  DONE  ',
                       style: AppTypography.category,
                     ),

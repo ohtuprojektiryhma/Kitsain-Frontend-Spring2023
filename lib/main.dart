@@ -12,7 +12,6 @@ import 'package:kitsain_frontend_spring2023/views/homepage2.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/shopping_list_navigation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +59,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     stateController.addData();
     super.initState();
   }
@@ -70,6 +68,7 @@ class _HomePageState extends State<HomePage> {
     double navBarHeight = 75;
     double paddingBoxHeight = 10;
 
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         return false;
@@ -150,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .shoppingListsTabLabel,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 13),
+                                    style: const TextStyle(fontSize: 13),
                                   ),
                                 ],
                               ),
@@ -166,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                             List<dynamic> accepted,
                             List<dynamic> rejected,
                           ) {
-                            return Container(
+                            return SizedBox(
                               height: navBarHeight,
                               child: Column(
                                 children: [

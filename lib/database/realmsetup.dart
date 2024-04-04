@@ -1,5 +1,4 @@
 import 'package:realm/realm.dart';
-import 'package:flutter/foundation.dart';
 import 'item.dart';
 
 Realm realm = RealmSetup()._initializeRealm();

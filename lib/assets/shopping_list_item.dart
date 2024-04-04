@@ -68,11 +68,11 @@ class _ShoppingListItemState extends State<ShoppingListItem> {
         borderRadius: BorderRadius.circular(5),
       ),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.symmetric(vertical: 3, horizontal: 0),
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 0),
               child: Row(
                 children: [
                   Column(
@@ -85,14 +85,14 @@ class _ShoppingListItemState extends State<ShoppingListItem> {
                       Container(
                         // height: 50,
                         width: MediaQuery.of(context).size.width * .45,
-                        decoration: BoxDecoration(),
+                        decoration: const BoxDecoration(),
                         clipBehavior: Clip.antiAlias,
 
                         child: Text(
                           widget.itemName.toUpperCase(),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -104,10 +104,10 @@ class _ShoppingListItemState extends State<ShoppingListItem> {
                       ),
                     ],
                   ),
-                  Spacer(),
+                  const Spacer(),
                   IconButton(
                     onPressed: () => _editItem(),
-                    icon: Icon(Icons.edit, color: AppColors.main1),
+                    icon: const Icon(Icons.edit, color: AppColors.main1),
                   ),
                   Checkbox(
                     value: taskController
@@ -120,7 +120,7 @@ class _ShoppingListItemState extends State<ShoppingListItem> {
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               thickness: 1,
               height: 1,
             ),
