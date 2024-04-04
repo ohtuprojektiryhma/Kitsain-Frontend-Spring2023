@@ -104,6 +104,7 @@ class PantryController {
   /// [pantryItem] is the pantry item that contains the details to be stringified.
   createStringOfPantryItemValues(Item pantryItem) {
     var valuesString = "";
+    valuesString += "amount: ${pantryItem.amount}\n";
     valuesString += "location: ${pantryItem.location}\n";
     valuesString += "category: ${pantryItem.mainCat}\n";
     valuesString += "favorite: ${pantryItem.favorite}\n";
