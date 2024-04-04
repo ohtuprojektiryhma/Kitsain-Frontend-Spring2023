@@ -1,0 +1,31 @@
+name: Kitsain Frontend CI
+
+on:
+  push:
+    branches:
+    - dev_tasks
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setups-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta'
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Check formatting issues
+        run: flutter format --set-exit-if-changed .
+      - name: Analyze code for errors
+        run: flutter analyze .
+      - name: Run tests
+        run: flutter test
+      - name: Build android Apk
+        run: flutter build apk
+      - uses: actions/upload-artifact@v1
+        with:
+          name: release-apk
+          path: build/app/outputs/apk/release/kitsain.apk
