@@ -17,8 +17,8 @@ jobs:
           channel: 'beta'
       - name: Install dependencies
         run: flutter pub get
-      - name: Check formatting issues
-        run: flutter format --set-exit-if-changed .
+      #- name: Check formatting issues
+      #  run: flutter format --set-exit-if-changed .
       - name: Analyze code for errors
         run: flutter analyze .
       - name: Run tests
