@@ -273,12 +273,5 @@ class PantryController {
       index = await checkIfPantryListExists();
     }
     await syncPantryTasksWithRealm(index);
-    var realmItems = await PantryProxy().getItems();
-    print("REALM ITEMS: ");
-    for (var i = 0; i < realmItems.length; i++) {
-      print(realmItems[i].name);
-      print(realmItems[i].expiryDate);
-      print("");
-    }
   }
 }
