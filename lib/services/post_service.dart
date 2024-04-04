@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/models/post.dart';
@@ -176,7 +175,8 @@ class PostService {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ${accessToken.value}',
           },
-          body: jsonEncode(existingPost.toJson()), // Serialize only the updated fields
+          body: jsonEncode(
+              existingPost.toJson()), // Serialize only the updated fields
         );
 
         if (response.statusCode == 200) {
@@ -198,7 +198,6 @@ class PostService {
     // Return null if the update fails
     return null;
   }
-
 
   /// Deletes a post by its ID.
   ///
@@ -305,13 +304,16 @@ class PostService {
   Future<Post> parsePost(Map<String, dynamic> json) async {
     try {
       // Parse the list of images
-      List<String> images = json['images'] != null ? List<String>.from(json['images']) : [];
+      List<String> images =
+          json['images'] != null ? List<String>.from(json['images']) : [];
 
       // Parse other fields with null checks and error handling
       String title = json['title'] ?? '';
       String description = json['description'] ?? '';
       String price = json['price'] ?? '';
-      DateTime expiringDate = json['expringDate'] != null ? DateTime.parse(json['expringDate']) : DateTime.now();
+      DateTime expiringDate = json['expringDate'] != null
+          ? DateTime.parse(json['expringDate'])
+          : DateTime.now();
       String id = json['id'] ?? '';
       String userId = json['user'] != null ? json['user']['id'] ?? '' : '';
       int useful = json['favourite'] ?? false;

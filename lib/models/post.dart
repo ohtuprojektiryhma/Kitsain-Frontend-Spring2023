@@ -1,13 +1,5 @@
-import 'dart:ffi';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
-import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:kitsain_frontend_spring2023/services/post_service.dart';
 
 /// A class for an object that handles information about a post
 /// on the social media feed tab.
@@ -57,14 +49,13 @@ class Post extends ChangeNotifier {
   // Deserialize the JSON map to a Post object
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      price: json['price'],
-      expiringDate: DateTime.parse(json['expiringDate']),
-      images: List<String>.from(json['images']),
-      userId: json['userId']
-    );
+        id: json['id'],
+        title: json['title'],
+        description: json['description'],
+        price: json['price'],
+        expiringDate: DateTime.parse(json['expiringDate']),
+        images: List<String>.from(json['images']),
+        userId: json['userId']);
   }
 }
 
@@ -76,8 +67,6 @@ class PostProvider extends ChangeNotifier {
   final List<Post> _posts = [];
 
   List<Post> get posts => _posts;
-
-
 
   /// Adds a new post to the list of posts.
   ///

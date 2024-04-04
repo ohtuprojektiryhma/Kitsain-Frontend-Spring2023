@@ -14,9 +14,9 @@ class CommentBox extends StatelessWidget {
 
   const CommentBox(
       {super.key,
-        required this.author,
-        required this.comment,
-        required this.date});
+      required this.author,
+      required this.comment,
+      required this.date});
 
   /// Converts the time into a pretty string.
   /// > If comment was posted within 7 days -> display days ago
@@ -24,12 +24,11 @@ class CommentBox extends StatelessWidget {
   /// > If time was under 1 hour ago -> display minutes
   /// > If time was over 1 hour ago -> display hours
   String _timeToString(DateTime t) {
-
     DateTime currTime = DateTime.now();
     final difference = currTime.difference(t);
 
     String minute = t.minute.toString();
-    if (t.minute < 10){
+    if (t.minute < 10) {
       minute = '0$minute';
     }
 
@@ -68,8 +67,7 @@ class CommentBox extends StatelessWidget {
                         const SizedBox(width: 5),
                         Text('$author  •  ${_timeToString(date)}'),
                       ],
-                    )
-                ),
+                    )),
                 const SizedBox(height: 15),
                 Align(alignment: Alignment.centerLeft, child: Text(comment)),
               ],

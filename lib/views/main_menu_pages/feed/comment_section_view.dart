@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:kitsain_frontend_spring2023/models/comment.dart';
 import 'package:kitsain_frontend_spring2023/services/comment_service.dart';
 import 'package:kitsain_frontend_spring2023/assets/commentBox.dart';
@@ -13,9 +12,8 @@ class CommentSectionView extends StatefulWidget {
   final String parentID;
   final List<Comment> comments;
 
-  const CommentSectionView({super.key,
-    required this.parentID,
-    required this.comments});
+  const CommentSectionView(
+      {super.key, required this.parentID, required this.comments});
 
   @override
   State<CommentSectionView> createState() => _CommentSectionViewState();
@@ -40,10 +38,7 @@ class _CommentSectionViewState extends State<CommentSectionView> {
   /// current instance of comment.
   Comment _createCommentObj(String author, String message, DateTime date) {
     return Comment(
-        postID: widget.parentID,
-        author: author,
-        message: message,
-        date: date);
+        postID: widget.parentID, author: author, message: message, date: date);
   }
 
   @override
@@ -62,13 +57,13 @@ class _CommentSectionViewState extends State<CommentSectionView> {
         padding: const EdgeInsets.only(bottom: 85),
         child: Container(
           height: MediaQuery.of(context).size.height * 1,
-          width: MediaQuery.of(context).size.width *1 ,
+          width: MediaQuery.of(context).size.width * 1,
           child: RefreshIndicator(
             onRefresh: () {
               return Future.delayed(
                 Duration(seconds: 1),
                 () {
-                setState(() {});
+                  setState(() {});
                 },
               );
             },
@@ -84,40 +79,37 @@ class _CommentSectionViewState extends State<CommentSectionView> {
                   return GestureDetector(
                     onLongPress: () {
                       showModalBottomSheet(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Container(
-                            child: Padding(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Container(
+                                child: Padding(
                               padding: EdgeInsets.all(16.0),
                               child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  ListTile(
-                                    textColor: Colors.red,
-                                    iconColor: Colors.red,
-                                    leading: Icon(Icons.delete),
-                                    title: Text('Remove post'),
-                                    onTap: (){
-                                      setState(() {
-                                        // TODO: check if user matches comment author
-                                        _removeComment(index);
-                                        Navigator.of(context).pop();
-                                      });
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: Icon(Icons.edit),
-                                    title: Text('Edit'),
-                                    onTap: (){
-                                      // TODO: logic for editing comment
-                                    },
-                                  ),
-                                ]
-                              ),
-                            )
-                          );
-                        }
-                      );
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      textColor: Colors.red,
+                                      iconColor: Colors.red,
+                                      leading: Icon(Icons.delete),
+                                      title: Text('Remove post'),
+                                      onTap: () {
+                                        setState(() {
+                                          // TODO: check if user matches comment author
+                                          _removeComment(index);
+                                          Navigator.of(context).pop();
+                                        });
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: Icon(Icons.edit),
+                                      title: Text('Edit'),
+                                      onTap: () {
+                                        // TODO: logic for editing comment
+                                      },
+                                    ),
+                                  ]),
+                            ));
+                          });
                     },
                     child: CommentBox(
                       comment: _tempComments[index].message,
@@ -170,14 +162,12 @@ class _CommentSectionViewState extends State<CommentSectionView> {
     );
   }
 
-  void _scrollToTop(){
-    _scrollController.animateTo(
-        _scrollController.position.minScrollExtent,
-        duration: const Duration(seconds: 1),
-        curve: Curves.decelerate);
+  void _scrollToTop() {
+    _scrollController.animateTo(_scrollController.position.minScrollExtent,
+        duration: const Duration(seconds: 1), curve: Curves.decelerate);
   }
 
-  void _removeComment(int index){
+  void _removeComment(int index) {
     _tempComments.removeAt(index);
   }
 
