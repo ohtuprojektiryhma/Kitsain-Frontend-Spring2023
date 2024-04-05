@@ -22,6 +22,7 @@ doc/api/
 
 
 
+
 # Miscellaneous
 *.class
 *.log
@@ -48,7 +49,7 @@ firebase_options.dart
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
-#.vscode/
+.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -105,3 +106,4 @@ binary/
 
 # Ignore Gradle build output directory
 build
+/ios/Podfile.lock
