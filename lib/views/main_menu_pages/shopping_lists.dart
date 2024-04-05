@@ -5,7 +5,7 @@ import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:kitsain_frontend_spring2023/views/help_pages/shopping_lists_help_page.dart';
-import 'package:kitsain_frontend_spring2023/LoginController.dart';
+import 'package:kitsain_frontend_spring2023/login_controller.dart';
 import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
 import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/user_shopping_list.dart';
@@ -89,7 +89,7 @@ class _ShoppingListsState extends State<ShoppingLists> {
       () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("$title added"),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ));
       },
     );
@@ -184,7 +184,7 @@ class _ShoppingListsState extends State<ShoppingLists> {
                                   Text(
                                     '${taskListController.taskLists.value?.items?[index].title}',
                                     style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                        const TextStyle(fontWeight: FontWeight.bold),
                                     //style: AppTypography.paragraph.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const Spacer(),

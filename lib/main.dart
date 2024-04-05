@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/item_controller.dart';
+import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/feedview.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/pantryview.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/recipeview.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/used_and_expired.dart';
@@ -12,7 +13,6 @@ import 'package:kitsain_frontend_spring2023/views/homepage2.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/shopping_list_navigation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +60,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     stateController.addData();
     super.initState();
   }
@@ -70,6 +69,7 @@ class _HomePageState extends State<HomePage> {
     double navBarHeight = 75;
     double paddingBoxHeight = 10;
 
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         return false;
@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
         child: DefaultTabController(
           // animationDuration: Duration.zero,
 
-          length: 4,
+          length: 5,
           child: Builder(
             builder: (BuildContext context) {
               return Container(
@@ -94,6 +94,7 @@ class _HomePageState extends State<HomePage> {
                         ShoppingListNavigation(),
                         UsedAndExpired(),
                         RecipeView(),
+                        FeedView()
                       ],
                     ),
                     bottomNavigationBar: TabBar(
@@ -123,6 +124,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .pantryTabLabel,
                                     textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
@@ -150,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .shoppingListsTabLabel,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 13),
+                                    style: const TextStyle(fontSize: 9),
                                   ),
                                 ],
                               ),
@@ -166,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                             List<dynamic> accepted,
                             List<dynamic> rejected,
                           ) {
-                            return Container(
+                            return SizedBox(
                               height: navBarHeight,
                               child: Column(
                                 children: [
@@ -176,8 +178,9 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   Text(
                                     AppLocalizations.of(context)!
-                                        .pantryTabLabel,
+                                        .historyTabLabel,
                                     textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
@@ -205,13 +208,41 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .recipeTabLabel,
                                     textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
                             );
                           },
                           onMove: (details) {
-                            DefaultTabController.of(context).animateTo(0);
+                            DefaultTabController.of(context).animateTo(3);
+                          },
+                        ),
+                        DragTarget(
+                          builder: (
+                            BuildContext context,
+                            List<dynamic> accepted,
+                            List<dynamic> rejected,
+                          ) {
+                            return Container(
+                              height: navBarHeight,
+                              child: Column(
+                                children: [
+                                  SizedBox(height: paddingBoxHeight),
+                                  const Icon(
+                                    Icons.feed,
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!.feedTabLabel,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          onMove: (details) {
+                            DefaultTabController.of(context).animateTo(4);
                           },
                         ),
                       ],

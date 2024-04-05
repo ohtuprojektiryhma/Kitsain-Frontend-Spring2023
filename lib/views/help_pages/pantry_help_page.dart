@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
@@ -55,11 +54,11 @@ class _PantryHelp extends State<PantryHelp> {
       list.add(Text(line, style: AppTypography.paragraph));
       //After last row don't add empty space
       if (line != paragraph[paragraph.length - 1]) {
-        list.add(SizedBox(height: 3));
+        list.add(const SizedBox(height: 3));
       }
     }
 
-    return new Column(children: list);
+    return Column(children: list);
   }
 
   @override
@@ -70,7 +69,7 @@ class _PantryHelp extends State<PantryHelp> {
         body: ListView(children: <Widget>[
           Column(
             children: [
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: Align(
@@ -92,11 +91,11 @@ class _PantryHelp extends State<PantryHelp> {
                 style: AppTypography.heading2.copyWith(color: AppColors.main3),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               _createParagraph(paragraphs[0], true),
               Container(
                 height: MediaQuery.of(context).size.height * 0.3,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/images/pantry_help1.png"),
                     // fit: BoxFit.cover,
@@ -107,7 +106,7 @@ class _PantryHelp extends State<PantryHelp> {
               _createParagraph(paragraphs[1], true),
               Container(
                 height: MediaQuery.of(context).size.height * 0.3,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/images/pantry_help2.png"),
                     // fit: BoxFit.cover,
@@ -118,7 +117,7 @@ class _PantryHelp extends State<PantryHelp> {
               _createParagraph(paragraphs[2], true),
               Container(
                 height: MediaQuery.of(context).size.height * 0.3,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/images/pantry_help3.png"),
                     // fit: BoxFit.cover,
@@ -127,7 +126,7 @@ class _PantryHelp extends State<PantryHelp> {
                 ),
               ),
               _createParagraph(paragraphs[3], false),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               SizedBox(
                 width: 100,
                 height: 50,
@@ -141,10 +140,10 @@ class _PantryHelp extends State<PantryHelp> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text("GOT IT"),
+                  child: const Text("GOT IT"),
                 ),
               ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
             ],
           ),
         ]),

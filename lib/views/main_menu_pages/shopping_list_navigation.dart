@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kitsain_frontend_spring2023/views/main_menu_pages/user_shopping_list.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/shopping_lists.dart';
 
 class ShoppingListNavigation extends StatefulWidget {
@@ -10,13 +9,9 @@ class ShoppingListNavigation extends StatefulWidget {
 }
 
 class _ShoppingListNavigationState extends State<ShoppingListNavigation> {
-  String _activeList = '';
-  int _activeShoppingListIndex = 0;
 
   setActiveShoppingListIndex(index) {
     setState(() {
-      _activeShoppingListIndex = index;
-      _activeList = index.toString();
     });
   }
 

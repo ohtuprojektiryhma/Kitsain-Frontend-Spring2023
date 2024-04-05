@@ -5,7 +5,7 @@ on:
     branches:
     - dev_tasks
 jobs:
-  build:
+  Frontend-CI:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -17,12 +17,10 @@ jobs:
           channel: 'beta'
       - name: Install dependencies
         run: flutter pub get
-      #- name: Check formatting issues
-      #  run: flutter format --set-exit-if-changed .
-      #- name: Analyze code for errors
-      #  run: flutter analyze .
+      - name: Analyze code for errors
+        run: flutter analyze .
       - name: Run tests
-        run: flutter test
+        run: flutter test test/integration_test/pantry_builder_ontegration_test.dart
       - name: Build android Apk
         run: flutter build apk
       - uses: actions/upload-artifact@v1

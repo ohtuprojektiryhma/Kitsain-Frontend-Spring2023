@@ -13,7 +13,7 @@ class RecipeController {
 
   createRecipeTaskList() async {
     var recipesFound = await checkIfRecipeListExists();
-    print("recipesfound: ${recipesFound}");
+    print("recipesfound: $recipesFound");
     if (recipesFound == "not") {
       _taskListController.createTaskLists("My Recipes");
     }
@@ -115,7 +115,7 @@ class RecipeController {
   }
   
   syncRecipeTasksWithRealm(index) async {
-    var realmItems = await RecipeProxy().getRecipes();
+    var realmItems = RecipeProxy().getRecipes();
     var tasks = await _taskController.getTasksList(index);
     print("testing");
     saveRecipeTasksToRealm(realmItems, tasks);
@@ -130,7 +130,7 @@ class RecipeController {
       index = await checkIfRecipeListExists();
     }
     await syncRecipeTasksWithRealm(index);
-    var realmItems = await RecipeProxy().getItems();
+    var realmItems = RecipeProxy().getItems();
     print(realmItems);
   }
 
@@ -141,9 +141,9 @@ class RecipeController {
       valuesString += "$key: $value\n";
     });
     valuesString += "\nInstructions:\n";
-    recipe.instructions.forEach((instruction) {
+    for (var instruction in recipe.instructions) {
       valuesString += "$instruction\n";
-    });
+    }
     return valuesString;
   }
 
@@ -184,7 +184,7 @@ class RecipeController {
     if (_taskListController.taskLists.value?.items != null) {
       int length = _taskListController.taskLists.value?.items!.length as int;
       for (var i = 0; i < length; i++) {
-        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        print("$i: ${_taskListController.taskLists.value?.items?[i].title}");
         if (_taskListController.taskLists.value?.items?[i].title ==
             "My Recipes") {
           recipeIndex =

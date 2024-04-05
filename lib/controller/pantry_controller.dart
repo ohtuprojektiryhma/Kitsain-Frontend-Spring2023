@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:kitsain_frontend_spring2023/LoginController.dart';
 import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
 import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
 import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
@@ -20,7 +19,7 @@ class PantryController {
     if (_taskListController.taskLists.value?.items != null) {
       int length = _taskListController.taskLists.value?.items!.length as int;
       for (var i = 0; i < length; i++) {
-        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        print("$i: ${_taskListController.taskLists.value?.items?[i].title}");
         if (_taskListController.taskLists.value?.items?[i].title ==
             "My Pantry") {
           pantryIndex =
@@ -66,7 +65,7 @@ class PantryController {
     if (_taskListController.taskLists.value?.items != null) {
       int length = _taskListController.taskLists.value?.items!.length as int;
       for (var i = 0; i < length; i++) {
-        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        print("$i: ${_taskListController.taskLists.value?.items?[i].title}");
         if (_taskListController.taskLists.value?.items?[i].title ==
             "My Pantry") {
           pantryIndex =
@@ -84,7 +83,7 @@ class PantryController {
   Future<void> createPantryItemTask(Item pantryItem) async {
     final valuesString = createStringOfPantryItemValues(pantryItem);
     final taskListIndex = await checkIfPantryListExists();
-    var expiryDateAsString = null;
+    String? expiryDateAsString;
     if (pantryItem.expiryDate != null) {
       expiryDateAsString =
           changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
@@ -104,6 +103,7 @@ class PantryController {
   /// [pantryItem] is the pantry item that contains the details to be stringified.
   createStringOfPantryItemValues(Item pantryItem) {
     var valuesString = "";
+    valuesString += "amount: ${pantryItem.amount}\n";
     valuesString += "location: ${pantryItem.location}\n";
     valuesString += "category: ${pantryItem.mainCat}\n";
     valuesString += "favorite: ${pantryItem.favorite}\n";
@@ -118,20 +118,6 @@ class PantryController {
   /// [item] is the pantry item with its updated properties.
   Future<void> editItemTasks(Item item) async {
     print("opening date 3: ${item.openedDate}");
-    final taskListIndex = await findPantryIndex();
-    var expiryDateAsString = null;
-    if (item.expiryDate != null) {
-      expiryDateAsString = changeFormatOfExpiryDate(item.expiryDate.toString());
-    }
-    final editedValuesString = createStringOfPantryItemValues(item);
-    var googleTaskId = _taskController.editTask(
-        item.name,
-        editedValuesString,
-        taskListIndex,
-        item.googleTaskId as String,
-        0,
-        expiryDateAsString,
-        item.amount);
   }
 
   String _ignoreSubMicro(String s) {
@@ -151,7 +137,7 @@ class PantryController {
     List<String> lines = description.split('\n');
 
     // Loop through each line
-    lines.forEach((line) {
+    for (var line in lines) {
       // Split each line by colon (:) to separate property name and value
       List<String> parts = line.split(':');
 
@@ -198,7 +184,7 @@ class PantryController {
           }
           break;
       }
-    });
+    }
     return item;
   }
 
@@ -258,7 +244,7 @@ class PantryController {
   ///
   /// [index] is the My Pantry tasklist index
   syncPantryTasksWithRealm(index) async {
-    var realmItems = await PantryProxy().getPantryItems();
+    var realmItems = PantryProxy().getPantryItems();
     var tasks = await _taskController.getTasksList(index);
     saveGoogleTasksToRealm(realmItems, tasks);
     deleteMissingGoogleTasksFromRealm(realmItems, tasks);

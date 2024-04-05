@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/categories.dart';
+import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
 import 'package:realm/realm.dart';
@@ -40,14 +41,15 @@ class NewItemForm extends StatefulWidget {
 class _NewItemFormState extends State<NewItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _EANCodeField = TextEditingController();
-  var _itemName = TextEditingController();
-  var _itemAmount = TextEditingController();
+  final _itemName = TextEditingController();
+  final _itemAmount = TextEditingController();
   final _taskListController = Get.put(TaskListController());
   final _taskController = Get.put(TaskController());
+  final _pantryController = PantryController();
 
   // These dates control the date string user sees in the form
-  var _expDateString = TextEditingController();
-  var _openDateString = TextEditingController();
+  final _expDateString = TextEditingController();
+  final _openDateString = TextEditingController();
 
   // These values are actually saved to the db as DateTime
   var _openDateDT;
@@ -57,12 +59,11 @@ class _NewItemFormState extends State<NewItemForm> {
   bool _hasExpiryDate = false;
   String _category = "Choose category";
   var _catInt;
-  var _details = TextEditingController();
+  final _details = TextEditingController();
 
   var _offData;
-  UnfocusDisposition _disposition = UnfocusDisposition.scope;
+  final UnfocusDisposition _disposition = UnfocusDisposition.scope;
 
-  final _categoryMaps = CategoryMaps();
 
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
@@ -70,7 +71,7 @@ class _NewItemFormState extends State<NewItemForm> {
     if (_taskListController.taskLists.value?.items != null) {
       int length = _taskListController.taskLists.value?.items!.length as int;
       for (var i = 0; i < length; i++) {
-        print("${i}: ${_taskListController.taskLists.value?.items?[i].title}");
+        print("$i: ${_taskListController.taskLists.value?.items?[i].title}");
         if (_taskListController.taskLists.value?.items?[i].title ==
             "My Pantry") {
           pantryIndex =
@@ -82,39 +83,8 @@ class _NewItemFormState extends State<NewItemForm> {
     return pantryIndex;
   }
 
-  createStringOfPantryItemValues(Item pantryItem) {
-    var valuesString = "";
-    valuesString += "location: ${pantryItem.location}\n";
-    valuesString += "category: ${pantryItem.mainCat}\n";
-    valuesString += "favorite: ${pantryItem.favorite}\n";
-    valuesString += "opened date: ${pantryItem.openedDate}\n";
-    valuesString += "added date: ${pantryItem.addedDate}\n";
-    valuesString += "details: ${pantryItem.details}\n";
-    return valuesString;
-  }
-
   changeFormatOfExpiryDate(String expiryDate) {
     return expiryDate.replaceAll(' ', 'T');
-  }
-
-  Future<void> createPantryItemTask(Item pantryItem) async {
-    final valuesString = createStringOfPantryItemValues(pantryItem);
-    final taskListIndex = await checkIfPantryListExists();
-    var expiryDateAsString = null;
-    if (pantryItem.expiryDate != null) {
-      expiryDateAsString =
-          changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
-    }
-    print("expiry date: ${pantryItem.expiryDate}");
-    var googleTaskId = await _taskController.createTask(
-        pantryItem.name,
-        valuesString,
-        taskListIndex.toString(),
-        expiryDateAsString,
-        pantryItem.amount);
-    pantryItem.googleTaskId = googleTaskId;
-    PantryProxy().upsertItem(pantryItem);
-    print("pantry item amount: ${pantryItem.amount}");
   }
 
   void _discardChangesDialog(bool discardForm) {
@@ -346,6 +316,7 @@ class _NewItemFormState extends State<NewItemForm> {
                     TextFormField(
                       style: AppTypography.paragraph,
                       controller: _itemName,
+                      maxLength: 60,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -372,6 +343,7 @@ class _NewItemFormState extends State<NewItemForm> {
                     TextFormField(
                       style: AppTypography.paragraph,
                       controller: _itemAmount,
+                      maxLength: 10,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -401,7 +373,7 @@ class _NewItemFormState extends State<NewItemForm> {
                             .copyWith(color: Colors.black),
                         menuMaxHeight: 200,
                         value: _category,
-                        icon: Icon(Icons.arrow_drop_down),
+                        icon: const Icon(Icons.arrow_drop_down),
                         decoration:
                             const InputDecoration.collapsed(hintText: ''),
                         onChanged: (String? value) {
@@ -530,10 +502,10 @@ class _NewItemFormState extends State<NewItemForm> {
                         _expDateString.text = expirationDate;
                         _expDateDT = pickedExpiryDate.toLocal();
                         _hasExpiryDate = true;
-                        print('_expDateDT, ${_expDateDT}');
-                        print('pickedDate, ${pickedExpiryDate}');
-                        print('expirationDate, ${expirationDate}');
-                        print('_expDateString.text, ${_expDateString.text}');
+                        print('_expDateDT, $_expDateDT');
+                        print('pickedDate, $pickedExpiryDate');
+                        print('expirationDate, $expirationDate');
+                        print('_expDateString.text, $_expDateString.text');
                         print("MOI PÄÄSIN TÄNNE");
                       } else {
                         _expDateString.text = "";
@@ -602,7 +574,7 @@ class _NewItemFormState extends State<NewItemForm> {
                                 details: _details.text,
                                 amount: _itemAmount.text,
                               );
-                              createPantryItemTask(newItem);
+                              _pantryController.createPantryItemTask(newItem);
                               setState(() {});
                               Navigator.pop(context);
                             }

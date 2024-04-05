@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, sort_child_properties_last, unused_field
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +11,6 @@ import 'package:kitsain_frontend_spring2023/views/edit_forms/edit_item_form.dart
 import 'statuscolor.dart';
 import 'package:kitsain_frontend_spring2023/categories.dart';
 import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
-import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
 import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
 import 'package:get/get.dart';
 
@@ -24,10 +23,11 @@ enum _MenuValues {
   pantry
 }
 
-const double BORDERWIDTH = 30.0;
-const Color NULLSTATUSCOLOR = Color(0xffF0EBE5);
-const Color NULLTEXTCOLOR = Color(0xff979797);
+const double borderWidth = 30.0;
+const Color nullStatusColor = Color(0xffF0EBE5);
+const Color nullStatusTextColor = Color(0xff979797);
 
+// ignore: must_be_immutable
 class ItemCard extends StatefulWidget {
   ItemCard({super.key, required this.item, required this.loc});
   late Item item;
@@ -318,12 +318,13 @@ class _ItemCardState extends State<ItemCard> {
                   border: Border(
                     left: BorderSide(
                         color: widget.item.expiryDate == null
-                            ? NULLSTATUSCOLOR
+                            ? nullStatusColor
                             : returnColor(widget.item.expiryDate!),
-                        width: BORDERWIDTH),
+                        width: borderWidth),
                   ),
                 ),
                 child: ListTile(
+                  isThreeLine: true,
                   title: Text(
                     widget.item.name.toUpperCase(),
                     style: AppTypography.heading3,
@@ -375,25 +376,36 @@ class _ItemCardState extends State<ItemCard> {
                     border: Border(
                       left: BorderSide(
                           color: widget.item.expiryDate == null
-                              ? NULLSTATUSCOLOR
+                              ? nullStatusColor
                               : returnColor(widget.item.expiryDate!),
-                          width: BORDERWIDTH),
+                          width: borderWidth),
                     ),
                   ),
                   child: ExpansionTile(
                     onExpansionChanged: (val) =>
                         setState(() => showAbbreviation = !val),
                     title: Text(
-                      "${widget.item.name.toUpperCase()} ${widget.item.amount}"
-                          .trimRight(),
+                      widget.item.name.toUpperCase(),
                       style:
                           AppTypography.heading3.copyWith(color: Colors.black),
                     ),
-                    subtitle: Text(
-                      Categories.categoriesByIndex[widget.item.mainCat]!
-                          .toUpperCase(),
-                      style: AppTypography.smallTitle
-                          .copyWith(color: Colors.black),
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                            Categories.categoriesByIndex[widget.item.mainCat]!
+                                .toUpperCase(),
+                            style: AppTypography.smallTitle
+                                .copyWith(color: Colors.black)),
+                        widget.item.amount != null
+                            ? Text(widget.item.amount!,
+                                style: AppTypography.smallTitle
+                                    .copyWith(color: Colors.black))
+                            : Text("",
+                                style: AppTypography.smallTitle
+                                    .copyWith(color: Colors.black)),
+                      ],
                     ),
                     trailing: widget.loc == "Pantry"
                         ? popupMenuButton
@@ -423,7 +435,7 @@ class _ItemCardState extends State<ItemCard> {
                             Text(
                               "OPENED",
                               style: AppTypography.smallTitle
-                                  .copyWith(color: NULLTEXTCOLOR),
+                                  .copyWith(color: nullStatusTextColor),
                             )
                           ]
                         ],
@@ -450,7 +462,7 @@ class _ItemCardState extends State<ItemCard> {
                             Text(
                               "EXPIRATION",
                               style: AppTypography.smallTitle
-                                  .copyWith(color: NULLTEXTCOLOR),
+                                  .copyWith(color: nullStatusTextColor),
                             )
                           ]
                         ],
@@ -507,14 +519,14 @@ class _ItemCardState extends State<ItemCard> {
                           width: 200,
                           height: 50,
                           decoration: BoxDecoration(
-                            border: Border.all(color: NULLTEXTCOLOR),
+                            border: Border.all(color: nullStatusTextColor),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: Text(
                               "Details",
                               style: AppTypography.paragraph
-                                  .copyWith(color: NULLTEXTCOLOR),
+                                  .copyWith(color: nullStatusTextColor),
                             ),
                           ),
                         ),

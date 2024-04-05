@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
@@ -43,11 +42,11 @@ class _ShoppingListsHelp extends State<ShoppingListsHelp> {
       list.add(Text(line, style: AppTypography.paragraph));
       //After last row don't add empty space
       if (line != paragraph[paragraph.length - 1]) {
-        list.add(SizedBox(height: 3));
+        list.add(const SizedBox(height: 3));
       }
     }
 
-    return new Column(children: list);
+    return Column(children: list);
   }
 
   @override
@@ -58,7 +57,7 @@ class _ShoppingListsHelp extends State<ShoppingListsHelp> {
         body: ListView(children: <Widget>[
           Column(
             children: [
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: Align(
@@ -75,17 +74,17 @@ class _ShoppingListsHelp extends State<ShoppingListsHelp> {
                   ),
                 ),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Text(
                 "WHAT'S IN\nSHOPPING LISTS?",
                 style: AppTypography.heading2.copyWith(color: AppColors.main3),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               _createParagraph(paragraphs[0], true),
               Container(
                 height: MediaQuery.of(context).size.height * 0.3,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/images/shopping_list_help.png"),
                     // fit: BoxFit.cover,
@@ -94,7 +93,7 @@ class _ShoppingListsHelp extends State<ShoppingListsHelp> {
                 ),
               ),
               _createParagraph(paragraphs[1], true),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               SizedBox(
                 width: 100,
                 height: 50,
@@ -108,13 +107,13 @@ class _ShoppingListsHelp extends State<ShoppingListsHelp> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(
+                  child: const Text(
                     "GOT IT",
                     style: AppTypography.category,
                   ),
                 ),
               ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
             ],
           ),
         ]),

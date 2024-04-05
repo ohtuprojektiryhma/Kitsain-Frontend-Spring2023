@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:googleapis/tasks/v1.dart';
-import 'package:kitsain_frontend_spring2023/LoginController.dart';
+import 'package:kitsain_frontend_spring2023/login_controller.dart';
 import 'package:kitsain_frontend_spring2023/models/ShoppingListItemModel.dart';
 
 class TaskController extends GetxController {
@@ -42,10 +42,8 @@ class TaskController extends GetxController {
     if (amount == null) {
       itemAmount = "";
     }
-    var newTask = Task(
-        title: "${itemName} ${itemAmount}".trimRight(),
-        notes: description,
-        status: "needsAction");
+    var newTask =
+        Task(title: itemName, notes: description, status: "needsAction");
 
     if (due != null) {
       // Parse due date
@@ -93,15 +91,11 @@ class TaskController extends GetxController {
     if (amount == null) {
       itemAmount = "";
     }
-    var newItem = ShoppingListItemModel(
-        "${itemName} ${itemAmount}".trimRight(), description, false, taskId);
+    var newItem = ShoppingListItemModel(itemName, description, false, taskId);
     shoppingListItem.value?.insert(index, newItem);
 
     var newTask = Task(
-        title: "${itemName} ${itemAmount}".trimRight(),
-        notes: description,
-        status: "needsAction",
-        id: taskId);
+        title: itemName, notes: description, status: "needsAction", id: taskId);
 
     if (due != null) {
       DateTime dueDateTime = DateTime.parse(due);

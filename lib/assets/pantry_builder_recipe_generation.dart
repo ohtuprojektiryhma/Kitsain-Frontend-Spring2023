@@ -235,8 +235,8 @@ class PantryBuilderLogic extends State<PantryBuilder>{
 /// Builds the choosing of ingredients part of the UI
 class PantryBuilder extends StatefulWidget {
   final RealmResults<Item> items;
-  const PantryBuilder({
-    Key? key,
+  const PantryBuilder({super.key, 
+    Key? widgetKey,
     required this.sortMethod,
     required this.items,
     required this.onOptionalItemsChanged,
@@ -389,7 +389,7 @@ class PantryBuilderWidgets extends StatelessWidget {
               const SizedBox(height: 30),
               const Text('Must Have Items', // Title for the first list
                   style: AppTypography.heading4),
-              Container(
+              SizedBox(
                   height: 200, // Adjust this value as needed
                   child: Scrollbar(
                     child: ListView.builder(
@@ -449,7 +449,7 @@ class PantryBuilderWidgets extends StatelessWidget {
               const SizedBox(height: 30),
               const Text('Optional Items', // Title for the second list
                   style: AppTypography.heading4),
-              Container(
+              SizedBox(
                   height: 200, // Adjust this value as needed
                   child: Scrollbar(
                     child: ListView.builder(

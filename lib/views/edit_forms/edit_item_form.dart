@@ -38,6 +38,7 @@ Map catEnglish = {
   13: 'Other'
 };
 
+// ignore: must_be_immutable
 class EditItemForm extends StatefulWidget {
   EditItemForm({super.key, required this.item});
 
@@ -52,13 +53,13 @@ class EditItemForm extends StatefulWidget {
 class _EditItemFormState extends State<EditItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _EANCodeField = TextEditingController();
-  var _itemName = TextEditingController();
-  var _itemAmount = TextEditingController();
+  final _itemName = TextEditingController();
+  final _itemAmount = TextEditingController();
   final _pantryController = PantryController();
 
   // These dates control the date string user sees in the form
-  var _expDateString = TextEditingController();
-  var _openDateString = TextEditingController();
+  final _expDateString = TextEditingController();
+  final _openDateString = TextEditingController();
 
   // These values are actually saved to the db as DateTime
   var _openDateDT;
@@ -69,10 +70,10 @@ class _EditItemFormState extends State<EditItemForm> {
   String _category = 'ITEM CATEGORY';
   var _catInt;
   var _hasExpiryDate;
-  var _details = TextEditingController();
+  final _details = TextEditingController();
 
   var _offData;
-  UnfocusDisposition _disposition = UnfocusDisposition.scope;
+  final UnfocusDisposition _disposition = UnfocusDisposition.scope;
 
   bool _noEditsWereMade() {
     bool noEditsOnBarcode = _EANCodeField.text == widget.item.barcode ||
@@ -144,7 +145,6 @@ class _EditItemFormState extends State<EditItemForm> {
 
     // Mandatory fields
     _itemName.text = widget.item.name;
-    _itemAmount.text = widget.item.amount as String;
     _category = catEnglish[widget.item.mainCat];
     _favorite = widget.item.favorite;
     _catInt = widget.item.mainCat;
@@ -153,6 +153,10 @@ class _EditItemFormState extends State<EditItemForm> {
     // Optional fields
     if (widget.item.barcode != null) {
       _EANCodeField.text = widget.item.barcode!;
+    }
+
+    if (widget.item.amount != null) {
+      _itemAmount.text = widget.item.amount!;
     }
 
     if (widget.item.openedDate != null) {
@@ -313,6 +317,7 @@ class _EditItemFormState extends State<EditItemForm> {
                     TextFormField(
                       style: AppTypography.paragraph,
                       controller: _itemName,
+                      maxLength: 60,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -339,6 +344,7 @@ class _EditItemFormState extends State<EditItemForm> {
                     TextFormField(
                       style: AppTypography.paragraph,
                       controller: _itemAmount,
+                      maxLength: 10,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -368,7 +374,7 @@ class _EditItemFormState extends State<EditItemForm> {
                             .copyWith(color: Colors.black),
                         menuMaxHeight: 200,
                         value: _category,
-                        icon: Icon(Icons.arrow_drop_down),
+                        icon: const Icon(Icons.arrow_drop_down),
                         decoration:
                             const InputDecoration.collapsed(hintText: ''),
                         onChanged: (String? value) {
