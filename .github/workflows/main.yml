@@ -3,7 +3,7 @@ name: Kitsain Frontend CI
 on:
   push:
     branches:
-    - dev_tasks
+    - lint-and-ci
 jobs:
   Frontend-CI:
     runs-on: ubuntu-latest
