@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:googleapis/tasks/v1.dart';
-import 'package:kitsain_frontend_spring2023/LoginController.dart';
+import 'package:kitsain_frontend_spring2023/login_controller.dart';
 import 'package:kitsain_frontend_spring2023/models/ShoppingListItemModel.dart';
 
 class TaskController extends GetxController {
