@@ -61,19 +61,30 @@ void main() {
         expect(thisOptionalItems.contains(mockItems[0].name), true);
     });
 
-    /*
-    testWidgets("""When adding a new ingredient to the recipe by typing it to the text box
-    it is added to the optional items, when pressing it again it is moved to the must have items list""",
+    
+    testWidgets("""When adding a new ingredient to the recipe by typing it to the text box by must have items
+    it is added to the must have items, when pressing it again it is moved to the optional items list""",
     (tester) async{
       await tester.pumpWidget(widget);
       await tester.pumpAndSettle(); // Wait for animations to complete
-      expect(find.byType(InputDecoration), true);
-      // await tester.enterText(find.byType(InputDecoration), "grape");
+      // Find the TextField widget by its type
+      final textFieldFinder = find.byType(TextField).first;
+      // Verify that the TextField widget is found
+      expect(textFieldFinder, findsOneWidget);
+      // Enter a grape ingredient to mustHaveItems item card
+      await tester.enterText(textFieldFinder, "grape");
       await tester.pumpAndSettle(); // Wait for animations to complete
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      // Check if now the grape is in a right list (thisMustHaveItems)
+      expect(thisMustHaveItems.contains("grape"), true);
+      expect(thisOptionalItems.contains("grape"), false);
+      await tester.pumpAndSettle();
+      // Tap the ingredient and see if it switches lists correctly
+      await tester.tap(find.text("grape"));
       expect(thisMustHaveItems.contains("grape"), false);
       expect(thisOptionalItems.contains("grape"), true);
     } );
-    */
+    
 
     testWidgets("""When pressing the select all button,
       every item from the pantry is selected into the recipe,
