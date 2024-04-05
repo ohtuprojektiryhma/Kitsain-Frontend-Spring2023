@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
 import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/categories.dart';
+import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
 import 'package:realm/realm.dart';
@@ -44,6 +45,7 @@ class _NewItemFormState extends State<NewItemForm> {
   final _itemAmount = TextEditingController();
   final _taskListController = Get.put(TaskListController());
   final _taskController = Get.put(TaskController());
+  final _pantryController = PantryController();
 
   // These dates control the date string user sees in the form
   final _expDateString = TextEditingController();
@@ -81,39 +83,8 @@ class _NewItemFormState extends State<NewItemForm> {
     return pantryIndex;
   }
 
-  createStringOfPantryItemValues(Item pantryItem) {
-    var valuesString = "";
-    valuesString += "location: ${pantryItem.location}\n";
-    valuesString += "category: ${pantryItem.mainCat}\n";
-    valuesString += "favorite: ${pantryItem.favorite}\n";
-    valuesString += "opened date: ${pantryItem.openedDate}\n";
-    valuesString += "added date: ${pantryItem.addedDate}\n";
-    valuesString += "details: ${pantryItem.details}\n";
-    return valuesString;
-  }
-
   changeFormatOfExpiryDate(String expiryDate) {
     return expiryDate.replaceAll(' ', 'T');
-  }
-
-  Future<void> createPantryItemTask(Item pantryItem) async {
-    final valuesString = createStringOfPantryItemValues(pantryItem);
-    final taskListIndex = await checkIfPantryListExists();
-    var expiryDateAsString;
-    if (pantryItem.expiryDate != null) {
-      expiryDateAsString =
-          changeFormatOfExpiryDate(pantryItem.expiryDate.toString());
-    }
-    print("expiry date: ${pantryItem.expiryDate}");
-    var googleTaskId = await _taskController.createTask(
-        pantryItem.name,
-        valuesString,
-        taskListIndex.toString(),
-        expiryDateAsString,
-        pantryItem.amount);
-    pantryItem.googleTaskId = googleTaskId;
-    PantryProxy().upsertItem(pantryItem);
-    print("pantry item amount: ${pantryItem.amount}");
   }
 
   void _discardChangesDialog(bool discardForm) {
@@ -345,6 +316,7 @@ class _NewItemFormState extends State<NewItemForm> {
                     TextFormField(
                       style: AppTypography.paragraph,
                       controller: _itemName,
+                      maxLength: 60,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -371,6 +343,7 @@ class _NewItemFormState extends State<NewItemForm> {
                     TextFormField(
                       style: AppTypography.paragraph,
                       controller: _itemAmount,
+                      maxLength: 10,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -601,7 +574,7 @@ class _NewItemFormState extends State<NewItemForm> {
                                 details: _details.text,
                                 amount: _itemAmount.text,
                               );
-                              createPantryItemTask(newItem);
+                              _pantryController.createPantryItemTask(newItem);
                               setState(() {});
                               Navigator.pop(context);
                             }

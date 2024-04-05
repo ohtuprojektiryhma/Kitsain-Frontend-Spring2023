@@ -324,6 +324,7 @@ class _ItemCardState extends State<ItemCard> {
                   ),
                 ),
                 child: ListTile(
+                  isThreeLine: true,
                   title: Text(
                     widget.item.name.toUpperCase(),
                     style: AppTypography.heading3,
@@ -384,16 +385,27 @@ class _ItemCardState extends State<ItemCard> {
                     onExpansionChanged: (val) =>
                         setState(() => showAbbreviation = !val),
                     title: Text(
-                      "${widget.item.name.toUpperCase()} ${widget.item.amount}"
-                          .trimRight(),
+                      widget.item.name.toUpperCase(),
                       style:
                           AppTypography.heading3.copyWith(color: Colors.black),
                     ),
-                    subtitle: Text(
-                      Categories.categoriesByIndex[widget.item.mainCat]!
-                          .toUpperCase(),
-                      style: AppTypography.smallTitle
-                          .copyWith(color: Colors.black),
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                            Categories.categoriesByIndex[widget.item.mainCat]!
+                                .toUpperCase(),
+                            style: AppTypography.smallTitle
+                                .copyWith(color: Colors.black)),
+                        widget.item.amount != null
+                            ? Text(widget.item.amount!,
+                                style: AppTypography.smallTitle
+                                    .copyWith(color: Colors.black))
+                            : Text("",
+                                style: AppTypography.smallTitle
+                                    .copyWith(color: Colors.black)),
+                      ],
                     ),
                     trailing: widget.loc == "Pantry"
                         ? popupMenuButton
