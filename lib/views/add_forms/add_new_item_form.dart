@@ -4,13 +4,11 @@ import 'package:kitsain_frontend_spring2023/app_typography.dart';
 import 'package:kitsain_frontend_spring2023/categories.dart';
 import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:kitsain_frontend_spring2023/database/pantry_proxy.dart';
 import 'package:realm/realm.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:kitsain_frontend_spring2023/database/openfoodfacts.dart';
 
 import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart';
-import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
 import 'package:get/get.dart';
 
 const List<String> categories = <String>[
@@ -44,7 +42,6 @@ class _NewItemFormState extends State<NewItemForm> {
   final _itemName = TextEditingController();
   final _itemAmount = TextEditingController();
   final _taskListController = Get.put(TaskListController());
-  final _taskController = Get.put(TaskController());
   final _pantryController = PantryController();
 
   // These dates control the date string user sees in the form
