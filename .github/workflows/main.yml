@@ -28,6 +28,12 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with: 
+          name: "google-services.json"
+          json: ${{ secrets.GOOGLE_SERVCES_JSON }}
       - name: Install dependencies
         run: flutter pub get
       - name: Analyze code for errors
