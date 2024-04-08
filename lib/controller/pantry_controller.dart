@@ -118,6 +118,23 @@ class PantryController {
   /// [item] is the pantry item with its updated properties.
   Future<void> editItemTasks(Item item) async {
     print("opening date 3: ${item.openedDate}");
+    final valuesString = createStringOfPantryItemValues(item);
+    final taskListIndex = await checkIfPantryListExists();
+    String? expiryDateAsString;
+    if (item.expiryDate != null) {
+      expiryDateAsString = changeFormatOfExpiryDate(item.expiryDate.toString());
+    }
+    print("MOI!!!!");
+    var googleTaskId = await _taskController.editTask(
+        item.name,
+        valuesString,
+        taskListIndex.toString(),
+        item.googleTaskId!,
+        0,
+        expiryDateAsString,
+        item.amount);
+    item.googleTaskId = googleTaskId;
+    PantryProxy().upsertItem(item);
   }
 
   String _ignoreSubMicro(String s) {
@@ -211,6 +228,50 @@ class PantryController {
   /// [realmItems] are the items that are in realm and [tasks] are the items that are in Google Tasks
   saveGoogleTasksToRealm(realmItems, tasks) {
     var notes = "";
+
+    var itemBothIds = {};
+    realmItems.forEach((item) {
+      itemBothIds[item.googleTaskId] = item.id;
+    });
+    print(itemBothIds);
+
+    tasks.items.forEach((item) {
+      if (!checkIfItemInrealm(item.id, realmItems)) {
+        var newItem = Item(ObjectId().toString(), item.title, "Pantry", 1,
+            googleTaskId: item.id);
+        if (item.due != null) {
+          newItem.expiryDate = convertToRealmDateTime(item.due);
+        }
+        if (item.notes != null) {
+          notes = item.notes;
+        }
+        item = parseDescriptionStringFromGoogleTask(notes, newItem);
+        _pantryProxy.upsertItem(newItem);
+      } else {
+        if (itemBothIds.keys.contains(item.id)) {
+          var newItem = Item(itemBothIds[item.id], item.title, "Pantry", 1,
+              googleTaskId: item.id);
+          if (item.due != null) {
+            newItem.expiryDate = convertToRealmDateTime(item.due);
+          }
+          if (item.notes != null) {
+            notes = item.notes;
+          }
+          item = parseDescriptionStringFromGoogleTask(notes, newItem);
+          _pantryProxy.upsertItem(newItem);
+        }
+      }
+    });
+
+    """
+    final realmItemsMap = Map<String, String>.fromIterable(realmItems,
+        key: (item) => item.name, value: (item) => item.googleTaskId);
+    print(realmItemsMap);
+    final taskItemsMap = Map<String, String>.fromIterable(tasks.items,
+        key: (item) => item.title, value: (item) => item.id);
+    print(taskItemsMap);
+    """;
+    """
     for (var i = 0; i < tasks.items.length; i++) {
       if (!checkIfItemInrealm(tasks.items[i].id, realmItems)) {
         var item = Item(
@@ -224,8 +285,25 @@ class PantryController {
         }
         item = parseDescriptionStringFromGoogleTask(notes, item);
         _pantryProxy.upsertItem(item);
+      } else {
+
+        
+        if (realmItems[i].googleTaskId == tasks.items[i].id) {
+          var item = Item(realmItems[i].id, tasks.items[i].title, "Pantry", 1,
+              googleTaskId: tasks.items[i].id);
+          if (tasks.items[i].due != null) {
+            item.expiryDate = convertToRealmDateTime(tasks.items[i].due);
+          }
+          if (tasks.items[i].notes != null) {
+            notes = tasks.items[i].notes;
+          }
+          item = parseDescriptionStringFromGoogleTask(notes, item);
+          _pantryProxy.upsertItem(item);
+        }
+        
       }
     }
+    """;
   }
 
   /// Deletes items from Realm that aren't in Google Tasks

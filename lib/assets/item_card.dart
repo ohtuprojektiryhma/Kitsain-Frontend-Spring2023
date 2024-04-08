@@ -44,7 +44,7 @@ class _ItemCardState extends State<ItemCard> {
 
   deleteItemFromTasks(Item item) async {
     final taskListIndex = await _pantryController.findPantryIndex();
-    _taskController.deleteTask(taskListIndex, item.googleTaskId as String, 0);
+    _taskController.deleteTask(taskListIndex, item.googleTaskId!, 0);
   }
 
   void deleteItem(Item item) async {

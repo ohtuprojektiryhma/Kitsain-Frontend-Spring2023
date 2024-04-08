@@ -564,8 +564,8 @@ class _EditItemFormState extends State<EditItemForm> {
                                   details: _details.text,
                                   googleTaskId: _googleTaskId,
                                   amount: _itemAmount.text);
-                              PantryProxy().upsertItem(item);
 
+                              ///PantryProxy().upsertItem(item);
                               _pantryController.editItemTasks(item);
                               setState(() {});
                               Navigator.pop(context);

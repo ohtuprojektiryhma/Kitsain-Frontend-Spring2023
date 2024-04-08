@@ -61,7 +61,6 @@ class _NewItemFormState extends State<NewItemForm> {
   var _offData;
   final UnfocusDisposition _disposition = UnfocusDisposition.scope;
 
-
   Future checkIfPantryListExists() async {
     await _taskListController.getTaskLists();
     var pantryIndex = "not";
