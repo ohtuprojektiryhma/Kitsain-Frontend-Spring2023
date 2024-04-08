@@ -4,6 +4,7 @@ on:
   push:
     branches:
     - lint-and-ci
+    - dev_tasks
 jobs:
   Frontend-CI:
     runs-on: ubuntu-latest
