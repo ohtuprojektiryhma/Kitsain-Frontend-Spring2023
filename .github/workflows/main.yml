@@ -40,6 +40,8 @@ jobs:
         run: flutter pub get
       - name: Analyze code for errors
         run: flutter analyze .
+      - name: Create dummy .env file for tests
+        run: touch .env
       - name: Run tests
         run: flutter test test/integration_test/
       - name: Build android Apk
