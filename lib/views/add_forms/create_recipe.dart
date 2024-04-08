@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:kitsain_frontend_spring2023/assets/pantry_builder_recipe_generation.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
+import 'package:kitsain_frontend_spring2023/views/add_forms/feedback_form.dart';
 
 class CreateNewRecipeForm extends StatefulWidget {
   const CreateNewRecipeForm({super.key});
@@ -161,6 +162,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           children: <Widget>[
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             _buildCloseButton(),
+            const FeedbackButton(),
             SizedBox(height: MediaQuery.of(context).size.height * 0.01),
             _buildRecipeHeading(),
             SizedBox(height: MediaQuery.of(context).size.height * 0.06),
