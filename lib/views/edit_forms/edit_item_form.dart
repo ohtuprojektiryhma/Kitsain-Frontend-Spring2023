@@ -145,7 +145,6 @@ class _EditItemFormState extends State<EditItemForm> {
 
     // Mandatory fields
     _itemName.text = widget.item.name;
-    _itemAmount.text = widget.item.amount as String;
     _category = catEnglish[widget.item.mainCat];
     _favorite = widget.item.favorite;
     _catInt = widget.item.mainCat;
@@ -154,6 +153,10 @@ class _EditItemFormState extends State<EditItemForm> {
     // Optional fields
     if (widget.item.barcode != null) {
       _EANCodeField.text = widget.item.barcode!;
+    }
+
+    if (widget.item.amount != null) {
+      _itemAmount.text = widget.item.amount!;
     }
 
     if (widget.item.openedDate != null) {
@@ -314,6 +317,7 @@ class _EditItemFormState extends State<EditItemForm> {
                     TextFormField(
                       style: AppTypography.paragraph,
                       controller: _itemName,
+                      maxLength: 60,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -340,6 +344,7 @@ class _EditItemFormState extends State<EditItemForm> {
                     TextFormField(
                       style: AppTypography.paragraph,
                       controller: _itemAmount,
+                      maxLength: 10,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white,

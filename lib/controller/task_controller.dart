@@ -15,7 +15,7 @@ class TaskController extends GetxController {
   /// Returns the contents (= tasks) of the task list as Tasks object
   getTasksList(String taskListId) async {
     var tskList = await loginController.taskApiAuthenticated.value?.tasks
-        .list(taskListId);
+        .list(taskListId, showHidden: true);
     shoppingListItem.value?.clear();
     tskList?.items?.forEach((element) {
       var newItem = ShoppingListItemModel(
@@ -42,10 +42,8 @@ class TaskController extends GetxController {
     if (amount == null) {
       itemAmount = "";
     }
-    var newTask = Task(
-        title: "${itemName} ${itemAmount}".trimRight(),
-        notes: description,
-        status: "needsAction");
+    var newTask =
+        Task(title: itemName, notes: description, status: "needsAction");
 
     if (due != null) {
       // Parse due date
@@ -93,15 +91,11 @@ class TaskController extends GetxController {
     if (amount == null) {
       itemAmount = "";
     }
-    var newItem = ShoppingListItemModel(
-        "${itemName} ${itemAmount}".trimRight(), description, false, taskId);
+    var newItem = ShoppingListItemModel(itemName, description, false, taskId);
     shoppingListItem.value?.insert(index, newItem);
 
     var newTask = Task(
-        title: "${itemName} ${itemAmount}".trimRight(),
-        notes: description,
-        status: "needsAction",
-        id: taskId);
+        title: itemName, notes: description, status: "needsAction", id: taskId);
 
     if (due != null) {
       DateTime dueDateTime = DateTime.parse(due);

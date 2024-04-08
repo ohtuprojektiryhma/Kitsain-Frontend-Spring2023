@@ -30,6 +30,10 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   late MockRealmResults<Item> mockRealmResults;
   late List<Item> mockItems;
+  late List thisMustHaveItems;
+  late List thisOptionalItems;
+  late Widget widget;
+
   group('end-to-end test', () {
     setUp(() {
       mockItems = <Item>[
@@ -37,16 +41,9 @@ void main() {
         Item(ObjectId().toString(), "Banana", "Pantry", 3)
       ];
       mockRealmResults = MockRealmResults<Item>(mockItems);
-
-    });
-
-    testWidgets('When adding pantry items to the ingredient list for recipe they are put into the optional items list at first',
-        (tester) async {
-
-      // Load app widget with the mocked RealmResults
-      var thisMustHaveItems = <String>[];
-      var thisOptionalItems = <String>[];
-      var widget = PantryBuilderTestWrapper(
+      thisMustHaveItems = <String>[];
+      thisOptionalItems = <String>[];
+      widget = PantryBuilderTestWrapper(
         sortMethod: "az",
         items: mockRealmResults,
         onMustHaveItemsChanged: (mustHaveItems) {
@@ -56,6 +53,12 @@ void main() {
           thisOptionalItems = optionalItems;
         },
       );
+    });
+
+    testWidgets('When adding pantry items to the ingredient list for recipe they are put into the optional items list at first',
+        (tester) async {
+      // Load app widget with the mocked RealmResults
+
       await tester.pumpWidget(widget);
   
       
@@ -68,6 +71,8 @@ void main() {
       expect(thisMustHaveItems.contains(mockItems[0].name), false);
       expect(thisOptionalItems.contains(mockItems[0].name), true);
     });
+
+    // testWidgets("", (widgetTester) => null)
   });
 }
 
