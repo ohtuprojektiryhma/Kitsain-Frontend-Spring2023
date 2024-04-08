@@ -161,7 +161,7 @@ class _PantryViewState extends State<PantryView> {
         titleBackgroundColor: AppColors.titleBackgroundBrown,
       ),
       body: DragTarget<Item>(
-        onAccept: (data) => _receiveItem(data),
+        onAcceptWithDetails: (data) => _receiveItem(data as Item),
         builder: (context, candidateData, rejectedData) {
           return ListView(
             children: [

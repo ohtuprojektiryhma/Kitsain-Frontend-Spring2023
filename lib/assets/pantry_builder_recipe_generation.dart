@@ -13,6 +13,7 @@ class NewItem {
 /// Class for handling the logic for pantry items selecting
 class PantryBuilderLogic extends State<PantryBuilder>{
   /// Builds the widget tree for the UI
+  @override
   Widget build(BuildContext context) => PantryBuilderWidgets(this);
 
   /// Initializes selectedItems list
@@ -256,7 +257,7 @@ class PantryBuilderWidgets extends StatelessWidget {
   get widget => state.widget;
   
   /// Gets the state and logic handler class as an argument
-  const PantryBuilderWidgets(this.state, {Key? key}) : super(key: key);
+  const PantryBuilderWidgets(this.state, {super.key});
   /// Builds the UI element for select and deselect buttons
   Widget buildSelectButtons() {
     return Row(

@@ -219,7 +219,7 @@ class _UserShoppingListState extends State<UserShoppingList> {
               ],
             ),
             DragTarget<String>(
-              onAccept: (data) => _receiveItem(data),
+              onAcceptWithDetails: (data) => _receiveItem(data as String),
               builder: (context, candidateData, rejectedData) {
                 return Obx(
                   () {

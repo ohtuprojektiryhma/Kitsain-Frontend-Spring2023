@@ -162,7 +162,7 @@ class _ShoppingListsState extends State<ShoppingLists> {
               return Column(
                 children: [
                   DragTarget<Item>(
-                    onAccept: (data) => _receiveItem(index, data),
+                    onAcceptWithDetails: (data) => _receiveItem(index, data as Item),
                     builder: (context, candidateData, rejectedData) {
                       return Card(
                         elevation: 2,
