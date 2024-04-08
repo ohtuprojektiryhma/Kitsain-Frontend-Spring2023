@@ -41,7 +41,7 @@ jobs:
       - name: Analyze code for errors
         run: flutter analyze .
       - name: Run tests
-        run: flutter test test/integration_test/pantry_builder_integration_test.dart
+        run: flutter test test/integration_test/
       - name: Build android Apk
         run: flutter build apk
       - uses: actions/upload-artifact@v1

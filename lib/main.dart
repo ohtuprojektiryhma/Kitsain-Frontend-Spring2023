@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .pantryTabLabel,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 10),
+                                    style: const TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .historyTabLabel,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 10),
+                                    style: const TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
@@ -210,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                                     AppLocalizations.of(context)!
                                         .recipeTabLabel,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 10),
+                                    style: const TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
@@ -226,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                             List<dynamic> accepted,
                             List<dynamic> rejected,
                           ) {
-                            return Container(
+                            return SizedBox(
                               height: navBarHeight,
                               child: Column(
                                 children: [
@@ -237,7 +237,7 @@ class _HomePageState extends State<HomePage> {
                                   Text(
                                     AppLocalizations.of(context)!.feedTabLabel,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 10),
+                                    style: const TextStyle(fontSize: 10),
                                   ),
                                 ],
                               ),
