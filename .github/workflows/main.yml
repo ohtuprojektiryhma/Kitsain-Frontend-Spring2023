@@ -7,6 +7,19 @@ on:
 jobs:
   Frontend-CI:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_APIKEY: ${{ secrets.ANDROID_APIKEY }}
+      ANDROID_APPID: ${{ secrets.ANDROID_APPID }}
+      IOS_APIKEY: ${{ secrets.IOS_APIKEY }}
+      IOS_APPID: ${{ secrets.IOS_APPID }}
+      IOS_BUNDLEID: ${{ secrets.IOS_BUNDLEID }}
+      MEASUREMENTID: ${{ secrets.MEASUREMENTID }}
+      MESSAGINGSENDERID: ${{ secrets.MESSAGINGSENDERID }}
+      PROJECTID: ${{ secrets.PROJECT_ID }}
+      STORAGE_BUCKET: ${{ secrets.STORAGE_BUCKET }}
+      WEB_APIKEY: ${{ secrets.WEB_APIKEY }}
+      WEB_APPID: ${{ secrets.WEB_APPID }}
+      WEB_AUTHDOMAIN: ${{ secrets.WEB_AUTHDOMAIN }}
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-java@v1
