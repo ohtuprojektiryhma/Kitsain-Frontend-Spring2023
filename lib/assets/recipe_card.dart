@@ -6,6 +6,17 @@ import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
+import 'package:realm/realm.dart';
+import '../database/recipes_proxy.dart';
+
+import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
+import 'package:flutter_gen/gen_l10n/app-localizations.dart';
+import 'package:kitsain_frontend_spring2023/database/item.dart';
+import 'package:kitsain_frontend_spring2023/views/add_forms/create_recipe.dart';
+import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
+import 'package:kitsain_frontend_spring2023/assets/recipebuilder.dart';
+import 'package:kitsain_frontend_spring2023/app_colors.dart';
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
   const LoadingDialogWithTimeout({super.key});
@@ -39,13 +50,11 @@ const Color nullTextColor = Color(0xff979797);
 
 class RecipeCard extends StatefulWidget {
   const RecipeCard({super.key, required this.recipe});
-  
+
   final Recipe recipe;
   @override
   State<RecipeCard> createState() => _RecipeCardState();
 }
-
-
 
 class _RecipeCardState extends State<RecipeCard> {
   bool showAbbreviation = true;
@@ -214,7 +223,15 @@ class _RecipeCardState extends State<RecipeCard> {
   ///
   /// Includes [details] presenting the details of the recipe. [recipeName] describes the name of the recipe whose details
   /// are shown. Returns the details screen as alert dialog.
+
   Widget _buildDetailsScreen(BuildContext context, Recipe recipe) {
+    TextEditingController recipeNameController =
+        TextEditingController(text: recipe.name);
+    TextEditingController ingredientsController =
+        TextEditingController(text: recipe.ingredients.values.join('\n'));
+    TextEditingController instructionsController =
+        TextEditingController(text: recipe.instructions.join('\n'));
+
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -222,7 +239,7 @@ class _RecipeCardState extends State<RecipeCard> {
         children: [
           Expanded(
             child: Text(
-              recipe.name,
+              'Recipe',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -235,17 +252,24 @@ class _RecipeCardState extends State<RecipeCard> {
         ],
       ),
       content: SingleChildScrollView(
-        child:Column(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Ingredients:', style: TextStyle(fontWeight: FontWeight.bold)),
-            for (var entry in recipe.ingredients.entries)
-              Text('${entry.key}: ${entry.value}'),
-            SizedBox(height: 10),
-            Text('Steps:', style: TextStyle(fontWeight: FontWeight.bold)),
-            for (int i = 0; i < recipe.instructions.length; i++)
-              Text(recipe.instructions[i].toString()),
+            TextFormField(
+              controller: recipeNameController,
+              decoration: InputDecoration(labelText: 'Recipe Name'),
+            ),
+            TextFormField(
+              controller: ingredientsController,
+              decoration: InputDecoration(labelText: 'Ingredients'),
+              maxLines: null, // Allow multiple lines for ingredients
+            ),
+            TextFormField(
+              controller: instructionsController,
+              decoration: InputDecoration(labelText: 'Instructions'),
+              maxLines: null, // Allow multiple lines for instructions
+            ),
           ],
         ),
       ),
@@ -253,6 +277,53 @@ class _RecipeCardState extends State<RecipeCard> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            ElevatedButton(
+              onPressed: () {
+                // Save changes and update recipe
+
+                String name = recipeNameController.text;
+                print("name ${name}");
+                print("icontroller ${ingredientsController.text}");
+                Map<String, String> ingredients = {
+                  for (var line in ingredientsController.text.split('\n'))
+                    line.split(':')[0].trim(): line.split(':')[1].trim()
+                };
+                print("name2 ${name}");
+                List<String> instructions =
+                    instructionsController.text.split('\n');
+                print("name3 ${name}");
+                // Update the recipe with new details
+
+                // RealmMap<String> realmIngredients =
+                //     RealmMap<String>(realm as Map<String, String>);
+                // ingredients.forEach((key, value) {
+                //   realmIngredients[key] = value;
+                // });
+                // // Inside onPressed callback for saving changes
+                // RealmList<String> realmInstructions =
+                //     RealmList<String>(realm as Iterable<String>);
+                // instructions.forEach((instruction) {
+                //   realmInstructions.add(instruction);
+                // });
+
+                // var recipe = Recipe(name, ingredients, instructions);
+                // // recipe.name = name;
+                // // recipe.ingredients = realmIngredients;
+                // // recipe.instructions = realmInstructions)
+                print("name4 ${name}");
+                var recipe = Recipe(
+                  ObjectId().toString(),
+                  name,
+                  ingredients: ingredients,
+                  instructions: instructions,
+                );
+
+                RecipeProxy().upsertRecipe(recipe);
+                // Navigator.of(context).pop();
+                // Close the dialog
+              },
+              child: Text('Save'),
+            ),
             _buildChangeButton("Change", Colors.grey[200], recipe.name),
             _buildDeleteButton("Delete", Colors.grey[200], recipe.name),
           ],
