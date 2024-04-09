@@ -8,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 import 'package:realm/realm.dart';
 import '../database/recipes_proxy.dart';
+import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
 import 'package:flutter_gen/gen_l10n/app-localizations.dart';
@@ -16,7 +17,6 @@ import 'package:kitsain_frontend_spring2023/views/add_forms/create_recipe.dart';
 import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:kitsain_frontend_spring2023/assets/recipebuilder.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
-import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
   const LoadingDialogWithTimeout({super.key});
@@ -228,8 +228,8 @@ class _RecipeCardState extends State<RecipeCard> {
     TextEditingController recipeNameController =
         TextEditingController(text: recipe.name);
     String ingredientsString = recipe.ingredients.entries
-      .map((entry) => '${entry.key}: ${entry.value}')
-      .join('\n');
+        .map((entry) => '${entry.key}: ${entry.value}')
+        .join('\n');
     TextEditingController ingredientsController =
         TextEditingController(text: ingredientsString);
     TextEditingController instructionsController =
@@ -282,6 +282,7 @@ class _RecipeCardState extends State<RecipeCard> {
           children: [
             ElevatedButton(
               onPressed: () {
+                var navigator = Navigator.of(context);
                 String name = recipeNameController.text;
                 print("name ${name}");
                 print("icontroller ${ingredientsController.text}");
@@ -293,24 +294,7 @@ class _RecipeCardState extends State<RecipeCard> {
                 List<String> instructions =
                     instructionsController.text.split('\n');
                 print("name3 ${name}");
-                // Update the recipe with new details
 
-                // RealmMap<String> realmIngredients =
-                //     RealmMap<String>(realm as Map<String, String>);
-                // ingredients.forEach((key, value) {
-                //   realmIngredients[key] = value;
-                // });
-                // // Inside onPressed callback for saving changes
-                // RealmList<String> realmInstructions =
-                //     RealmList<String>(realm as Iterable<String>);
-                // instructions.forEach((instruction) {
-                //   realmInstructions.add(instruction);
-                // });
-
-                // var recipe = Recipe(name, ingredients, instructions);
-                // // recipe.name = name;
-                // // recipe.ingredients = realmIngredients;
-                // // recipe.instructions = realmInstructions)
                 print("name4 ${name}");
                 var recipe = Recipe(
                   ObjectId().toString(),
@@ -319,8 +303,8 @@ class _RecipeCardState extends State<RecipeCard> {
                   instructions: instructions,
                 );
 
-                RecipeProxy().upsertRecipe(recipe);
-                // Navigator.of(context).pop();
+                RecipeController().createRecipeTask(recipe);
+                navigator.pop();
                 // Close the dialog
               },
               child: Text('Save'),
@@ -422,7 +406,6 @@ class _RecipeCardState extends State<RecipeCard> {
             ),
             onPressed: () {
               _recipeController.deleteRecipe(widget.recipe);
-              Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
             child: const Text('Delete'),
