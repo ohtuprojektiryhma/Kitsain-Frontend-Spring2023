@@ -279,8 +279,6 @@ class _RecipeCardState extends State<RecipeCard> {
           children: [
             ElevatedButton(
               onPressed: () {
-                // Save changes and update recipe
-
                 String name = recipeNameController.text;
                 print("name ${name}");
                 print("icontroller ${ingredientsController.text}");
