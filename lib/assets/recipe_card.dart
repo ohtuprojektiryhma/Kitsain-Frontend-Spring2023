@@ -227,8 +227,11 @@ class _RecipeCardState extends State<RecipeCard> {
   Widget _buildDetailsScreen(BuildContext context, Recipe recipe) {
     TextEditingController recipeNameController =
         TextEditingController(text: recipe.name);
+    String ingredientsString = recipe.ingredients.entries
+      .map((entry) => '${entry.key}: ${entry.value}')
+      .join('\n');
     TextEditingController ingredientsController =
-        TextEditingController(text: recipe.ingredients.values.join('\n'));
+        TextEditingController(text: ingredientsString);
     TextEditingController instructionsController =
         TextEditingController(text: recipe.instructions.join('\n'));
 
