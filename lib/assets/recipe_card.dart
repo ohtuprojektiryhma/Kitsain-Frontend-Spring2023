@@ -7,16 +7,6 @@ import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 import 'package:realm/realm.dart';
-import '../database/recipes_proxy.dart';
-import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
-
-import 'package:kitsain_frontend_spring2023/assets/top_bar.dart';
-import 'package:flutter_gen/gen_l10n/app-localizations.dart';
-import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:kitsain_frontend_spring2023/views/add_forms/create_recipe.dart';
-import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
-import 'package:kitsain_frontend_spring2023/assets/recipebuilder.dart';
-import 'package:kitsain_frontend_spring2023/app_colors.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
   const LoadingDialogWithTimeout({super.key});
@@ -284,18 +274,16 @@ class _RecipeCardState extends State<RecipeCard> {
               onPressed: () {
                 var navigator = Navigator.of(context);
                 String name = recipeNameController.text;
-                print("name ${name}");
+
                 print("icontroller ${ingredientsController.text}");
                 Map<String, String> ingredients = {
                   for (var line in ingredientsController.text.split('\n'))
                     line.split(':')[0].trim(): line.split(':')[1].trim()
                 };
-                print("name2 ${name}");
+
                 List<String> instructions =
                     instructionsController.text.split('\n');
-                print("name3 ${name}");
 
-                print("name4 ${name}");
                 var recipe = Recipe(
                   ObjectId().toString(),
                   name,
