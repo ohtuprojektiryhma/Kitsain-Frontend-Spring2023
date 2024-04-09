@@ -51,16 +51,14 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   var _pantryItems;
 
   bool _isLoading = true; // Flag to track loading state
-  List<String> optionalItems = [];
-  List<String> mustHaveItems = [];
-  Map<String, String> optionalItemsDict = {};
-  Map<String, String> mustHaveItemsDict = {};
+  List optionalItems = [];
+  List mustHaveItems = [];
   Map<String, String> itemNamesAndAmounts = {};
   String language = "English";
 
   String selected = "True";
 
-  int number = 1;
+  int options = 1;
 
   final _recipeController = RecipeController();
 
@@ -82,8 +80,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       // Call your method to get pantry items
 
       _pantryItems = PantryProxy().getPantryItems();
-      _itemNamesAndAmountsBuilder();
-      print(itemNamesAndAmounts);
     } catch (e) {
       // Handle any potential errors
       print("Error loading pantry items: $e");
@@ -203,12 +199,12 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     );
   }
 
-  Widget _buildNumberDropdown() {
+  Widget _buildOptionsDropdown() {
     return DropdownButton<int>(
-      value: number,
+      value: options,
       onChanged: (int? newValue) {
         setState(() {
-          number = newValue!;
+          options = newValue!;
         });
       },
       items: <int>[1, 2, 3].map<DropdownMenuItem<int>>((int value) {
@@ -291,7 +287,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           ),
           const Text("How many recipes do you want?:",
               style: AppTypography.heading4),
-          _buildNumberDropdown(),
+          _buildOptionsDropdown(),
           SizedBox(height: MediaQuery.of(context).size.height * 0.05),
           PantryBuilder(
               items: _pantryItems,
@@ -313,9 +309,14 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     );
   }
 
-  _itemNamesAndAmountsBuilder() {
-    for (var i = 0; i < _pantryItems.length; i++) {
-      itemNamesAndAmounts[_pantryItems[i].name] = _pantryItems[i].amount;
+  itemNamesAndAmountsConvertor(list) {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].contains(';')) {
+        List<String> splitted = list[i].split(';');
+        itemNamesAndAmounts[splitted[0]] = splitted[1];
+      } else {
+        itemNamesAndAmounts[list[i]] = '';
+      }
     }
     return itemNamesAndAmounts;
   }
@@ -366,7 +367,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   ///
   /// Returns buttons
   Widget _buildActionButtons() {
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -380,7 +380,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
             foregroundColor: Colors.white,
           ),
           onPressed: () async {
-
             showDialog(
               context: context,
               barrierDismissible: false,
@@ -435,19 +434,24 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       if (_selectedOption == "Can use items not in pantry") {
         pantryOnly = false;
       }
-
+      Map<String, String> optionalMapped =
+          itemNamesAndAmountsConvertor(optionalItems);
+      Map<String, String> mustHaveMapped =
+          itemNamesAndAmountsConvertor(mustHaveItems);
       var generatedRecipe = await generateRecipe(
-          optionalItems,
+          optionalMapped,
           recipeType,
-          mustHaveItems,
+          mustHaveMapped,
           [
             supplies
           ], // temporary solution. rather ask the user for an actual list
           pantryOnly,
           language,
-          number);
+          options);
+      for (var recipe in generatedRecipe) {
+        _recipeController.createRecipeTask(recipe);
+      }
 
-      _recipeController.createRecipeTask(generatedRecipe);
       // clear
       _recipeTypeController.clear();
       _suppliesController.clear();

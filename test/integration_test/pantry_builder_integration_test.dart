@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 /// [thisOptionalItems] (optional items used in the pantryBuilderWidget, includes items that could be used in the recipe)
 /// [widget] (Pantry builder widget that is tested)
 void main() {
-  
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   late MockRealmResults<Item> mockRealmResults;
   late List<Item> mockItems;
@@ -46,25 +45,30 @@ void main() {
       );
     });
 
-    testWidgets('When adding pantry items to the ingredient list for recipe they are put into the optional items list at first',
-      (tester) async {
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle(); // Wait for animations to complete
+    testWidgets(
+        'When adding pantry items to the ingredient list for recipe they are put into the optional items list at first',
+        (tester) async {
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle(); // Wait for animations to complete
 
-        expect(find.text(mockItems[0].name), findsOneWidget); // Finds a widget which has a "Text" field "Apple"
+      expect(find.text(mockItems[0].name),
+          findsOneWidget); // Finds a widget which has a "Text" field "Apple"
 
-        await tester.tap(find.text(mockItems[0].name)); // Tap on the first item on rest on the list
-        await tester.pumpAndSettle(); // Wait for animations to complete
+      await tester.tap(find.text(
+          mockItems[0].name)); // Tap on the first item on rest on the list
+      await tester.pumpAndSettle(); // Wait for animations to complete
 
-        // Verify that the item is moved to the appropriate list
-        expect(thisMustHaveItems.contains(mockItems[0].name), false);
-        expect(thisOptionalItems.contains(mockItems[0].name), true);
+      // Verify that the item is moved to the appropriate list
+      print(thisOptionalItems);
+      print(thisMustHaveItems);
+      expect(thisMustHaveItems.contains('${mockItems[0].name};'), false);
+      expect(thisOptionalItems.contains('${mockItems[0].name};'), true);
     });
 
-    
-    testWidgets("""When adding a new ingredient to the recipe by typing it to the text box by must have items
+    testWidgets(
+        """When adding a new ingredient to the recipe by typing it to the text box by must have items
     it is added to the must have items, when pressing it again it is moved to the optional items list""",
-    (tester) async{
+        (tester) async {
       await tester.pumpWidget(widget);
       await tester.pumpAndSettle(); // Wait for animations to complete
       // Find the TextField widget by its type
@@ -76,32 +80,31 @@ void main() {
       await tester.pumpAndSettle(); // Wait for animations to complete
       await tester.testTextInput.receiveAction(TextInputAction.done);
       // Check if now the grape is in a right list (thisMustHaveItems)
-      expect(thisMustHaveItems.contains("grape"), true);
-      expect(thisOptionalItems.contains("grape"), false);
+      expect(thisMustHaveItems.contains("grape;"), true);
+      expect(thisOptionalItems.contains("grape;"), false);
       await tester.pumpAndSettle();
       // Tap the ingredient and see if it switches lists correctly
       await tester.tap(find.text("grape"));
-      expect(thisMustHaveItems.contains("grape"), false);
-      expect(thisOptionalItems.contains("grape"), true);
-    } );
-    
+      expect(thisMustHaveItems.contains("grape;"), false);
+      expect(thisOptionalItems.contains("grape;"), true);
+    });
 
     testWidgets("""When pressing the select all button,
       every item from the pantry is selected into the recipe,
       Then when pressing the deselect button after they are deselected""",
-      (tester) async {
-        await tester.pumpWidget(widget);
-        await tester.pumpAndSettle(); // Wait for animations to complete
+        (tester) async {
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle(); // Wait for animations to complete
 
-        await tester.tap(find.text("Select all"));
-        await tester.pumpAndSettle(); // Wait for animations to complete
-        expect(thisOptionalItems.contains(mockItems[0].name), true);
-        expect(thisOptionalItems.contains(mockItems[1].name), true);
-        
-        await tester.tap(find.text("Deselect all"));
-        await tester.pumpAndSettle(); // Wait for animations to complete
-        expect(thisOptionalItems.contains(mockItems[0].name), false);
-        expect(thisOptionalItems.contains(mockItems[1].name), false);
+      await tester.tap(find.text("Select all"));
+      await tester.pumpAndSettle(); // Wait for animations to complete
+      expect(thisOptionalItems.contains(mockItems[0].name), true);
+      expect(thisOptionalItems.contains(mockItems[1].name), true);
+
+      await tester.tap(find.text("Deselect all"));
+      await tester.pumpAndSettle(); // Wait for animations to complete
+      expect(thisOptionalItems.contains(mockItems[0].name), false);
+      expect(thisOptionalItems.contains(mockItems[1].name), false);
     });
   });
 }
@@ -143,7 +146,6 @@ class MockRealmResults<T> extends Mock implements RealmResults<T> {
 
   @override
   Iterator<T> get iterator => items.iterator;
-
 
   @override
   T operator [](int index) {
