@@ -15,7 +15,7 @@ class TaskController extends GetxController {
   /// Returns the contents (= tasks) of the task list as Tasks object
   getTasksList(String taskListId) async {
     var tskList = await loginController.taskApiAuthenticated.value?.tasks
-        .list(taskListId);
+        .list(taskListId, showHidden: true);
     shoppingListItem.value?.clear();
     tskList?.items?.forEach((element) {
       var newItem = ShoppingListItemModel(

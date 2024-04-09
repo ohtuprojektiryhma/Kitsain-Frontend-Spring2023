@@ -88,7 +88,7 @@ void main() {
 
     testWidgets("""When pressing the select all button,
       every item from the pantry is selected into the recipe,
-      Then when pressing the deselect button after they are deselected""",
+      Then when pressing the deselect button after  they are deselected""",
       (tester) async {
         await tester.pumpWidget(widget);
         await tester.pumpAndSettle(); // Wait for animations to complete
