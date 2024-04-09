@@ -59,8 +59,6 @@ void main() {
       await tester.pumpAndSettle(); // Wait for animations to complete
 
       // Verify that the item is moved to the appropriate list
-      print(thisOptionalItems);
-      print(thisMustHaveItems);
       expect(thisMustHaveItems.contains('${mockItems[0].name};'), false);
       expect(thisOptionalItems.contains('${mockItems[0].name};'), true);
     });
@@ -98,13 +96,12 @@ void main() {
 
       await tester.tap(find.text("Select all"));
       await tester.pumpAndSettle(); // Wait for animations to complete
-      expect(thisOptionalItems.contains(mockItems[0].name), true);
-      expect(thisOptionalItems.contains(mockItems[1].name), true);
-
+      expect(thisOptionalItems.contains('${mockItems[0].name};'), true);
+      expect(thisOptionalItems.contains('${mockItems[1].name};'), true);
       await tester.tap(find.text("Deselect all"));
       await tester.pumpAndSettle(); // Wait for animations to complete
-      expect(thisOptionalItems.contains(mockItems[0].name), false);
-      expect(thisOptionalItems.contains(mockItems[1].name), false);
+      expect(thisOptionalItems.contains('${mockItems[0].name};'), false);
+      expect(thisOptionalItems.contains('${mockItems[1].name};'), false);
     });
   });
 }
