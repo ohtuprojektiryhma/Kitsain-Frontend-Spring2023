@@ -11,10 +11,10 @@ import 'package:realm/realm.dart';
 /// [pantryOnly] (boolean value whether the recipe only uses items from the pantry or adds new ingredients)
 /// [language] (in which language is the recipe generated in)
 /// Returns a Recipe object with the generated recipe from ChatGPT
-Future<Recipe> generateRecipe(
-    List<String> pantry,
+Future<List<Recipe>> generateRecipe(
+    Map<String, String> pantry,
     String recipeType,
-    List<String> requiredItems,
+    Map<String, String> requiredItems,
     List<String> specialSupplies,
     bool pantryOnly,
     String language,
@@ -40,24 +40,27 @@ Future<Recipe> generateRecipe(
   print('Response body: ${response.body}');
 
   var responseMap = json.decode(response.body);
+  List<Recipe> recipes = [];
 
-  // Amounts in the ingredients map may be strings or numbers, so converting them all to strings
-  Map<String, String> convertedIngredients = Map<String, String>.fromIterable(
-    responseMap["ingredients"].keys,
-    value: (key) => responseMap["ingredients"][key].toString(),
-  );
+  for (var recipe in responseMap['recipes']) {
+    // Convert ingredients to string values
+    Map<String, String> convertedIngredients = Map<String, String>.fromIterable(
+      recipe["ingredients"].keys,
+      value: (key) => recipe["ingredients"][key].toString(),
+    );
 
-  List<String> convertedInstructions = [];
-  for (var step in responseMap["instructions"]) {
-    convertedInstructions.add(step);
+    // Convert instructions to a list of strings
+    List<String> convertedInstructions = recipe["instructions"].cast<String>();
+
+    // Create a Recipe object and add it to the recipes list
+    recipes.add(Recipe(
+      ObjectId().toString(),
+      recipe["recipe_name"],
+      ingredients: convertedIngredients,
+      instructions: convertedInstructions,
+    ));
   }
-
-  return Recipe(
-    ObjectId().toString(),
-    responseMap["recipe_name"],
-    ingredients: convertedIngredients,
-    instructions: convertedInstructions,
-  );
+  return recipes;
 }
 
 /// Changes a recipe with the following values
