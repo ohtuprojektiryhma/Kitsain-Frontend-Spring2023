@@ -31,6 +31,15 @@ class PantryController {
     return pantryIndex;
   }
 
+  Future completePantryItem(Item item) async {
+    await editItemTasks(item, complete: true);
+  }
+
+  Future deletePantryItem(Item item) async {
+    var pantryIndex = await findPantryIndex();
+    await _taskController.deleteTask(pantryIndex, item.googleTaskId!, 0);
+  }
+
   /// Checks if pantry item exists as a task in the My Pantry tasklist.
   ///
   /// [pantryItemGoogleTaskIndex] is the google task index of the Pantry Item
@@ -116,7 +125,7 @@ class PantryController {
   /// Edits the pantry item in Google Tasks with provided changes.
   ///
   /// [item] is the pantry item with its updated properties.
-  Future<void> editItemTasks(Item item) async {
+  Future<void> editItemTasks(Item item, {bool complete = false}) async {
     print("opening date 3: ${item.openedDate}");
     final valuesString = createStringOfPantryItemValues(item);
     final taskListIndex = await checkIfPantryListExists();
@@ -125,16 +134,18 @@ class PantryController {
       expiryDateAsString = changeFormatOfExpiryDate(item.expiryDate.toString());
     }
     print("MOI!!!!");
-    var googleTaskId = await _taskController.editTask(
+    await _taskController.editTask(
         item.name,
         valuesString,
         taskListIndex.toString(),
         item.googleTaskId!,
         0,
         expiryDateAsString,
-        item.amount);
-    item.googleTaskId = googleTaskId;
-    PantryProxy().upsertItem(item);
+        item.amount,
+        complete);
+    if (!complete) {
+      PantryProxy().upsertItem(item);
+    }
   }
 
   String _ignoreSubMicro(String s) {
@@ -249,6 +260,7 @@ class PantryController {
         _pantryProxy.upsertItem(newItem);
       } else {
         if (itemBothIds.keys.contains(item.id)) {
+          print("item id ${item.id}");
           var newItem = Item(itemBothIds[item.id], item.title, "Pantry", 1,
               googleTaskId: item.id);
           if (item.due != null) {

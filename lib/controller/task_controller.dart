@@ -85,7 +85,7 @@ class TaskController extends GetxController {
   /// [due] is the optional expiry date of a pantry item task.
   editTask(String itemName, String description, String taskListId,
       String taskId, int index,
-      [String? due, String? amount]) async {
+      [String? due, String? amount, bool? completed]) async {
     var itemAmount = amount;
     print("editAmount: ${amount}");
     if (amount == null) {
@@ -94,14 +94,19 @@ class TaskController extends GetxController {
     var newItem = ShoppingListItemModel(itemName, description, false, taskId);
     shoppingListItem.value?.insert(index, newItem);
 
+    print("completed: ${completed}");
+
     var newTask = Task(
-        title: itemName, notes: description, status: "needsAction", id: taskId);
+        title: itemName,
+        notes: description,
+        status: completed! ? "completed" : "needsAction",
+        id: taskId);
 
     if (due != null) {
       DateTime dueDateTime = DateTime.parse(due);
       // Add one day more to prevent the UTC conversion problem
       dueDateTime =
-          DateTime(dueDateTime.year, dueDateTime.month, dueDateTime.day + 2);
+          DateTime(dueDateTime.year, dueDateTime.month, dueDateTime.day + 1);
       // Convert to UTC
       DateTime dueUtcDateTime = dueDateTime.toUtc();
       // Format as ISO 8601 string
@@ -109,6 +114,7 @@ class TaskController extends GetxController {
       // Assign formatted due date to newTask
       newTask.due = formattedDueDate;
     }
+
     // print('tlid ' + taskListId + ' tid ' + taskId);
     var googleTaskId;
     await loginController.taskApiAuthenticated.value!.tasks
