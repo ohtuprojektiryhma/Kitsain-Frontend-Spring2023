@@ -169,7 +169,7 @@ class RecipeController {
         recipe.name, valuesString, taskListIndex.toString());
     recipe.googleTaskId = googleTaskId;
     await _taskController.editRecipeTask(recipe.name, valuesString,
-        taskListIndex.toString(), recipe.googleTaskId = googleTaskId);
+        taskListIndex.toString(), recipe.googleTaskId as String);
     recipe.googleTaskId = googleTaskId;
     RecipeProxy().editRecipeRealm(recipe);
   }
