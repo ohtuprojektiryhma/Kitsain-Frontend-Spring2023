@@ -8,7 +8,6 @@ import 'package:kitsain_frontend_spring2023/assets/pantry_builder_recipe_generat
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 import 'package:kitsain_frontend_spring2023/views/add_forms/feedback_form.dart';
-import 'package:kitsain_frontend_spring2023/assets/recipe_card.dart';
 
 class CreateNewRecipeForm extends StatefulWidget {
   const CreateNewRecipeForm({super.key});
@@ -51,7 +50,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   late List<bool> _isCheckedList;
 
   // List to store indices of selected recipes
-  List<int> _selectedRecipeIndices = [];
+  final List<int> _selectedRecipeIndices = [];
   final _formKey = GlobalKey<FormState>();
   final _itemName = TextEditingController();
   var _pantryItems;
@@ -434,7 +433,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     for (var index in _selectedRecipeIndices) {
       await _recipeController.createRecipeTask(recipes[index]);
     }
-
   }
 
   /// Sends the created recipe to backend
@@ -473,47 +471,45 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     }
   }
 
-  
-
   Future<void> _showRecipeSelectionDialog(List recipes) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-          title: Text('Select Recipes'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: List.generate(
-                recipes.length,
-                (index) => CheckboxListTile(
-                  title: Text(recipes[index].name),
-                  value: _isCheckedList[index],
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _isCheckedList[index] = value!;
-                      if (value) {
-                        _selectedRecipeIndices.add(index);
-                      } else {
-                        _selectedRecipeIndices.remove(index);
-                      }
-                    });
-
-                  },
+            title: const Text('Select Recipes'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: List.generate(
+                  recipes.length,
+                  (index) => CheckboxListTile(
+                    title: Text(recipes[index].name),
+                    value: _isCheckedList[index],
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _isCheckedList[index] = value!;
+                        if (value) {
+                          _selectedRecipeIndices.add(index);
+                        } else {
+                          _selectedRecipeIndices.remove(index);
+                        }
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await _saveRecipes(recipes);
-              },
-              child: Text('Save Selected Recipes'),
-            ),
-          ],
-        );});
+            actions: <Widget>[
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await _saveRecipes(recipes);
+                },
+                child: const Text('Save Selected Recipes'),
+              ),
+            ],
+          );
+        });
       },
     );
   }

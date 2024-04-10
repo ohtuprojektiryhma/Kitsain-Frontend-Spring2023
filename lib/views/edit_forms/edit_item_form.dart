@@ -553,7 +553,6 @@ class _EditItemFormState extends State<EditItemForm> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               var addedDate = DateTime.now();
-                              print("edit item form: ${_googleTaskId}");
                               var item = Item(widget.item.id, _itemName.text,
                                   widget.item.location, _catInt,
                                   favorite: _favorite,
