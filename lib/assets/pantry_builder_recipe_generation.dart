@@ -62,7 +62,7 @@ class PantryBuilderLogic extends State<PantryBuilder> {
       if (item is NewItem) {
         mustHaveItemsNames.add('${item.name};');
       } else {
-        mustHaveItemsNames.add(item.name + ';' + item.amount);
+        mustHaveItemsNames.add(item.name + ';' + (item.amount ?? ''));
       }
     }
 
