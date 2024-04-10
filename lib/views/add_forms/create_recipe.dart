@@ -129,14 +129,16 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       );
     }
   }
-
+  /// Checks if the text form fields empty
   bool _areFormFieldsEmpty() {
     return _itemName.text.isEmpty &&
         _recipeTypeController.text.isEmpty &&
         _suppliesController.text.isEmpty &&
         _expSoonController.text.isEmpty;
   }
-
+  /// Builds the dialog button
+  /// 
+  /// Returns the text button
   Widget _buildDialogButton(
       String text, Color textColor, void Function() onPressed) {
     return TextButton(
@@ -204,7 +206,9 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       }).toList(),
     );
   }
-
+  /// Builds the options choice dropdown
+  ///
+  /// Returns the DropDownButton widget
   Widget _buildOptionsDropdown() {
     return DropdownButton<int>(
       value: options,
@@ -314,7 +318,10 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       ),
     );
   }
-
+  /// Makes a map of all the items in the list,
+  /// with the key being the name, and the value being the amount
+  /// 
+  /// Returns the map
   Map<String, String> itemNamesAndAmountsConvertor(List list) {
     Map<String, String> itemNamesAndAmounts = {}; // Initialize as an empty map
     for (var i = 0; i < list.length; i++) {
@@ -413,7 +420,9 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       ],
     );
   }
-
+  /// Builds the loading dialog
+  /// 
+  /// Returns the LoadingDialogWithTimeout widget
   Widget _loadingDialog(BuildContext context) {
     return const LoadingDialogWithTimeout();
   }
@@ -430,7 +439,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       child: Text(label),
     );
   }
-
+  /// Saves the recipes to Google tasks + Realm database
   _saveRecipes(List recipes) async {
     for (var index in _selectedRecipeIndices) {
       await _recipeController.createRecipeTask(recipes[index]);
@@ -451,9 +460,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           itemNamesAndAmountsConvertor(optionalItems);
       Map<String, String> mustHaveMapped =
           itemNamesAndAmountsConvertor(mustHaveItems);
-      
-      print('optional $optionalMapped');
-      print('musthave $mustHaveMapped');
+
       var generatedRecipe = await generateRecipe(
           optionalMapped,
           recipeType,
@@ -464,11 +471,14 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           pantryOnly,
           language,
           options);
+      // List for whether the items are selected to be saved
       _isCheckedList = List.generate(generatedRecipe.length, (index) => false);
+
+      // If multiple recipes load the selectionDialog
       if (generatedRecipe.length > 1) {
         await _showRecipeSelectionDialog(generatedRecipe);
       } else {
-        await _recipeController.createRecipeTask(generatedRecipe[0]);
+        await _recipeController.createRecipeTask(generatedRecipe[0]); // Else save the only recipe
       }
 
 
@@ -478,56 +488,56 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       _expSoonController.clear();
     }
   }
-
+  /// Bulds the dialog for selecting from multiple recipes
   Future<void> _showRecipeSelectionDialog(List recipes) async {
     return showDialog<void>(
       context: context,
-     builder: (BuildContext context) {
-      return StatefulBuilder(builder: (context, setState) {
-        return AlertDialog(
-          title: const Text('Select Recipes'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: List.generate(
-                recipes.length,
-                (index) {
-                  return ListTile(
-                    title: Text(recipes[index].name),
-                    onTap: () {
-                      _showRecipeDetailsDialog(context, recipes[index]);
-                    },
-                    trailing: Checkbox(
-                      value: _isCheckedList[index],
-                      onChanged: (bool? value) {
-                        setState(() {
-                          _isCheckedList[index] = value!;
-                          if (value) {
-                            _selectedRecipeIndices.add(index);
-                          } else {
-                            _selectedRecipeIndices.remove(index);
-                          }
-                        });
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Select Recipes'),
+            content: SingleChildScrollView(
+              child: Column(
+                children: List.generate(
+                  recipes.length,
+                  (index) {
+                    return ListTile(
+                      title: Text(recipes[index].name),
+                      onTap: () {
+                        _showRecipeDetailsDialog(context, recipes[index]);
                       },
-                    ),
-                  );
-                },
+                      trailing: Checkbox(
+                        value: _isCheckedList[index],
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _isCheckedList[index] = value!;
+                            if (value) {
+                              _selectedRecipeIndices.add(index);
+                            } else {
+                              _selectedRecipeIndices.remove(index);
+                            }
+                          });
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await _saveRecipes(recipes);
-              },
-              child: const Text('Save Selected Recipes'),
-            ),
-          ],
-        );});
-      },
+            actions: <Widget>[
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await _saveRecipes(recipes);
+                },
+                child: const Text('Save Selected Recipes'),
+              ),
+            ],
+          );});
+        },
     );
   }
-
+  /// Builds the details part of the recipe when choosing from multiple recipes
   void _showRecipeDetailsDialog(BuildContext context, recipe) {
     String ingredientsString = recipe.ingredients.entries
     .map((entry) => '${entry.key}: ${entry.value}')
@@ -538,7 +548,8 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(recipe.name),
-          content: Column(
+          content: SingleChildScrollView(
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -548,6 +559,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
               const Text('Instructions:'),
               Text(instructionString),
             ],
+          ),
           ),
           actions: <Widget>[
             TextButton(
