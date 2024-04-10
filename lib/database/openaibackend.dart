@@ -10,6 +10,7 @@ import 'package:realm/realm.dart';
 /// [specialSupplies] (list of kitchen supplies available for use in the recipe),
 /// [pantryOnly] (boolean value whether the recipe only uses items from the pantry or adds new ingredients)
 /// [language] (in which language is the recipe generated in)
+/// [options] (how many different recipe options are to be generated)
 /// Returns a Recipe object with the generated recipe from ChatGPT
 Future<List<Recipe>> generateRecipe(
     Map<String, String> pantry,
@@ -18,7 +19,7 @@ Future<List<Recipe>> generateRecipe(
     List<String> specialSupplies,
     bool pantryOnly,
     String language,
-    int number) async {
+    int options) async {
   var url = Uri.https(
       'kitsain-backend-test-ohtuprojekti-staging.apps.ocp-test-0.k8s.it.helsinki.fi',
       '/generate');
@@ -30,7 +31,7 @@ Future<List<Recipe>> generateRecipe(
     'recipe_type': recipeType,
     'special_supplies': specialSupplies,
     'language': language,
-    'number': number
+    'options': options
   });
   print('Request body: $requestBody');
 
