@@ -449,7 +449,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           language,
           options);
       for (var recipe in generatedRecipe) {
-        _recipeController.createRecipeTask(recipe);
+        _recipeController.createRecipe(recipe);
       }
 
       // clear

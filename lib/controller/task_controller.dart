@@ -36,6 +36,55 @@ class TaskController extends GetxController {
   /// [itemName] is the task's, e.g. pantry item's, name. [description] is the details of the task.
   /// [taskListId] is the google tasks id of the task list. [due] is the optional expiry date of a pantry item task.
   /// Returns the google tasks id of the task list in which the task is inserted.
+  ///
+  ///
+  editRecipeTask(
+      String itemName, String description, String taskListId, String taskId,
+      [String? due, String? amount]) async {
+    try {
+      var itemAmount = amount;
+      print("editAmount: ${amount}");
+      if (amount == null) {
+        itemAmount = "";
+      }
+
+      // Construct a new Task object with updated properties
+      var updatedTask = Task(
+        title: itemName,
+        notes: description,
+        status: "needsAction",
+        id: taskId, // Use the existing taskId to identify the task
+      );
+
+      if (due != null) {
+        DateTime dueDateTime = DateTime.parse(due);
+        // Add one day more to prevent the UTC conversion problem
+        dueDateTime =
+            DateTime(dueDateTime.year, dueDateTime.month, dueDateTime.day + 2);
+        // Convert to UTC
+        DateTime dueUtcDateTime = dueDateTime.toUtc();
+        // Format as ISO 8601 string
+        String formattedDueDate = dueUtcDateTime.toIso8601String();
+        // Assign formatted due date to updatedTask
+        updatedTask.due = formattedDueDate;
+      }
+
+      var googleTaskId;
+      await loginController.taskApiAuthenticated.value!.tasks
+          .update(updatedTask, taskListId, taskId)
+          .then((value) async {
+        googleTaskId = value.id;
+        // Optionally, you can refresh the task list after updating the task
+        await getTasksList(taskListId);
+        // Optionally, refresh the UI if needed
+        // shoppingListItem.refresh();
+      });
+    } catch (e) {
+      print("Error updating task: $e");
+      // Handle the error appropriately, if needed
+    }
+  }
+
   createTask(String itemName, String description, String taskListId,
       [String? due, String? amount]) async {
     var itemAmount = amount;

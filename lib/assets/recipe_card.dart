@@ -271,7 +271,7 @@ class _RecipeCardState extends State<RecipeCard> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 var navigator = Navigator.of(context);
                 String name = recipeNameController.text;
 
@@ -291,7 +291,16 @@ class _RecipeCardState extends State<RecipeCard> {
                   instructions: instructions,
                 );
 
-                RecipeController().createRecipeTask(recipe);
+                showDialog(
+                  context: context,
+                  barrierDismissible:
+                      false, // Prevent closing the dialog by tapping outside
+                  builder: (BuildContext context) {
+                    return LoadingDialogWithTimeout(); // Loading spinner
+                  },
+                );
+                await RecipeController().editRecipe(recipe);
+                navigator.pop();
                 navigator.pop();
                 // Close the dialog
               },
@@ -356,7 +365,7 @@ class _RecipeCardState extends State<RecipeCard> {
 
               navigator.pop();
 
-              _recipeController.createRecipeTask(changedRecipe);
+              _recipeController.createRecipe(changedRecipe);
               changesController.clear();
               navigator.pop();
               navigator.pop();

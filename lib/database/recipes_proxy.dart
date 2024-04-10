@@ -69,6 +69,31 @@ class RecipeProxy with ChangeNotifier {
     }
   }
 
+  bool editRecipeRealm(Recipe recipe) {
+    try {
+      // Query all Recipe objects from the Realm
+      final recipes = realm.all<Recipe>();
+
+      // Find the existing recipe by its ID
+      final existingRecipe =
+          recipes.firstWhere((r) => r.googleTaskId == recipe.googleTaskId);
+
+      // If the existing recipe is found, update its properties
+      realm.write(() {
+        existingRecipe.name = recipe.name;
+        existingRecipe.ingredients = recipe.ingredients;
+        existingRecipe.instructions = recipe.instructions;
+        // Update other properties as needed
+      });
+      // Notify listeners of the change
+      notifyListeners();
+      return true; // Operation successful
+    } on RealmException catch (e) {
+      debugPrint(e.message); // Print error message
+      return false; // Operation failed
+    }
+  }
+
   /// Deletes the [recipe] from the database
   void deleteRecipe(Recipe recipe) {
     try {
