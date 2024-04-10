@@ -136,7 +136,7 @@ class _ItemCardState extends State<ItemCard> {
             PantryProxy().changeLocation(widget.item, "Used");
             break;
           case _MenuValues.bin:
-            _pantryController.deletePantryItem(widget.item);
+            _pantryController.deletePantryItemFromTasks(widget.item);
             PantryProxy().changeLocation(widget.item, "Bin");
             break;
           // case _MenuValues.shoppinglist:
@@ -240,12 +240,15 @@ class _ItemCardState extends State<ItemCard> {
         switch (value) {
           case _MenuValues.bin:
             PantryProxy().changeLocation(widget.item, "Bin");
+            _pantryController.deletePantryItemFromTasks(widget.item);
             break;
           case _MenuValues.used:
             PantryProxy().changeLocation(widget.item, "Used");
+            _pantryController.editItemTasks(widget.item, complete: true);
             break;
           case _MenuValues.pantry:
             PantryProxy().changeLocation(widget.item, "Pantry");
+            _pantryController.editItemTasks(widget.item, returnToPantry: true);
             break;
           // case _MenuValues.shoppinglist:
           //   break;

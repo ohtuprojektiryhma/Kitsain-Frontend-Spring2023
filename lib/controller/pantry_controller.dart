@@ -35,7 +35,7 @@ class PantryController {
     await editItemTasks(item, complete: true);
   }
 
-  Future deletePantryItem(Item item) async {
+  Future deletePantryItemFromTasks(Item item) async {
     var pantryIndex = await findPantryIndex();
     await _taskController.deleteTask(pantryIndex, item.googleTaskId!, 0);
   }
@@ -110,7 +110,8 @@ class PantryController {
   /// Creates a string of all pantry item details.
   ///
   /// [pantryItem] is the pantry item that contains the details to be stringified.
-  createStringOfPantryItemValues(Item pantryItem) {
+  createStringOfPantryItemValues(Item pantryItem,
+      {bool returnToPantry = false}) {
     var valuesString = "";
     valuesString += "amount: ${pantryItem.amount}\n";
     valuesString += "location: ${pantryItem.location}\n";
@@ -125,7 +126,8 @@ class PantryController {
   /// Edits the pantry item in Google Tasks with provided changes.
   ///
   /// [item] is the pantry item with its updated properties.
-  Future<void> editItemTasks(Item item, {bool complete = false}) async {
+  Future<void> editItemTasks(Item item,
+      {bool complete = false, bool returnToPantry = false}) async {
     print("opening date 3: ${item.openedDate}");
     final valuesString = createStringOfPantryItemValues(item);
     final taskListIndex = await checkIfPantryListExists();
@@ -143,7 +145,7 @@ class PantryController {
         expiryDateAsString,
         item.amount,
         complete);
-    if (!complete) {
+    if (!complete && !returnToPantry) {
       PantryProxy().upsertItem(item);
     }
   }
