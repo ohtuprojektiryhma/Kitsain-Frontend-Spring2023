@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 class FeedbackButton extends StatelessWidget {
   const FeedbackButton({super.key});
@@ -26,6 +27,27 @@ class FeedbackLogic {
   void setSelectedFeedbackType(String value) {
     _selectedFeedbackType = value;
   }
+
+  final _recipientController = TextEditingController(
+    text: 'kitsaintest@gmail.com', // Change to the email you want to receive feedback
+  );
+
+  final _subjectController = TextEditingController();
+
+  final _bodyController = TextEditingController();
+
+  Future<void> send_email() async {
+    print(_bodyController.text);
+    print(_subjectController.text);
+    final Email email = Email(
+      body: _bodyController.text,
+      subject: _subjectController.text,
+      recipients: [_recipientController.text],
+      attachmentPaths: [],
+      isHTML: false,
+    );
+    await FlutterEmailSender.send(email);
+  }
 }
 
 class CreateFeedbackForm extends StatefulWidget {
@@ -38,7 +60,6 @@ class CreateFeedbackForm extends StatefulWidget {
 class _CreateFeedbackFormState extends State<CreateFeedbackForm> {
   final feedbackLogic = FeedbackLogic();
   final _formKey = GlobalKey<FormState>();
-  final _feedbackController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +83,7 @@ class _CreateFeedbackFormState extends State<CreateFeedbackForm> {
                     onChanged: (value) {
                       setState(() {
                         feedbackLogic.setSelectedFeedbackType(value as String);
+                        feedbackLogic._subjectController.text = feedbackLogic.selectedFeedbackType;
                       });
                     },
                   ),
@@ -72,6 +94,7 @@ class _CreateFeedbackFormState extends State<CreateFeedbackForm> {
                     onChanged: (value) {
                       setState(() {
                         feedbackLogic.setSelectedFeedbackType(value as String);
+                        feedbackLogic._subjectController.text = feedbackLogic.selectedFeedbackType;
                       });
                     },
                   ),
@@ -82,6 +105,7 @@ class _CreateFeedbackFormState extends State<CreateFeedbackForm> {
                     onChanged: (value) {
                       setState(() {
                         feedbackLogic.setSelectedFeedbackType(value as String);
+                        feedbackLogic._subjectController.text = feedbackLogic.selectedFeedbackType;
                       });
                     },
                   ),
@@ -90,7 +114,7 @@ class _CreateFeedbackFormState extends State<CreateFeedbackForm> {
               ),
               const Text('Describe your feedback: '),
               TextFormField(
-                controller: _feedbackController,
+                controller: feedbackLogic._bodyController,
                 decoration: const InputDecoration(
                   labelText: 'Feedback',
                   filled: true,
@@ -108,6 +132,7 @@ class _CreateFeedbackFormState extends State<CreateFeedbackForm> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
+                    feedbackLogic.send_email();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Feedback submitted')),
                     );
