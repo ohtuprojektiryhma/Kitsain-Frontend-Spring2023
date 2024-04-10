@@ -42,6 +42,7 @@ class _Recipe {
   late Map<String, String> ingredients;
   late List<String> instructions;
   late String? googleTaskId;
+  late bool done = false;
 }
 
 class CategoryMaps {

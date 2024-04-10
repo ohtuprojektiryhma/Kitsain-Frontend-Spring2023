@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:get/get.dart';
 import 'package:kitsain_frontend_spring2023/app_colors.dart';
-import 'package:kitsain_frontend_spring2023/item_controller.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/feed/feedview.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/pantryview.dart';
 import 'package:kitsain_frontend_spring2023/views/main_menu_pages/recipeview.dart';
@@ -58,11 +56,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final stateController = Get.put(ItemController());
-
   @override
   void initState() {
-    stateController.addData();
     super.initState();
   }
 

@@ -435,7 +435,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     for (var index in _selectedRecipeIndices) {
       await _recipeController.createRecipeTask(recipes[index]);
     }
-
   }
 
   /// Sends the created recipe to backend
@@ -479,8 +478,6 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
       _expSoonController.clear();
     }
   }
-
-  
 
   Future<void> _showRecipeSelectionDialog(List recipes) async {
     return showDialog<void>(
