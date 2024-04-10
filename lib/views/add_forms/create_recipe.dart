@@ -8,7 +8,7 @@ import 'package:kitsain_frontend_spring2023/assets/pantry_builder_recipe_generat
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
 import 'package:kitsain_frontend_spring2023/views/add_forms/feedback_form.dart';
-import 'package:kitsain_frontend_spring2023/assets/recipe_card.dart';
+
 
 class CreateNewRecipeForm extends StatefulWidget {
   const CreateNewRecipeForm({super.key});
@@ -51,7 +51,7 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   late List<bool> _isCheckedList;
 
   // List to store indices of selected recipes
-  List<int> _selectedRecipeIndices = [];
+  final List<int> _selectedRecipeIndices = [];
   final _formKey = GlobalKey<FormState>();
   final _itemName = TextEditingController();
   var _pantryItems;
@@ -315,7 +315,8 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
     );
   }
 
-  itemNamesAndAmountsConvertor(list) {
+  Map<String, String> itemNamesAndAmountsConvertor(List list) {
+    Map<String, String> itemNamesAndAmounts = {}; // Initialize as an empty map
     for (var i = 0; i < list.length; i++) {
       if (list[i].contains(';')) {
         List<String> splitted = list[i].split(';');
@@ -451,6 +452,9 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           itemNamesAndAmountsConvertor(optionalItems);
       Map<String, String> mustHaveMapped =
           itemNamesAndAmountsConvertor(mustHaveItems);
+      
+      print('optional $optionalMapped');
+      print('musthave $mustHaveMapped');
       var generatedRecipe = await generateRecipe(
           optionalMapped,
           recipeType,
@@ -461,10 +465,13 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
           pantryOnly,
           language,
           options);
-      print(generatedRecipe);
       _isCheckedList = List.generate(generatedRecipe.length, (index) => false);
-      print(_isCheckedList);
-      await _showRecipeSelectionDialog(generatedRecipe);
+      if (generatedRecipe.length > 1) {
+        await _showRecipeSelectionDialog(generatedRecipe);
+      } else {
+        await _recipeController.createRecipeTask(generatedRecipe[0]);
+      }
+
 
       // clear
       _recipeTypeController.clear();
@@ -478,29 +485,35 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
   Future<void> _showRecipeSelectionDialog(List recipes) async {
     return showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return AlertDialog(
-          title: Text('Select Recipes'),
+     builder: (BuildContext context) {
+      return StatefulBuilder(builder: (context, setState) {
+        return AlertDialog(
+          title: const Text('Select Recipes'),
           content: SingleChildScrollView(
             child: Column(
               children: List.generate(
                 recipes.length,
-                (index) => CheckboxListTile(
-                  title: Text(recipes[index].name),
-                  value: _isCheckedList[index],
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _isCheckedList[index] = value!;
-                      if (value) {
-                        _selectedRecipeIndices.add(index);
-                      } else {
-                        _selectedRecipeIndices.remove(index);
-                      }
-                    });
-
-                  },
-                ),
+                (index) {
+                  return ListTile(
+                    title: Text(recipes[index].name),
+                    onTap: () {
+                      _showRecipeDetailsDialog(context, recipes[index]);
+                    },
+                    trailing: Checkbox(
+                      value: _isCheckedList[index],
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _isCheckedList[index] = value!;
+                          if (value) {
+                            _selectedRecipeIndices.add(index);
+                          } else {
+                            _selectedRecipeIndices.remove(index);
+                          }
+                        });
+                      },
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -510,10 +523,44 @@ class _CreateNewRecipeFormState extends State<CreateNewRecipeForm> {
                 Navigator.of(context).pop();
                 await _saveRecipes(recipes);
               },
-              child: Text('Save Selected Recipes'),
+              child: const Text('Save Selected Recipes'),
             ),
           ],
         );});
+      },
+    );
+  }
+
+  void _showRecipeDetailsDialog(BuildContext context, recipe) {
+    String ingredientsString = recipe.ingredients.entries
+    .map((entry) => '${entry.key}: ${entry.value}')
+    .join('\n');
+    String instructionString = recipe.instructions.join('\n');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(recipe.name),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Ingredients:'),
+              Text(ingredientsString),
+              const SizedBox(height: 20),
+              const Text('Instructions:'),
+              Text(instructionString),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
       },
     );
   }
