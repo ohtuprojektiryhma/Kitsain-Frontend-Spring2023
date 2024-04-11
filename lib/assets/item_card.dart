@@ -343,7 +343,7 @@ class _ItemCardState extends State<ItemCard> {
                   ),
                   leading: Transform.translate(
                     offset: Offset(0, 0),
-                    child: Categories.categoryImages[widget.item.mainCat - 1],
+                    child: Categories.categoryImages[widget.item.mainCat],
                   ),
                 )),
             clipper: ShapeBorderClipper(
@@ -416,7 +416,7 @@ class _ItemCardState extends State<ItemCard> {
                         : popupMenuButtonHistory,
                     leading: Transform.translate(
                       offset: const Offset(0, 0),
-                      child: Categories.categoryImages[widget.item.mainCat - 1],
+                      child: Categories.categoryImages[widget.item.mainCat],
                     ),
                     children: [
                       Row(
