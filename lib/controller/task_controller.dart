@@ -9,7 +9,7 @@ class TaskController extends GetxController {
   var shoppingListItem = Rx<List<ShoppingListItemModel>?>([]);
 
   final loginController = Get.put(LoginController());
-  final _tasksStreamController = StreamController<List<ShoppingListItemModel>>();
+  final _tasksStreamController = StreamController<List<ShoppingListItemModel>>.broadcast();
 
   Stream<List<ShoppingListItemModel>> get tasksStream => _tasksStreamController.stream;
 
@@ -54,6 +54,12 @@ class TaskController extends GetxController {
     shoppingListItem.refresh();
 
     return tskList;
+  }
+
+  @override
+  void onClose() {
+    _tasksStreamController.close();
+    super.onClose();
   }
 
   /// Sends created task to the google tasks API

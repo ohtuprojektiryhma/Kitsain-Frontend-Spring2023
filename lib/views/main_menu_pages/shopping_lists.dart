@@ -232,7 +232,7 @@ class _ShoppingListsState extends State<ShoppingLists> {
                                   title: Row(
                                     children: [
                                       Text(
-                                        '${task.title}',
+                                        task.title,
                                         style:
                                             const TextStyle(fontWeight: FontWeight.bold),
                                       ),
@@ -248,7 +248,7 @@ class _ShoppingListsState extends State<ShoppingLists> {
                                       ),
                                       IconButton(
                                         onPressed: () => _editList(
-                                            '${task.id}',
+                                            task.id,
                                             index),
                                         icon: const Icon(
                                           Icons.edit,
