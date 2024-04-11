@@ -47,11 +47,16 @@ class TaskListController extends GetxController {
     });
   }
 
-  deleteRecipeTaskList() async {
-    final id = await checkIfRecipeListExists();
-    await loginController.taskApiAuthenticated.value!.tasklists.delete(id);
+ deleteRecipeTaskList() async {
+  final id = await checkIfRecipeListExists();
+  if (id != "not") {
+    var tasks = await loginController.taskApiAuthenticated.value!.tasks.list(id);
+    for (var task in tasks.items!) {
+      await loginController.taskApiAuthenticated.value!.tasks.delete(id, task.id!);
+    }
     taskLists.refresh();
   }
+}
 
   Future checkIfRecipeListExists() async {
     await getTaskLists();

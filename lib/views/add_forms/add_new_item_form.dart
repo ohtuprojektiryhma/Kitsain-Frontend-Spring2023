@@ -12,7 +12,7 @@ import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart'
 import 'package:get/get.dart';
 
 const List<String> categories = <String>[
-  'Choose category',
+  'No category',
   'Meat',
   'Seafood',
   'Fruit',
@@ -54,8 +54,8 @@ class _NewItemFormState extends State<NewItemForm> {
 
   bool _favorite = false;
   bool _hasExpiryDate = false;
-  String _category = "Choose category";
-  var _catInt;
+  String _category = "No category";
+  var _catInt = 0;
   final _details = TextEditingController();
 
   var _offData;
@@ -378,8 +378,7 @@ class _NewItemFormState extends State<NewItemForm> {
                               _category = value!;
                               _catInt = Categories.categoriesByIndex.keys
                                       .firstWhere(
-                                          (key) => categories[key] == value) +
-                                  1;
+                                          (key) => categories[key] == value);
                             },
                           );
                         },
@@ -391,12 +390,6 @@ class _NewItemFormState extends State<NewItemForm> {
                             );
                           },
                         ).toList(),
-                        validator: (value) {
-                          if (value == categories.first) {
-                            return "Please enter a category";
-                          }
-                          return null;
-                        },
                       ),
                     ),
                   ),
