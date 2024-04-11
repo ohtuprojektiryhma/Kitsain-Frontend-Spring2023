@@ -6,6 +6,7 @@ import 'package:kitsain_frontend_spring2023/database/item.dart';
 import 'package:kitsain_frontend_spring2023/database/openaibackend.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kitsain_frontend_spring2023/controller/recipe_controller.dart';
+import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:realm/realm.dart';
 
 class LoadingDialogWithTimeout extends StatefulWidget {
@@ -275,22 +276,52 @@ class _RecipeCardState extends State<RecipeCard> {
                 var navigator = Navigator.of(context);
                 String name = recipeNameController.text;
 
-                print("icontroller ${ingredientsController.text}");
-                Map<String, String> ingredients = {
-                  for (var line in ingredientsController.text.split('\n'))
-                    line.split(':')[0].trim(): line.split(':')[1].trim()
-                };
+                // print("rcontroller ${recipeNameController.text}");
+                // Map<String, String> ingredients = {
+                //   for (var line in ingredientsController.text.split('\n'))
+                //     line.split(':')[0].trim(): line.split(':')[1].trim()
+                // };
 
-                List<String> instructions =
-                    instructionsController.text.split('\n');
+                // List<String> instructions =
+                //     instructionsController.text.split('\n');
 
-                var recipe = Recipe(
-                  ObjectId().toString(),
-                  name,
-                  ingredients: ingredients,
-                  instructions: instructions,
-                );
+                // var recipe = Recipe(
+                //   ObjectId().toString(),
+                //   name,
+                //   ingredients: ingredients,
+                //   instructions: instructions,
+                // );
 
+                // final recipes = realm.all<Recipe>();
+                // try {
+                //   // Start a write transaction
+                //   realm.write(() {
+                //     // Find the existing recipe by its ID
+                //     final existingRecipe =
+                //         recipes.firstWhere((r) => r.id == recipe.id);
+                //     print("exrname ${existingRecipe.name}");
+                //     // Modify the existing recipe's properties
+                //     existingRecipe.name = name;
+                //     print("name2 $name");
+                //     existingRecipe.ingredients =
+                //         ingredients as RealmMap<String>;
+                //     existingRecipe.instructions =
+                //         instructions as RealmList<String>;
+                //   });
+                //   notifyListeners();
+                // } catch (e) {
+                //   print("Error modifying recipe: $e");
+                //   // Handle the error appropriately, if needed
+                // }
+                // // Find the existing recipe by its ID
+                // final existingRecipe =
+                //     recipes.firstWhere((r) => r.id == recipe.id);
+                // // Modify the existing recipe's properties
+                // existingRecipe.name = name;
+                // existingRecipe.ingredients = ingredients as RealmMap<String>;
+                // existingRecipe.instructions = instructions as RealmList<String>;
+
+                // Now the existing recipe is updated with the new values
                 showDialog(
                   context: context,
                   barrierDismissible:
@@ -299,7 +330,15 @@ class _RecipeCardState extends State<RecipeCard> {
                     return LoadingDialogWithTimeout(); // Loading spinner
                   },
                 );
-                await RecipeController().editRecipe(recipe);
+                final Map<String, String> ingredients = {
+                  for (var line in ingredientsController.text.split('\n'))
+                    line.split(':')[0].trim(): line.split(':')[1].trim()
+                };
+
+                final List<String> instructions =
+                    instructionsController.text.split('\n');
+                RecipeProxy()
+                    .editRecipee(name, ingredients, instructions, recipe);
                 navigator.pop();
                 navigator.pop();
                 // Close the dialog

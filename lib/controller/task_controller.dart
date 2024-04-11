@@ -140,6 +140,8 @@ class TaskController extends GetxController {
     if (amount == null) {
       itemAmount = "";
     }
+    print("taskListId: ${taskListId}");
+    print("taskId: ${taskId}");
     var newItem = ShoppingListItemModel(itemName, description, false, taskId);
     shoppingListItem.value?.insert(index, newItem);
 

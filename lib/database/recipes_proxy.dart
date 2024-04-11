@@ -75,8 +75,7 @@ class RecipeProxy with ChangeNotifier {
       final recipes = realm.all<Recipe>();
 
       // Find the existing recipe by its ID
-      final existingRecipe =
-          recipes.firstWhere((r) => r.googleTaskId == recipe.googleTaskId);
+      final existingRecipe = recipes.firstWhere((r) => r.id == recipe.id);
 
       // If the existing recipe is found, update its properties
       realm.write(() {
@@ -112,6 +111,39 @@ class RecipeProxy with ChangeNotifier {
       realm.deleteAll<Recipe>();
     });
     notifyListeners();
+  }
+
+  bool editRecipee(name, Map<String, String> ingredients,
+      List<String> instructions, recipe) {
+    final recipes = realm.all<Recipe>();
+    try {
+      // Start a write transaction
+      realm.write(() {
+        // Find the existing recipe by its ID
+        final existingRecipe = recipes.firstWhere((r) => r.id == recipe.id);
+        print("exrname ${existingRecipe.name}");
+        // Modify the existing recipe's properties
+        existingRecipe.name = name;
+        print("name2 $name");
+        final realmIngredients = RealmMap<String>(realm as Map<String, String>);
+        ingredients.forEach((key, value) {
+          realmIngredients[key] = value;
+        });
+        existingRecipe.ingredients = realmIngredients;
+
+        // Convert instructions list to RealmList
+        // existingRecipe.instructions = RealmList<String>.from(instructions);
+        final realmInstructions = RealmList<String>(realm as Iterable<String>);
+        realmInstructions.addAll(instructions);
+        existingRecipe.instructions = realmInstructions;
+      });
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print("Error modifying recipe: $e");
+      return false;
+      // Handle the error appropriately, if needed
+    }
   }
 
   int getCatCount(int category) {

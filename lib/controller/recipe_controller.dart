@@ -4,12 +4,14 @@ import 'package:kitsain_frontend_spring2023/controller/tasklist_controller.dart'
 import 'package:kitsain_frontend_spring2023/controller/task_controller.dart';
 import 'package:kitsain_frontend_spring2023/database/recipes_proxy.dart';
 import 'package:realm/realm.dart';
+import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
 // import 'package:kitsain_frontend_spring2023/controller/pantry_controller.dart';
 
 class RecipeController {
   final _taskListController = Get.put(TaskListController());
   final _taskController = Get.put(TaskController());
   final _recipeProxy = RecipeProxy();
+  final _pantryController = PantryController();
   // final _pantryController = PantryController();
 
   createRecipeTaskList() async {
@@ -164,14 +166,16 @@ class RecipeController {
 //       [String? due, String? amount]
   Future<void> editRecipe(Recipe recipe) async {
     final valuesString = createStringOfRecipeValues(recipe);
-    final taskListIndex = await checkIfRecipeListExists();
-    var googleTaskId = await _taskController.createTask(
-        recipe.name, valuesString, taskListIndex.toString());
-    recipe.googleTaskId = googleTaskId;
-    await _taskController.editRecipeTask(recipe.name, valuesString,
-        taskListIndex.toString(), recipe.googleTaskId as String);
-    recipe.googleTaskId = googleTaskId;
+    final taskListIndex = await _pantryController.findPantryIndex();
+    // final taskListIndex = await checkIfRecipeListExists();
+    // var googleTaskId = await _taskController.createTask(
+    //     recipe.name, valuesString, taskListIndex.toString());
+    // recipe.googleTaskId = googleTaskId;
     RecipeProxy().editRecipeRealm(recipe);
+    await _taskController.editTask(recipe.name, valuesString,
+        taskListIndex.toString(), recipe.googleTaskId as String, 0);
+    // recipe.googleTaskId = googleTaskId;
+    // RecipeProxy().editRecipeRealm(recipe);
   }
 
   deleteRecipeFromTasks(Recipe recipe) async {
