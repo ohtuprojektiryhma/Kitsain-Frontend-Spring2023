@@ -127,7 +127,9 @@ class PantryController {
   ///
   /// [item] is the pantry item with its updated properties.
   Future<void> editItemTasks(Item item,
-      {bool complete = false, bool returnToPantry = false}) async {
+      {bool complete = false,
+      bool returnToPantry = false,
+      bool favoritedFromPantryView = false}) async {
     print("opening date 3: ${item.openedDate}");
     final valuesString = createStringOfPantryItemValues(item);
     final taskListIndex = await checkIfPantryListExists();
@@ -145,7 +147,7 @@ class PantryController {
         expiryDateAsString,
         item.amount,
         complete);
-    if (!complete && !returnToPantry) {
+    if (!complete && !returnToPantry && !favoritedFromPantryView) {
       PantryProxy().upsertItem(item);
     }
   }
