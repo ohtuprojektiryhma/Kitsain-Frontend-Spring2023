@@ -259,7 +259,6 @@ class PantryController {
     var completedTasks =
         tasks.items.where((i) => i.status == "completed").toList();
     var completedTasksIds = completedTasks.map((i) => i.id).toList();
-    print("completed tasks: ${completedTasksIds}");
 
     moveIncompleteTasksToPantry(tasks);
 
