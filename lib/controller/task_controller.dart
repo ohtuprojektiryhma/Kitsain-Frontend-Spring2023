@@ -2,12 +2,16 @@ import 'package:get/get.dart';
 import 'package:googleapis/tasks/v1.dart';
 import 'package:kitsain_frontend_spring2023/login_controller.dart';
 import 'package:kitsain_frontend_spring2023/models/ShoppingListItemModel.dart';
+import 'dart:async';
 
 class TaskController extends GetxController {
   var tasksListRemove = Rx<List<int>?>([]);
   var shoppingListItem = Rx<List<ShoppingListItemModel>?>([]);
 
   final loginController = Get.put(LoginController());
+  final _tasksStreamController = StreamController<List<ShoppingListItemModel>>();
+
+  Stream<List<ShoppingListItemModel>> get tasksStream => _tasksStreamController.stream;
 
   /// Returns list of created tasks in a task list
   ///
@@ -26,6 +30,27 @@ class TaskController extends GetxController {
       shoppingListItem.value?.add(newItem);
     });
 
+    shoppingListItem.refresh();
+
+    return tskList;
+  }
+
+  getTasksListStream(String taskListId) async {
+    var tskList = await loginController.taskApiAuthenticated.value?.tasks
+        .list(taskListId, showHidden: true);
+    shoppingListItem.value?.clear();
+    tskList?.items?.forEach((element) {
+      if (element.parent == null) {
+        print(element);
+        var newItem = ShoppingListItemModel(
+            element.title ?? '',
+            element.notes ?? '',
+            false,
+            element.id ?? '');
+        shoppingListItem.value?.add(newItem);
+      }
+    });
+    _tasksStreamController.add(shoppingListItem.value ?? []);
     shoppingListItem.refresh();
 
     return tskList;
