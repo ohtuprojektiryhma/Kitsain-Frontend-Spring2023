@@ -12,7 +12,6 @@ import 'package:kitsain_frontend_spring2023/views/main_menu_pages/user_shopping_
 import 'package:kitsain_frontend_spring2023/views/edit/edit_shopping_list.dart';
 import 'package:kitsain_frontend_spring2023/views/add_forms/add_new_shopping_list_form.dart';
 import 'package:kitsain_frontend_spring2023/database/item.dart';
-import 'package:kitsain_frontend_spring2023/models/ShoppingListItemModel.dart';
 
 class ShoppingLists extends StatefulWidget {
   const ShoppingLists({super.key, required this.setActiveShoppingListIndex});
