@@ -248,7 +248,7 @@ class _CreateEditPostViewState extends State<CreateEditPostView> {
                 TextFormField(
                   keyboardType: TextInputType.number,
                   inputFormatters: [
-                    CurrencyTextInputFormatter(
+                    CurrencyTextInputFormatter.currency(
                       decimalDigits: 2,
                       locale: 'eu',
                       symbol: '€',

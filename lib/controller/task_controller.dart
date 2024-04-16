@@ -9,9 +9,6 @@ class TaskController extends GetxController {
   var shoppingListItem = Rx<List<ShoppingListItemModel>?>([]);
 
   final loginController = Get.put(LoginController());
-  var _tasksStreamController = StreamController<List<ShoppingListItemModel>>.broadcast();
-
-  Stream<List<ShoppingListItemModel>> get tasksStream => _tasksStreamController.stream;
 
   /// Returns list of created tasks in a task list
   ///
@@ -20,17 +17,6 @@ class TaskController extends GetxController {
   getTasksList(String taskListId, {bool pantryList = false}) async {
     var tskList = await loginController.taskApiAuthenticated.value?.tasks
         .list(taskListId, showHidden: true);
-
-    tskList?.items?.forEach((element) {
-      var newItem = ShoppingListItemModel(
-          '${element.title}',
-          element.notes == null ? '' : '${element.notes}',
-          false,
-          '${element.id}');
-      shoppingListItem.value?.add(newItem);
-    });
-
-    shoppingListItem.refresh();
 
     return tskList;
   }
