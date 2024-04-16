@@ -478,18 +478,20 @@ class _ItemCardState extends State<ItemCard> {
                           ),
                           if (widget.item.favorite == true) ...[
                             IconButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 PantryProxy().toggleItemFavorite(widget.item);
-                                _pantryController.editItemTasks(widget.item);
+                                _pantryController.editItemTasks(widget.item,
+                                    favoritedFromPantryView: true);
                               },
                               icon: const Icon(Icons.favorite,
                                   color: Colors.black),
                             ),
                           ] else ...[
                             IconButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 PantryProxy().toggleItemFavorite(widget.item);
-                                _pantryController.editItemTasks(widget.item);
+                                _pantryController.editItemTasks(widget.item,
+                                    favoritedFromPantryView: true);
                               },
                               icon: const Icon(Icons.favorite_border,
                                   color: Colors.grey),
