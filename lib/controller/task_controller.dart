@@ -109,6 +109,9 @@ class TaskController extends GetxController {
 
     print("completed: ${completed}");
 
+    if (completed == null) {
+      completed = false;
+    }
     var newTask = Task(
         title: itemName,
         notes: description,
