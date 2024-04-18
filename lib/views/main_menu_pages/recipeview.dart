@@ -43,9 +43,9 @@ class _RecipeViewState extends State<RecipeView> {
     _showModalBottomSheet(const CreateNewRecipeForm());
   }
 
-  void _createSingleItemRecipe() {
-    _showModalBottomSheet(const CreateRecipeSingleItemForm());
-    }
+  //void _createSingleItemRecipe() {
+  //  _showModalBottomSheet(const CreateRecipeSingleItemForm());
+  //  }
 
   void _showHelp() {
     _showModalBottomSheet(const RecipeHelp());
